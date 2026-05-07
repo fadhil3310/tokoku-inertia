@@ -93,7 +93,7 @@ export default function Login() {
                                     )}
                                 </button>
                             </div>
-                            <Button>
+                            <Button href={'/dashboard'}>
                                 Sign in
                             </Button>
                         </form>
