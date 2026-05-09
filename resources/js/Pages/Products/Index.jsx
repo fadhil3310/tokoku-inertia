@@ -1,7 +1,12 @@
 import React from "react";
 import DashboardLayout from "../DashboardLayout";
 import { Link, Head } from "@inertiajs/react";
-import { Card, CardHeader, CardTitle, CardActions } from "../../Components/Card";
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardActions,
+} from "../../Components/Card";
 import {
     AddIcon,
     CatalogueIcon,
@@ -11,7 +16,7 @@ import {
 } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
 
-export default function Index({ products }) {
+export default function Index({ products, error }) {
     return (
         <DashboardLayout>
             <Head title="Products" />
@@ -109,39 +114,48 @@ export default function Index({ products }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.data.map((e, index) => (
-                                    <tr key={index} className="border-b border-gray-200 hover:bg-white transition-colors">
-                                        <td className="py-4 px-2 text-gray-700">
-                                            {e.id}
-                                        </td>
-                                        <td className="py-4 px-2 text-gray-700">
-                                            <p className="font-medium">
-                                                {e.name}
-                                            </p>
-                                        </td>
-                                        <td className="py-4 px-2 text-gray-600 text-sm">
-                                            {e.description}
-                                        </td>
-                                        <td className="py-4 px-2 text-gray-700 font-medium">
-                                            {e.price}
-                                        </td>
-                                        <td className="py-4 px-2 text-gray-600 text-sm">
-                                            {e.stock}
-                                        </td>
-                                        <td className="py-4 px-2">
-                                            <Button
-                                                href={route('products.show', e.id)}
-                                                variant={'ghost'}
-                                            >
-                                                View
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {products != null ?
+                                    products.data.map((e, index) => (
+                                        <tr
+                                            key={index}
+                                            className="border-b border-gray-200 hover:bg-white transition-colors"
+                                        >
+                                            <td className="py-4 px-2 text-gray-700">
+                                                {e.id}
+                                            </td>
+                                            <td className="py-4 px-2 text-gray-700">
+                                                <p className="font-medium">
+                                                    {e.name}
+                                                </p>
+                                            </td>
+                                            <td className="py-4 px-2 text-gray-600 text-sm">
+                                                {e.description}
+                                            </td>
+                                            <td className="py-4 px-2 text-gray-700 font-medium">
+                                                {e.price}
+                                            </td>
+                                            <td className="py-4 px-2 text-gray-600 text-sm">
+                                                {e.stock}
+                                            </td>
+                                            <td className="py-4 px-2">
+                                                <Button
+                                                    href={route(
+                                                        "products.show",
+                                                        e.id,
+                                                    )}
+                                                    variant={"ghost"}
+                                                >
+                                                    View
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    )) : <tr>
+                                            <td colSpan={6} className="text-red-500 text-center p-10">{error}</td>
+                                        </tr>
+                                    }
                             </tbody>
                         </table>
                     </div>
-
 
                     {/* TODO: PAGINATION INCOMPLETE */}
                     <div className="flex items-center justify-center gap-2 mt-8">
