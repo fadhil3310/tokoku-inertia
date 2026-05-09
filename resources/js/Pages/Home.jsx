@@ -51,26 +51,25 @@ const features = [
     },
 ]
 
-function FaqItem({ question, answer }) {
-    const [open, setOpen] = useState(false)
-
+function FaqItem({ question, answer, onToggle, isOpen }) {
     return (
-        <div className="bg-white rounded-xl px-6 py-4 shadow-sm">
+        <div className="bg-white rounded-xl shadow-sm">
             <button
-                onClick={() => setOpen(!open)}
-                className="w-full font-medium text-sm flex justify-between items-center text-left"
+                onClick={onToggle}
+                className="w-full font-medium text-sm flex px-6 py-4 justify-between items-center text-left hover:cursor-pointer"
             >
                 <span>{question}</span>
-                <span className={`text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>▼</span>
+                <span className={`text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
             </button>
-            {open && (
-                <p className="mt-3 text-sm text-gray-500">{answer}</p>
+            {isOpen && (
+                <p className="mt-3 text-sm text-gray-500 px-6 pb-4">{answer}</p>
             )}
         </div>
     )
 }
 
 export default function Home() {
+    const [activeIndex, setActiveIndex] = useState(null)
     return (
         <>
             <Head title="Tokoku" />
@@ -194,8 +193,8 @@ export default function Home() {
                             Frequently Asked Questions
                         </h2>
                         <div className="space-y-4">
-                            {faqs.map((faq) => (
-                                <FaqItem key={faq.question} {...faq} />
+                            {faqs.map((faq, index) => (
+                                <FaqItem key={faq.question} {...faq} isOpen={activeIndex === index} onToggle={() => setActiveIndex(activeIndex === index ? null : index)} />
                             ))}
                         </div>
                     </div>
