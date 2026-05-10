@@ -90,7 +90,7 @@ export default function Index({ products, error }) {
                     </div>
 
                     <div className="overflow-x-auto">
-                        <table className="w-full">
+                        <table className="w-full table-fixed w-[300px]">
                             <thead>
                                 <tr className="border-b-2 border-gray-300">
                                     <th className="text-left py-4 px-2 font-semibold text-gray-700">
