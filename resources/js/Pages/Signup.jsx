@@ -60,7 +60,6 @@ export default function SignUp() {
 
             <div className="min-h-screen bg-gray-100 text-gray-700 flex justify-center items-center">
                 <main className="w-full max-w-5xl bg-white shadow-lg rounded-xl overflow-hidden flex flex-col-reverse lg:flex-row">
-                    {/* Form side */}
                     <div className="flex flex-1 flex-col p-12 space-y-4">
                         <div className="flex flex-col lg:my-6">
                             <h1 className="text-2xl xl:text-3xl font-bold">
@@ -114,10 +113,11 @@ export default function SignUp() {
                                 onChange={handleChange("password")}
                                 required
                             >
-                                <button
+                                <Button
                                     type="button"
+                                    variant={'ghost'}
                                     onClick={() => setShowPassword((v) => !v)}
-                                    className="absolute right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                                    className="w-fit absolute right-2 text-gray-400 hover:text-gray-600 hover:bg-transparent transition-colors cursor-pointer"
                                     aria-label={
                                         showPassword
                                             ? "Hide password"
@@ -129,23 +129,23 @@ export default function SignUp() {
                                     ) : (
                                         <EyeOpenIcon />
                                     )}
-                                </button>
+                                </Button>
                             </InputField>
 
-                            <button
+                            <Button
                                 type="submit"
-                                className="mt-5 tracking-wide font-semibold bg-blue-500 text-white w-full py-4 rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className={'mt-5'}
                             >
                                 Sign up
-                            </button>
+                            </Button>
                         </form>
 
-                        <a href="/login" className="text-center text-sm">
+                        <Link href="/login" className="text-center">
                             Already have an account?{" "}
                             <span className="underline font-bold text-blue-500">
                                 Sign in
                             </span>
-                        </a>
+                        </Link>
 
                         <p className="text-center text-sm ">Or continue with</p>
 
@@ -177,7 +177,6 @@ export default function SignUp() {
                         </div>
                     </div>
 
-                    {/* Image side */}
                     <div
                         className="lg:w-3/5 min-h-52 bg-blue-100 bg-cover bg-center"
                         style={{

@@ -51,7 +51,7 @@ export default function Login() {
             <div className="min-h-screen text-gray-700 flex justify-center">
                 <main className="min-w-full lg:min-w-5xl bg-white shadow rounded-xl overflow-hidden flex flex-col-reverse lg:flex-row justify-center lg:absolute lg:top-1/2 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2">
                     <div className="flex flex-1 flex-col p-12 space-y-4">
-                        <Link href="/" clLinkssName="text-gray-700">
+                        <Link href="/" className="text-gray-700">
                             <svg
                                 width="24"
                                 height="24"
@@ -88,10 +88,11 @@ export default function Login() {
                                 onChange={handleChange("password")}
                                 required
                             >
-                                <button
+                                <Button
                                     type="button"
+                                    variant={'ghost'}
                                     onClick={() => setShowPassword((v) => !v)}
-                                    className="absolute right-4 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                                    className="w-fit absolute right-2 text-gray-400 hover:text-gray-600 hover:bg-transparent transition-colors cursor-pointer"
                                     aria-label={
                                         showPassword
                                             ? "Hide password"
@@ -103,7 +104,7 @@ export default function Login() {
                                     ) : (
                                         <EyeOpenIcon />
                                     )}
-                                </button>
+                                </Button>
                             </InputField>
                             <Button href={'/dashboard'}>
                                 Sign in

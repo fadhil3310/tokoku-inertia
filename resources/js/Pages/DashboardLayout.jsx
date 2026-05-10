@@ -1,6 +1,7 @@
 import { Link, Head, usePage } from "@inertiajs/react";
 import { useState } from "react";
-import { TransactionsIcon, HomeIcon, PaymentIcon, ProductsIcon, BoothIcon } from "../Components/Icons";
+import { TransactionsIcon, HomeIcon, PaymentIcon, ProductsIcon, BoothIcon, BellIcon } from "../Components/Icons";
+import Button from "../Components/Buttons";
 
 export default function DashboardLayout({ children }) {
     const { url } = usePage();
@@ -71,12 +72,13 @@ export default function DashboardLayout({ children }) {
 
                         <div className="flex items-center gap-2 ml-auto">
                             <div className="relative">
-                                <button
+                                <Button
+                                    variant={'ghost'}
                                     onClick={() => setNotifOpen(!notifOpen)}
                                     className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
                                 >
-                                    🔔
-                                </button>
+                                    <BellIcon />
+                                </Button>
                                 {notifOpen && (
                                     <div className="absolute right-0 mt-2 w-72 bg-white rounded-md shadow-lg border border-gray-200 z-50">
                                         <div className="px-4 py-3 border-b border-gray-200 font-medium">
@@ -105,9 +107,10 @@ export default function DashboardLayout({ children }) {
                             </div>
 
                             <div className="relative">
-                                <button
+                                <Button
+                                    variant={'ghost'}
                                     onClick={() => setProfileOpen(!profileOpen)}
-                                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100"
+                                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 text-gray-700"
                                 >
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
                                         Ad
@@ -115,7 +118,7 @@ export default function DashboardLayout({ children }) {
                                     <span className="hidden md:inline text-sm font-medium">
                                         Admin
                                     </span>
-                                </button>
+                                </Button>
                                 {profileOpen && (
                                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
                                         <Link
