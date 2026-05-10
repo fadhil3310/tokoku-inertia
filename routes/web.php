@@ -11,6 +11,7 @@ Route::get('/payment', fn() => Inertia::render('Payment'));
 Route::get('/booth', fn() => Inertia::render('Booth'));
 Route::get('/transactions/form', fn() => Inertia::render('TransactionsForm'));
 Route::get('/login', fn() => Inertia::render('Login'));
+Route::get('/signup', fn() => Inertia::render('Signup'));
 Route::get('/profile', fn() => Inertia::render('Profile/Show'));
 
 Route::resource('products', ProductController::class);

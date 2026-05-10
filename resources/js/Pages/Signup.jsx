@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import {
+    CatalogueIcon,
+    EmailIcon,
+    EyeCloseIcon,
+    EyeOpenIcon,
+    GoogleIcon,
+    LockIcon,
+    UserIcon,
+} from "../Components/Icons";
 import { Link, Head } from "@inertiajs/react";
-import DashboardLayout from "./DashboardLayout";
-import { EmailIcon, EyeCloseIcon, EyeOpenIcon, GoogleIcon, LockIcon } from "../Components/Icons";
 import Button from "../Components/Buttons";
 
 function InputField({
@@ -29,9 +36,11 @@ function InputField({
     );
 }
 
-export default function Login() {
+export default function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [form, setForm] = useState({
+        boothName: "",
+        name: "",
         email: "",
         password: "",
     });
@@ -41,37 +50,53 @@ export default function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // handle login logic
+        // handle sign up logic
         console.log(form);
     };
 
     return (
         <>
-            <Head title="Login" />
-            <div className="min-h-screen text-gray-700 flex justify-center">
-                <main className="min-w-full lg:min-w-5xl bg-white shadow rounded-xl overflow-hidden flex flex-col-reverse lg:flex-row justify-center lg:absolute lg:top-1/2 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2">
+            <Head title="Signup" />
+
+            <div className="min-h-screen bg-gray-100 text-gray-700 flex justify-center items-center">
+                <main className="w-full max-w-5xl bg-white shadow-lg rounded-xl overflow-hidden flex flex-col-reverse lg:flex-row">
+                    {/* Form side */}
                     <div className="flex flex-1 flex-col p-12 space-y-4">
-                        <Link href="/" clLinkssName="text-gray-700">
-                            <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path d="M11.0303 8.53033C11.3232 8.23744 11.3232 7.76256 11.0303 7.46967C10.7374 7.17678 10.2626 7.17678 9.96967 7.46967L5.96967 11.4697C5.82322 11.6161 5.75 11.8081 5.75 12C5.75 12.1017 5.77024 12.1987 5.80691 12.2871C5.84351 12.3755 5.89776 12.4584 5.96967 12.5303L9.96967 16.5303C10.2626 16.8232 10.7374 16.8232 11.0303 16.5303C11.3232 16.2374 11.3232 15.7626 11.0303 15.4697L8.31066 12.75H18C18.4142 12.75 18.75 12.4142 18.75 12C18.75 11.5858 18.4142 11.25 18 11.25H8.31066L11.0303 8.53033Z" />
-                            </svg>
-                        </Link>
                         <div className="flex flex-col lg:my-6">
                             <h1 className="text-2xl xl:text-3xl font-bold">
                                 Tokoku
                             </h1>
-                            <p>Let's get you signed in</p>
+                            <p className="">Create an account</p>
                         </div>
+
                         <form
-                            action="home.html"
-                            method="get"
-                            className="mt-6 flex flex-col space-y-4"
+                            onSubmit={handleSubmit}
+                            className="mt-4 flex flex-col space-y-4"
                         >
+                            <span className="text-sm font-medium">
+                                Booth Data
+                            </span>
+
+                            <InputField
+                                icon={<CatalogueIcon />}
+                                placeholder="Booth Name"
+                                value={form.boothName}
+                                onChange={handleChange("boothName")}
+                                required
+                            />
+
+                            <span className="text-sm font-medium">
+                                Personal Data
+                            </span>
+
+                            <InputField
+                                icon={<UserIcon />}
+                                placeholder="Name"
+                                value={form.name}
+                                onChange={handleChange("name")}
+                                required
+                            />
+
                             <InputField
                                 icon={<EmailIcon />}
                                 type="email"
@@ -80,6 +105,7 @@ export default function Login() {
                                 onChange={handleChange("email")}
                                 required
                             />
+
                             <InputField
                                 icon={<LockIcon />}
                                 type={showPassword ? "text" : "password"}
@@ -105,23 +131,30 @@ export default function Login() {
                                     )}
                                 </button>
                             </InputField>
-                            <Button href={'/dashboard'}>
-                                Sign in
-                            </Button>
+
+                            <button
+                                type="submit"
+                                className="mt-5 tracking-wide font-semibold bg-blue-500 text-white w-full py-4 rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            >
+                                Sign up
+                            </button>
                         </form>
-                        <Link href="/signup" className="text-center">
-                            Don't have an account?{" "}
+
+                        <a href="/login" className="text-center text-sm">
+                            Already have an account?{" "}
                             <span className="underline font-bold text-blue-500">
-                                Sign Up
+                                Sign in
                             </span>
-                        </Link>
-                        <span className="text-center">Or continue with</span>
+                        </a>
+
+                        <p className="text-center text-sm ">Or continue with</p>
+
                         <div className="w-full flex-1">
                             <div className="flex flex-col items-center">
                                 <Button variant={'secondary'}>
                                     <GoogleIcon/>
                                     <span>
-                                        Sign in with Google
+                                        Sign up with Google
                                     </span>
                                 </Button>
                                 <p className="mt-6 text-xs text-gray-600 text-center">
@@ -143,12 +176,17 @@ export default function Login() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Image side */}
                     <div
-                        className="lg:w-3/5 min-h-52 bg-blue-100 text-center bg-cover"
+                        className="lg:w-3/5 min-h-52 bg-blue-100 bg-cover bg-center"
                         style={{
-                            backgroundImage: `url("https://www.anime-expo.org/wp-content/uploads/2017/04/anime-expo-los-angeles-convention-explore-exhibit-hall.jpg",)`,
+                            backgroundImage:
+                                "url('https://www.anime-expo.org/wp-content/uploads/2017/04/anime-expo-los-angeles-convention-explore-exhibit-hall.jpg')",
                         }}
-                    ></div>
+                        role="img"
+                        aria-label="Tokoku booth showcase"
+                    />
                 </main>
             </div>
         </>
