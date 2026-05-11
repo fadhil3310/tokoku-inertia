@@ -2,6 +2,7 @@ import { Link, Head, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import { TransactionsIcon, HomeIcon, PaymentIcon, ProductsIcon, BoothIcon, BellIcon } from "../Components/Icons";
 import Button from "../Components/Buttons";
+import { Toaster, toast } from 'sonner'
 
 export default function DashboardLayout({ children }) {
     const { url } = usePage();
@@ -159,6 +160,7 @@ export default function DashboardLayout({ children }) {
                         ))}
                     </div>
                 </footer>
+                <Toaster />
             </div>
         </>
     );

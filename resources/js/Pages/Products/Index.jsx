@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect }  from "react";
 import DashboardLayout from "../DashboardLayout";
-import { Link, Head } from "@inertiajs/react";
+import { Link, Head, usePage } from "@inertiajs/react";
 import {
     Card,
     CardHeader,
@@ -15,8 +15,17 @@ import {
     ChevronRightIcon,
 } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
+import { toast } from "sonner";
 
 export default function Index({ products, error }) {
+    const { flash } = usePage();
+
+    useEffect(() => {
+        if (flash.status != null) {
+            toast.success(flash.message);
+        }
+    }, [flash]) 
+
     return (
         <DashboardLayout>
             <Head title="Products" />
@@ -90,7 +99,7 @@ export default function Index({ products, error }) {
                     </div>
 
                     <div className="overflow-x-auto">
-                        <table className="w-full table-fixed w-[300px]">
+                        <table className="md:table-fixed w-full">
                             <thead>
                                 <tr className="border-b-2 border-gray-300">
                                     <th className="text-left py-4 px-2 font-semibold text-gray-700">
