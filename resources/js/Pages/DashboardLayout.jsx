@@ -10,6 +10,7 @@ export default function DashboardLayout({ children }) {
     const [notifOpen, setNotifOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(true);
+    const [mobileVisible, setMobileVisible] = useState(false);
 
     const navItems = [
         { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
@@ -23,7 +24,8 @@ export default function DashboardLayout({ children }) {
         <>
             <Head title="Dashboard" />
             <div className="flex flex-col min-h-screen bg-gray-100">
-                <aside className={`fixed top-0 left-0 z-50 h-screen bg-white border-r border-slate-400 flex flex-col lg:z-30 ${collapsed ? 'lg:w-64' : 'lg:w-24'}  -translate-x-full lg:translate-x-0 transition-all`}>
+                {mobileVisible && <div onClick={() => setMobileVisible(false)} className="fixed inset-0 z-40 bg-black/50 lg:hidden" />}
+                <aside className={`fixed top-0 left-0 z-50 h-screen bg-white border-r border-slate-400 flex flex-col lg:z-30 ${collapsed ? 'lg:w-64' : 'lg:w-24'}  ${!mobileVisible ? "-translate-x-full" : ""} lg:translate-x-0 transition-all`}>
                     <div className="flex items-center h-16 px-4">
                         <Link href="/" className="flex items-center gap-3">
                             {collapsed && (
@@ -42,7 +44,7 @@ export default function DashboardLayout({ children }) {
                                 </>
                             )}
                         </Link>
-                        <Button onClick={() => setCollapsed(!collapsed)} variant={'ghost'} size={'sm'} className={`w-fit ${collapsed ? 'ml-auto mt-3' : 'mx-auto'} text-black hover:bg-gray-100`}>
+                        <Button onClick={() => {(mobileVisible && collapsed) ? setMobileVisible(!mobileVisible) : setCollapsed(!collapsed)}} variant={'ghost'} size={'sm'} className={`w-fit ${collapsed ? 'ml-auto mt-3' : 'mx-auto'} ${mobileVisible ? "ml-5" : ""} text-black hover:bg-gray-100`}>
                             <Icon icon={collapsed ? "basil:caret-left-outline" : "basil:menu-outline"} width={24} />
                         </Button>
                     </div>
@@ -68,6 +70,9 @@ export default function DashboardLayout({ children }) {
 
                 <header className="fixed top-0 right-0 z-20 h-16 bg-white border-b border-gray-200 transition-all duration-300 left-0">
                     <div className="h-full px-4 lg:px-6 flex items-center justify-between gap-4">
+                        <Button onClick={() => setMobileVisible(!mobileVisible)} variant={'ghost'} size={'sm'} className={`w-fit text-black hover:bg-gray-100`}>
+                            <Icon icon="basil:menu-outline" width={24} />
+                        </Button>
                         <Link
                             href="/dashboard"
                             className="flex items-center gap-3 lg:hidden"
