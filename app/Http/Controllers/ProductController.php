@@ -12,11 +12,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->paginate(10);
-    
+        $products = Product::all(['id', 'name', 'description', 'price', 'created_at']);
+
         return Inertia::render('Products/Index', [
-            'products' => $products, 
-            'error' => 'Failed to fetch products.'
+            'products' => $products,
         ]);
 
     }
