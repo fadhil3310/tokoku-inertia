@@ -31,6 +31,8 @@ export default function Index({ products, error }) {
         p.created_at,
     ]);
 
+    console.log(data);
+
     const columns = [
         "Id",
         "Name",
@@ -106,7 +108,7 @@ export default function Index({ products, error }) {
                                 },
                             }}
                             pagination={{
-                                limit: 1,
+                                limit: 10,
                             }}
                             sort={true}
                         />
