@@ -31,8 +31,6 @@ export default function Index({ products, error }) {
         p.created_at,
     ]);
 
-    console.log(data);
-
     const columns = [
         "Id",
         "Name",
