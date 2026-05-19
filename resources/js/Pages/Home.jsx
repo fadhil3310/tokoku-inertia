@@ -160,7 +160,6 @@ export default function Home() {
                                         Try 14 Days Trial
                                     </Button>
                                 </div>
-
                             </div>
                         </div>
                     </div>

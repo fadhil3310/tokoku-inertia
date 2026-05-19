@@ -15,3 +15,4 @@ Route::get('/signup', fn() => Inertia::render('Signup'));
 Route::get('/profile', fn() => Inertia::render('Profile/Show'));
 
 Route::resource('products', ProductController::class);
+Route::get('/subscription', fn() => Inertia::render('Subscription'));

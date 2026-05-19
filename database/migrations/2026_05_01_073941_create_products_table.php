@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('booth_id');
             $table->string('name');
             $table->string('description')->nullable();
             $table->double('price');
@@ -24,6 +25,8 @@ return new class extends Migration
             $table->enum('status', ['draft', 'pending', 'published', 'archived', 'inactive'])->default('draft');
             $table->enum('visibility', ['private', 'public'])->default('private');
             $table->timestamps();
+            
+            $table->foreign('booth_id')->references('id')->on('booths')->onDelete('cascade');
         });
     }
 

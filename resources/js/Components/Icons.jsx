@@ -39,7 +39,7 @@ export function HomeIcon({ className = "", size = 24 }) {
             width={size}
             height={size}
             className={className}
-            viewBox="0 0 32 24"
+            viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"
         >
