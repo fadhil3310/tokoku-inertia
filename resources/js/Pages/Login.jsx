@@ -1,11 +1,49 @@
 import React, { useState } from "react";
 import { Link, Head } from "@inertiajs/react";
 import DashboardLayout from "./DashboardLayout";
-import { EyeCloseIcon, EyeOpenIcon, GoogleIcon } from "../Components/Icons";
+import { EmailIcon, EyeCloseIcon, EyeOpenIcon, GoogleIcon, LockIcon } from "../Components/Icons";
 import Button from "../Components/Buttons";
+
+function InputField({
+    icon,
+    type = "text",
+    placeholder,
+    value,
+    onChange,
+    required,
+    children,
+}) {
+    return (
+        <div className="relative flex items-center">
+            <span className="absolute left-4 pointer-events-none">{icon}</span>
+            <input
+                required={required}
+                type={type}
+                placeholder={placeholder}
+                value={value}
+                onChange={onChange}
+                className="w-full py-4 pl-12 pr-12 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white transition-colors"
+            />
+            {children}
+        </div>
+    );
+}
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
+    const [form, setForm] = useState({
+        email: "",
+        password: "",
+    });
+
+    const handleChange = (field) => (e) =>
+        setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // handle login logic
+        console.log(form);
+    };
 
     return (
         <>
@@ -13,7 +51,7 @@ export default function Login() {
             <div className="min-h-screen text-gray-700 flex justify-center">
                 <main className="min-w-full lg:min-w-5xl bg-white shadow rounded-xl overflow-hidden flex flex-col-reverse lg:flex-row justify-center lg:absolute lg:top-1/2 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2">
                     <div className="flex flex-1 flex-col p-12 space-y-4">
-                        <Link href="/" clLinkssName="text-gray-700">
+                        <Link href="/" className="text-gray-700">
                             <svg
                                 width="24"
                                 height="24"
@@ -34,56 +72,31 @@ export default function Login() {
                             method="get"
                             className="mt-6 flex flex-col space-y-4"
                         >
-                            <div className="flex items-center">
-                                <input
-                                    required
-                                    className="w-full px-8 py-4 pl-12 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
-                                    type="email"
-                                    placeholder="Email"
-                                />
-                                <div className="absolute translate-x-4 fill-current">
-                                    <svg
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            clip-rule="evenodd"
-                                            d="M2.80369 8.3533C2.52355 10.9562 2.53604 13.9582 2.92586 16.5505C3.14156 17.9849 4.31223 19.0845 5.7573 19.2102L7.26753 19.3414C10.4166 19.6152 13.5834 19.6152 16.7325 19.3414L18.2427 19.2102C19.6878 19.0845 20.8585 17.9849 21.0742 16.5505C21.464 13.9582 21.4765 10.9564 21.1963 8.35345C21.1601 8.05169 21.1194 7.75034 21.0742 7.44949C20.8585 6.0151 19.6878 4.91545 18.2427 4.78983L16.7325 4.65855C13.5834 4.38481 10.4166 4.38481 7.26753 4.65855L5.7573 4.78983C4.31223 4.91545 3.14156 6.0151 2.92586 7.44949C2.88063 7.75028 2.83991 8.05159 2.80369 8.3533ZM7.39743 6.15292C10.46 5.88669 13.54 5.88669 16.6026 6.15292L18.1128 6.2842C18.8671 6.34977 19.4782 6.92379 19.5908 7.67254C19.6025 7.7503 19.6139 7.82809 19.625 7.90592L14.064 10.9954C12.7804 11.7085 11.2196 11.7085 9.93599 10.9954L4.37505 7.90596C4.38611 7.82812 4.39749 7.75031 4.40918 7.67254C4.52178 6.92379 5.13287 6.34977 5.8872 6.2842L7.39743 6.15292ZM19.8085 9.51989C20.0025 11.7876 19.9299 14.0725 19.5908 16.3274C19.4782 17.0762 18.8671 17.6502 18.1128 17.7158L16.6026 17.8471C13.54 18.1133 10.46 18.1133 7.39743 17.8471L5.8872 17.7158C5.13287 17.6502 4.52178 17.0762 4.40918 16.3274C4.07009 14.0725 3.99753 11.7877 4.1915 9.51992L9.20752 12.3066C10.9442 13.2714 13.0558 13.2714 14.7924 12.3066L19.8085 9.51989Z"
-                                        />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div className="flex items-center relative">
-                                <input
-                                    required
-                                    id="password"
-                                    className="w-full px-8 py-4 pl-12 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="Password"
-                                />
-                                <div className="absolute translate-x-4 fill-current">
-                                    <svg
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path d="M10.5 16C10.5 15.1716 11.1716 14.5 12 14.5C12.8284 14.5 13.5 15.1716 13.5 16C13.5 16.8284 12.8284 17.5 12 17.5C11.1716 17.5 10.5 16.8284 10.5 16Z" />
-                                        <path
-                                            fill-rule="evenodd"
-                                            clip-rule="evenodd"
-                                            d="M7.62165 10.5971L7.30621 7.75816C7.26577 7.39418 7.26577 7.02684 7.30621 6.66286L7.32898 6.45796C7.57046 4.28457 9.27907 2.56492 11.4509 2.30941C11.8157 2.26649 12.1843 2.26649 12.5491 2.30941C14.7209 2.56492 16.4295 4.28458 16.671 6.45797L16.6937 6.66286C16.7342 7.02684 16.7342 7.39418 16.6937 7.75815L16.3783 10.5971L17.0649 10.6519C18.1476 10.7384 19.0317 11.5523 19.2073 12.6242C19.5733 14.8598 19.5733 17.1401 19.2073 19.3758C19.0317 20.4477 18.1476 21.2616 17.0649 21.348L15.5688 21.4675C13.1934 21.6571 10.8067 21.6571 8.43128 21.4675L6.93515 21.348C5.85242 21.2616 4.96832 20.4477 4.7928 19.3758C4.42673 17.1401 4.42673 14.8598 4.7928 12.6242C4.96832 11.5523 5.85242 10.7384 6.93515 10.6519L7.62165 10.5971ZM11.6261 3.79914C11.8745 3.76992 12.1255 3.76992 12.3738 3.79914C13.8525 3.97309 15.0157 5.1439 15.1802 6.62361L15.2029 6.82851C15.2311 7.08239 15.2311 7.33862 15.2029 7.59251L14.8818 10.483C12.9626 10.3594 11.0374 10.3594 9.1182 10.483L8.79704 7.59251C8.76883 7.33862 8.76883 7.08239 8.79704 6.82851L8.8198 6.62361C8.98422 5.1439 10.1475 3.97309 11.6261 3.79914ZM15.4494 12.0277C13.1535 11.8445 10.8466 11.8445 8.55065 12.0277L7.05452 12.1472C6.65959 12.1787 6.33711 12.4756 6.27309 12.8666C5.9333 14.9417 5.9333 17.0583 6.27309 19.1334C6.33711 19.5244 6.65959 19.8213 7.05452 19.8528L8.55065 19.9722C10.8466 20.1555 13.1535 20.1555 15.4494 19.9722L16.9455 19.8528C17.3405 19.8213 17.6629 19.5244 17.727 19.1334C18.0668 17.0583 18.0668 14.9417 17.727 12.8666C17.6629 12.4756 17.3405 12.1787 16.9455 12.1472L15.4494 12.0277Z"
-                                        />
-                                    </svg>
-                                </div>
-                                <button
+                            <InputField
+                                icon={<EmailIcon />}
+                                type="email"
+                                placeholder="Email"
+                                value={form.email}
+                                onChange={handleChange("email")}
+                                required
+                            />
+                            <InputField
+                                icon={<LockIcon />}
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Password"
+                                value={form.password}
+                                onChange={handleChange("password")}
+                                required
+                            >
+                                <Button
                                     type="button"
-                                    className="absolute right-0 -translate-x-4 fill-current hover:cursor-pointer"
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
+                                    variant={'ghost'}
+                                    onClick={() => setShowPassword((v) => !v)}
+                                    className="w-fit absolute right-2 text-gray-400 hover:text-gray-600 hover:bg-transparent transition-colors cursor-pointer"
+                                    aria-label={
+                                        showPassword
+                                            ? "Hide password"
+                                            : "Show password"
                                     }
                                 >
                                     {showPassword ? (
@@ -91,8 +104,8 @@ export default function Login() {
                                     ) : (
                                         <EyeOpenIcon />
                                     )}
-                                </button>
-                            </div>
+                                </Button>
+                            </InputField>
                             <Button href={'/dashboard'}>
                                 Sign in
                             </Button>

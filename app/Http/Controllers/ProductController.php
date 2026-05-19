@@ -12,8 +12,12 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::latest()->paginate(10);
-        return Inertia::render('Products/Index', ['products' => $products]);
+        $products = Product::all(['id', 'name', 'description', 'price', 'created_at']);
+
+        return Inertia::render('Products/Index', [
+            'products' => $products,
+        ]);
+
     }
 
     public function create()
@@ -43,8 +47,12 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('products.index')
-                         ->with('success', 'Product created successfully.');
+        Inertia::flash([
+            'status' => 'success',
+            'message' => 'Product created successfully'
+        ]);
+
+        return redirect()->route('products.index');
     }
 
     public function show(Product $product)
@@ -86,8 +94,12 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('products.index')
-                         ->with('success', 'Product updated successfully.');
+        Inertia::flash([
+            'status' => 'success',
+            'message' => 'Product updated successfully'
+        ]);
+
+        return redirect()->route('products.index');
     }
 
     public function destroy(Product $product)
@@ -98,7 +110,11 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return redirect()->route('products.index')
-                         ->with('success', 'Product deleted successfully.');
+        Inertia::flash([
+            'status' => 'success',
+            'message' => 'Product \''.$product->name.'\' deleted successfully.',
+        ]);
+
+        return redirect()->route('products.index');
     }
 }

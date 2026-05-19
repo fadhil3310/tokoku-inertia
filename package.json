@@ -15,10 +15,15 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
+        "@iconify-json/basil": "^1.2.4",
+        "@iconify/react": "^6.0.2",
         "@inertiajs/react": "^3.0.3",
         "class-variance-authority": "^0.7.1",
+        "gridjs": "^6.2.0",
+        "gridjs-react": "^6.1.1",
         "react": "^19.2.5",
         "react-dom": "^19.2.5",
+        "sonner": "^2.0.7",
         "tailwind-merge": "^3.5.0"
     }
 }

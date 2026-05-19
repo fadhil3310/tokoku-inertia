@@ -139,7 +139,7 @@ export default function Booth() {
                                 <SaveIcon/>
                                 <span>Save Profile</span>
                             </Button>
-                            <Button size={'sm'} variant={'outline'}>
+                            <Button size={'sm'} variant={'outline'} onClick={() => setCancelOpen(true)}>
                                 <CancelIcon/>
                                 <span>Cancel</span>
                             </Button>
@@ -173,18 +173,20 @@ export default function Booth() {
                         <h3 className="text-lg font-semibold text-gray-800">Discard Booth Profile?</h3>
                         <p className="text-sm text-gray-500">All changes will be lost.</p>
                         <div className="flex flex-row-reverse gap-3 mt-4">
-                            <button
+                            <Button
+                                size={'sm'}
+                                variant={'danger'}
                                 onClick={handleCancel}
-                                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-semibold"
                             >
                                 Yes, discard
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                                size={'sm'}
+                                variant={'outline'}
                                 onClick={() => setCancelOpen(false)}
-                                className="flex-1 px-4 py-2 border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white rounded-md text-sm font-semibold"
                             >
                                 No, keep editing
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

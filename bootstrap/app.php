@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Exceptions\DatabaseExceptionHandler;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,14 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class, ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (\Illuminate\Database\QueryException $e, $request) {
-            if ($e->getCode() === 2002 || $e->getCode() === 'HY000') {
-                if ($request->header('X-inertia')) {
-                    return response()->json(['error' => 'Service unavailable'], 503);
-                }
-                return inertia('Errors/DatabaseError')
-                    ->toResponse($request)
-                    ->setStatusCode(503);
-            }
-        });
+        $exceptions->report(DatabaseExceptionHandler::report(...));
+        $exceptions->render(DatabaseExceptionHandler::render(...));
     })->create();
