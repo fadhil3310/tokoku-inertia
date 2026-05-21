@@ -42,7 +42,6 @@ class AuthController extends Controller
                 }
 
                 Booth::create([
-                    'id'       => Str::uuid(), // Generating UUID manually (omit if Booth model HasUuids trait)
                     'name'     => $validated['boothName'],
                     'owner_id' => $user->id,
                     'image'    => $imagePath,

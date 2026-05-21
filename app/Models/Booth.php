@@ -13,6 +13,15 @@ class Booth extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    protected $fillable = [
+        'name', 
+        'description', 
+        'image',
+        'owner_id',
+        'catalog_html',
+        'catalog_css',
+    ];
+    
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
