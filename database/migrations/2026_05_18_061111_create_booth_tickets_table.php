@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('booth_tickets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booth_id')->constrained('booths')->cascadeOnDelete();
+            $table->uuid('booth_id');
             $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
-            $table->boolean('is_paid')->default(false);
-            // should it have this bool or just check relation with payment table?
             $table->timestamps();
+
+            $table->foreign('booth_id')
+            ->references('id')
+            ->on('booths')
+            ->cascadeOnDelete();
         });
     }
 

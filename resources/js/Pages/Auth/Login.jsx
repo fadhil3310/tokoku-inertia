@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Link, Head } from "@inertiajs/react";
-import DashboardLayout from "./DashboardLayout";
-import { EmailIcon, EyeCloseIcon, EyeOpenIcon, GoogleIcon, LockIcon } from "../Components/Icons";
-import Button from "../Components/Buttons";
+import { Link, Head, useForm } from "@inertiajs/react";
+// import DashboardLayout from "./DashboardLayout";
+import { EmailIcon, EyeCloseIcon, EyeOpenIcon, GoogleIcon, LockIcon } from "../../Components/Icons";
+import Button from "../../Components/Buttons";
 
 function InputField({
     icon,
@@ -31,24 +31,23 @@ function InputField({
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
-    const [form, setForm] = useState({
-        email: "",
-        password: "",
+    const { data, setData, post, processing, errors } = useForm({
+        email: '',
+        password: '',
     });
 
     const handleChange = (field) => (e) =>
         setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-    const handleSubmit = (e) => {
+    const submit = (e) => {
         e.preventDefault();
-        // handle login logic
-        console.log(form);
+        post('/login');
     };
 
     return (
         <>
             <Head title="Login" />
-            <div className="min-h-screen text-gray-700 flex justify-center">
+            <div className="min-h-screen text-gray-700 bg-gray-100 flex justify-center">
                 <main className="min-w-full lg:min-w-5xl bg-white shadow rounded-xl overflow-hidden flex flex-col-reverse lg:flex-row justify-center lg:absolute lg:top-1/2 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2">
                     <div className="flex flex-1 flex-col p-12 space-y-4">
                         <Link href="/" className="text-gray-700">
@@ -68,24 +67,24 @@ export default function Login() {
                             <p>Let's get you signed in</p>
                         </div>
                         <form
-                            action="home.html"
-                            method="get"
+                            onSubmit={submit}
                             className="mt-6 flex flex-col space-y-4"
                         >
                             <InputField
                                 icon={<EmailIcon />}
                                 type="email"
                                 placeholder="Email"
-                                value={form.email}
-                                onChange={handleChange("email")}
+                                value={data.email}
+                                onChange={e => setData('email', e.target.value)}
                                 required
                             />
+                            {errors.email && <div className="text-red-500 text-sm">{errors.email}</div>}
                             <InputField
                                 icon={<LockIcon />}
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Password"
-                                value={form.password}
-                                onChange={handleChange("password")}
+                                value={data.password}
+                                onChange={e => setData('password', e.target.value)}
                                 required
                             >
                                 <Button
@@ -106,7 +105,8 @@ export default function Login() {
                                     )}
                                 </Button>
                             </InputField>
-                            <Button href={'/dashboard'}>
+                            {errors.password && <div className="text-red-500 text-sm">{errors.password}</div>}
+                            <Button submit>
                                 Sign in
                             </Button>
                         </form>
@@ -133,7 +133,7 @@ export default function Login() {
                                     >
                                         Terms of Service
                                     </Link>
-                                    and its
+                                    <span> and its </span>
                                     <Link
                                         href="#"
                                         className="border-b border-gray-500 border-dotted"
@@ -147,7 +147,8 @@ export default function Login() {
                     <div
                         className="lg:w-3/5 min-h-52 bg-blue-100 text-center bg-cover"
                         style={{
-                            backgroundImage: `url("https://www.anime-expo.org/wp-content/uploads/2017/04/anime-expo-los-angeles-convention-explore-exhibit-hall.jpg",)`,
+                            backgroundImage:
+                                "url('https://www.anime-expo.org/wp-content/uploads/2017/04/anime-expo-los-angeles-convention-explore-exhibit-hall.jpg')",
                         }}
                     ></div>
                 </main>

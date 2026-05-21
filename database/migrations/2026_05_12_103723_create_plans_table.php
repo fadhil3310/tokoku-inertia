@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->json('description')->nullable();
             $table->decimal('price', 12, 2);
             $table->integer('duration_days');
             $table->string('midtrans_plan_id')->nullable();

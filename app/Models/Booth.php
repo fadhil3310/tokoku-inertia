@@ -6,22 +6,15 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Booth extends Model
 {
     use HasFactory, HasUuids;
 
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = [
-        'name', 
-        'description', 
-        'price',
-        'category',
-        'sku',
-        'stock',
-        'image',
-        'status',
-        'visibility',
-    ];
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 }

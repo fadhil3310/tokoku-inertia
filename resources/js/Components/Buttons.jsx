@@ -29,7 +29,7 @@ const buttonVariants = cva(
     }
 )
 
-export default function Button({ className, variant, size, href, children, ...props }) {
+export default function Button({ className, variant, size, href, children, submit = false, ...props }) {
     const classes = twMerge(buttonVariants({ variant, size }), className);
 
     if (href) {
@@ -41,7 +41,7 @@ export default function Button({ className, variant, size, href, children, ...pr
     }
 
     return (
-        <button type="button" className={classes} {...props}>
+        <button type={submit ? "submit" : "button"} className={classes} {...props}>
             {children}
         </button>
     );

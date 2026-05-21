@@ -1,6 +1,5 @@
 <?php
 
-use App\ProductCategory;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -25,8 +24,11 @@ return new class extends Migration
             $table->enum('status', ['draft', 'pending', 'published', 'archived', 'inactive'])->default('draft');
             $table->enum('visibility', ['private', 'public'])->default('private');
             $table->timestamps();
-            
-            $table->foreign('booth_id')->references('id')->on('booths')->onDelete('cascade');
+
+            $table->foreign('booth_id')
+            ->references('id')
+            ->on('booths')
+            ->cascadeOnDelete();
         });
     }
 
