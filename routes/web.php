@@ -10,6 +10,7 @@ Route::get('/login', fn() => Inertia::render('Auth/Login'));
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/signup', fn() => Inertia::render('Auth/Signup'));
 Route::post('/signup', [AuthController::class, 'signup']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::get('/', fn() => Inertia::render('Home'));
 Route::get('/dashboard', fn() => Inertia::render('Dashboard'));
