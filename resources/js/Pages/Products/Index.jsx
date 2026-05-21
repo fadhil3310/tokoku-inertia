@@ -106,7 +106,7 @@ export default function Index({ products, error }) {
                                 },
                             }}
                             pagination={{
-                                limit: 1,
+                                limit: 10,
                             }}
                             sort={true}
                         />
