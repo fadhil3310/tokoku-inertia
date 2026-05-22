@@ -13,7 +13,7 @@ class CatalogueController extends Controller
      */
     public function index()
     {
-        $products = Product::all(['id', 'name', 'price', 'created_at']);
+        $products = Product::all(['id', 'name', 'image', 'price', 'created_at']);
 
         return Inertia::render('Catalogue/Index', [
             'products' => $products,
