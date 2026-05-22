@@ -35,6 +35,8 @@ class AuthController extends Controller
                 'role'     => $validated['role'], 
             ]);
 
+            $request->session()->put('userId', $user->id);
+
             if ($validated['role'] === 'tenant') {
                 $imagePath = null;
                 if ($request->hasFile('boothIcon')) {
