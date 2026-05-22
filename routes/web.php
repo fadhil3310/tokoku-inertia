@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CatalogueController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'));
 Route::post('/login', [AuthController::class, 'login']);
@@ -23,3 +24,6 @@ Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
 
 Route::resource('products', ProductController::class);
 Route::get('/subscription', fn() => Inertia::render('Subscription'));
+
+Route::resource('catalogue', CatalogueController::class);
+
