@@ -2,7 +2,7 @@ import { Link } from "@inertiajs/react";
 
 export default function Footer({ className }) {
     return (
-        <footer className={className + " px-6 py-16 bg-white border-t border-gray-200"}>
+        <footer className={(className ?? "") + " px-6 py-16 bg-white border-t border-gray-200"}>
             <div className="max-w-7xl mx-auto grid grid-cols-2 md:flex md:gap-24 justify-center text-sm mb-12">
                 <div className="flex flex-col gap-4">
                     <span className="font-bold text-gray-900 text-base mb-1">
