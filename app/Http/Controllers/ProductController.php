@@ -7,12 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Booth;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all(['id', 'name', 'description', 'price', 'created_at']);
+        $boothId = Booth::where('owner_id', Auth::user()->id)->first()->id;
+        $products = Product::where('booth_id', $boothId)->get(['id', 'name', 'description', 'price', 'created_at']);
 
         return Inertia::render('Products/Index', [
             'products' => $products,
@@ -44,6 +47,7 @@ class ProductController extends Controller
         }
 
         $validated['id'] = Str::uuid();
+        $validated['booth_id'] = Booth::where('owner_id', Auth::user()->id)->first()->id;
 
         Product::create($validated);
 
