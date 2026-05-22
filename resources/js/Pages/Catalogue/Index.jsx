@@ -94,7 +94,7 @@ function ProductCard({ productId, name, image, price, sold }) {
     );
 }
 
-export default function Catalogue({ products }) {
+export default function Index({ products }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
 
