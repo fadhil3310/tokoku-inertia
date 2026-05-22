@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'));
 Route::post('/login', [AuthController::class, 'login']);
@@ -12,7 +13,8 @@ Route::get('/signup', fn() => Inertia::render('Auth/Signup'));
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
-Route::get('/', fn() => Inertia::render('Home'));
+Route::get('/', [HomeController::class, 'index']);
+
 Route::get('/dashboard', fn() => Inertia::render('Dashboard'));
 Route::get('/transactions', fn() => Inertia::render('Transactions'));
 Route::get('/payment', fn() => Inertia::render('Payment'));
