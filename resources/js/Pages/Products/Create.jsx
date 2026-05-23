@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import DashboardLayout from "../DashboardLayout";
+import DashboardLayout from "../../Layouts/DashboardLayout";
 import { Link, Head, useForm } from "@inertiajs/react";
 import {
     CancelIcon,

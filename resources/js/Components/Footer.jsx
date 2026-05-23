@@ -9,19 +9,19 @@ export default function Footer({ className }) {
                         Product
                     </span>
                     <Link
-                        href="#"
+                        href="/features"
                         className="text-gray-500 hover:text-blue-600 transition-colors"
                     >
                         Features
                     </Link>
                     <Link
-                        href="#"
+                        href="/pricing"
                         className="text-gray-500 hover:text-blue-600 transition-colors"
                     >
                         Pricing
                     </Link>
                     <Link
-                        href="#"
+                        href="/integrations"
                         className="text-gray-500 hover:text-blue-600 transition-colors"
                     >
                         Integrations
@@ -32,19 +32,19 @@ export default function Footer({ className }) {
                         Company
                     </span>
                     <Link
-                        href="#"
+                        href="/about-us"
                         className="text-gray-500 hover:text-blue-600 transition-colors"
                     >
                         About Us
                     </Link>
                     <Link
-                        href="#"
+                        href="/contact"
                         className="text-gray-500 hover:text-blue-600 transition-colors"
                     >
                         Contact
                     </Link>
                     <Link
-                        href="#"
+                        href="/support"
                         className="text-gray-500 hover:text-blue-600 transition-colors"
                     >
                         Support

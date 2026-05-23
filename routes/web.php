@@ -13,6 +13,11 @@ Route::get('/signup', fn() => Inertia::render('Auth/Signup'));
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('/', fn() => Inertia::render('Home'));
+Route::get('/about-us', fn() => Inertia::render('AboutUs'));
+Route::get('/features', fn() => Inertia::render('Features'));
+Route::get('/pricing', fn() => Inertia::render('Pricing'));
+Route::get('/contact', fn() => Inertia::render('Contact'));
+Route::get('/support', fn() => Inertia::render('Support'));
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', fn() => Inertia::render('Dashboard'));

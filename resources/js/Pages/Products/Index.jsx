@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import DashboardLayout from "../DashboardLayout";
+import DashboardLayout from "../../Layouts/DashboardLayout";
 import { Link, Head, usePage } from "@inertiajs/react";
 import {
     Card,

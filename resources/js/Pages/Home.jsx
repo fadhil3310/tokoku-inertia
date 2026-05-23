@@ -2,6 +2,7 @@ import { Link, Head } from '@inertiajs/react'
 import { useState } from 'react'
 import Button from '../Components/Buttons'
 import Footer from '../Components/Footer'
+import LandingPageLayout from '../Layouts/LandingPageLayout'
 
 const faqs = [
     {
@@ -149,190 +150,157 @@ export default function Home() {
     const [activeIndex, setActiveIndex] = useState(null)
     
     return (
-        <>
-            <Head title="Tokoku for Event Organizers" />
-            <div className="flex flex-col min-h-screen bg-gray-50">
-
-                <header className="fixed top-0 right-0 z-50 h-16 bg-white/90 backdrop-blur-md border-b border-gray-200 transition-all duration-300 left-0">
-                    <div className="h-full px-4 lg:px-6 flex items-center justify-between gap-4 max-w-7xl mx-auto">
-                        <Link href="/" className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-sm">
-                                T
-                            </div>
-                            <span className="text-xl font-bold text-gray-800 tracking-tight">Tokoku</span>
-                        </Link>
-                        <div className="flex items-center gap-4 ml-auto">
-                            <Button href="/login" className="hidden sm:flex px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                                Get Started
-                            </Button>
-                        </div>
+        <LandingPageLayout title="Tokoku for Event Organizers">
+            {/* HERO & PRICING SECTION */}
+            <section className="pt-32 pb-24 px-6 md:px-12 lg:px-24 overflow-hidden relative text-white bg-slate-900">
+                <div
+                    className="absolute inset-0 z-0 bg-cover bg-center opacity-40 mix-blend-overlay"
+                    style={{ backgroundImage: "url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2000&auto=format&fit=crop')" }}
+                />
+                <div className="absolute inset-0 z-0 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-900" />
+                <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
+                    <div className="lg:w-1/2 text-center lg:text-left">
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight">
+                            Empowering <br className="hidden lg:block"/> Event <br className="hidden lg:block"/> Organizers.
+                        </h2>
+                        <p className="mt-6 text-lg md:text-xl text-slate-300 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">
+                            The ultimate platform to manage multiple events, organize booth categories, and track tenant sales all in one place.
+                        </p>
                     </div>
-                </header>
-
-                {/* HERO & PRICING SECTION */}
-                <section className="pt-32 pb-24 px-6 md:px-12 lg:px-24 overflow-hidden relative text-white bg-slate-900">
-                    <div
-                        className="absolute inset-0 z-0 bg-cover bg-center opacity-40 mix-blend-overlay"
-                        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2000&auto=format&fit=crop')" }}
-                    />
-                    <div className="absolute inset-0 z-0 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-900" />
-
-                    <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
-
-                        <div className="lg:w-1/2 text-center lg:text-left">
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight">
-                                Empowering <br className="hidden lg:block"/> Event <br className="hidden lg:block"/> Organizers.
-                            </h2>
-                            <p className="mt-6 text-lg md:text-xl text-slate-300 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">
-                                The ultimate platform to manage multiple events, organize booth categories, and track tenant sales all in one place.
-                            </p>
-                        </div>
-
-                        <div className="lg:w-1/2 w-full text-slate-900">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-xl mx-auto lg:mx-0 lg:ml-auto">
-
-                                {/* STARTER PLAN */}
-                                <div className="bg-white rounded-2xl flex flex-col px-8 py-8 shadow-xl relative">
-                                    <h3 className="font-bold text-xl text-gray-800 mb-2">Starter</h3>
-                                    <div className="mb-6">
-                                        <span className="font-black text-3xl text-blue-600">Free</span>
-                                    </div>
-                                    <ul className="text-slate-600 mb-8 space-y-1">
-                                        {[
-                                            { text: '1 Event', included: true },
-                                            { text: '1 Booth Category', included: true },
-                                            { text: 'Up to 10 Tenants', included: true },
-                                            { text: 'Landing Page Feature', included: false },
-                                            { text: 'Advanced Analytics', included: false },
-                                        ].map((item) => (
-                                            <li key={item.text} className="py-2 text-sm border-b border-slate-100 flex items-center">
-                                                <span className={`font-bold mr-3 ${item.included ? 'text-blue-500' : 'text-gray-300'}`}>
-                                                    {item.included ? '✓' : '✗'}
-                                                </span>
-                                                <span className={item.included ? 'text-gray-700' : 'text-gray-400'}>{item.text}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <Button className={'mt-auto w-full py-3 justify-center'} href={'/register'} variant={'outline'}>
-                                        Start Free
-                                    </Button>
+                    <div className="lg:w-1/2 w-full text-slate-900">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-xl mx-auto lg:mx-0 lg:ml-auto">
+                            {/* STARTER PLAN */}
+                            <div className="bg-white rounded-2xl flex flex-col px-8 py-8 shadow-xl relative">
+                                <h3 className="font-bold text-xl text-gray-800 mb-2">Starter</h3>
+                                <div className="mb-6">
+                                    <span className="font-black text-3xl text-blue-600">Free</span>
                                 </div>
-
-                                {/* PRO PLAN */}
-                                <div className="bg-white rounded-2xl flex flex-col px-8 py-8 shadow-2xl relative border-2 border-blue-500 sm:scale-105 z-10">
-                                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-1.5 rounded-full text-white font-bold text-xs uppercase tracking-wide shadow-sm">
-                                        Best Deal
-                                    </span>
-                                    <h3 className="font-bold text-xl text-gray-800 mb-2">Pro</h3>
-                                    <div className="mb-6 flex items-end gap-1">
-                                        <span className="font-black text-3xl text-blue-600">Rp 199k</span>
-                                        <span className="text-slate-500 text-sm font-medium mb-1">/month</span>
-                                    </div>
-                                    <ul className="text-slate-600 mb-8 space-y-1">
-                                        {[
-                                            'Unlimited Events',
-                                            'Unlimited Booth Categories',
-                                            'Unlimited Tenants',
-                                            'Featured on Tokoku Landing Page',
-                                            'Comprehensive Sales Analytics',
-                                        ].map((item) => (
-                                            <li key={item} className="py-2 text-sm border-b border-slate-100 flex items-start">
-                                                <span className="font-bold text-blue-500 mr-3 mt-0.5">✓</span>
-                                                <span className="text-gray-800 font-medium">{item}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <Button className="mt-auto w-full py-3 justify-center bg-blue-600 hover:bg-blue-700 text-white" href={'/register'}>
-                                        Try 14 Days Free
-                                    </Button>
+                                <ul className="text-slate-600 mb-8 space-y-1">
+                                    {[
+                                        { text: '1 Event', included: true },
+                                        { text: '1 Booth Category', included: true },
+                                        { text: 'Up to 10 Tenants', included: true },
+                                        { text: 'Landing Page Feature', included: false },
+                                        { text: 'Advanced Analytics', included: false },
+                                    ].map((item) => (
+                                        <li key={item.text} className="py-2 text-sm border-b border-slate-100 flex items-center">
+                                            <span className={`font-bold mr-3 ${item.included ? 'text-blue-500' : 'text-gray-300'}`}>
+                                                {item.included ? '✓' : '✗'}
+                                            </span>
+                                            <span className={item.included ? 'text-gray-700' : 'text-gray-400'}>{item.text}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Button className={'mt-auto w-full py-3 justify-center'} href={'/register'} variant={'outline'}>
+                                    Start Free
+                                </Button>
+                            </div>
+                            {/* PRO PLAN */}
+                            <div className="bg-white rounded-2xl flex flex-col px-8 py-8 shadow-2xl relative border-2 border-blue-500 sm:scale-105 z-10">
+                                <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-1.5 rounded-full text-white font-bold text-xs uppercase tracking-wide shadow-sm">
+                                    Best Deal
+                                </span>
+                                <h3 className="font-bold text-xl text-gray-800 mb-2">Pro</h3>
+                                <div className="mb-6 flex items-end gap-1">
+                                    <span className="font-black text-3xl text-blue-600">Rp 199k</span>
+                                    <span className="text-slate-500 text-sm font-medium mb-1">/month</span>
                                 </div>
+                                <ul className="text-slate-600 mb-8 space-y-1">
+                                    {[
+                                        'Unlimited Events',
+                                        'Unlimited Booth Categories',
+                                        'Unlimited Tenants',
+                                        'Featured on Tokoku Landing Page',
+                                        'Comprehensive Sales Analytics',
+                                    ].map((item) => (
+                                        <li key={item} className="py-2 text-sm border-b border-slate-100 flex items-start">
+                                            <span className="font-bold text-blue-500 mr-3 mt-0.5">✓</span>
+                                            <span className="text-gray-800 font-medium">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Button className="mt-auto w-full py-3 justify-center bg-blue-600 hover:bg-blue-700 text-white" href={'/register'}>
+                                    Try 14 Days Free
+                                </Button>
                             </div>
                         </div>
                     </div>
-                </section>
-
-                {/* HAPPENING NOW SECTION */}
-                <section className="pt-20 px-6 max-w-7xl mx-auto w-full">
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
-                            <span className="relative flex h-4 w-4">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
-                            </span>
-                            Happening Now
-                        </h2>
+                </div>
+            </section>
+            {/* HAPPENING NOW SECTION */}
+            <section className="pt-20 px-6 max-w-7xl mx-auto w-full">
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
+                        <span className="relative flex h-4 w-4">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
+                        </span>
+                        Happening Now
+                    </h2>
+                </div>
+                
+                <div className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
+                    {happeningNowEvents.map((event) => (
+                        <EventCard key={event.id} {...event} />
+                    ))}
+                </div>
+            </section>
+            {/* UPCOMING EVENTS SECTION */}
+            <section className="pt-10 pb-20 px-6 max-w-7xl mx-auto w-full">
+                <div className="mb-8">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+                        Upcoming Events
+                    </h2>
+                    <p className="text-gray-500 mt-2">Discover and secure your tenant spot before they sell out.</p>
+                </div>
+                
+                <div className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
+                    {upcomingEvents.map((event) => (
+                        <EventCard key={event.id} {...event} />
+                    ))}
+                </div>
+            </section>
+            {/* FEATURES SECTION */}
+            <section className="px-6 py-24 bg-white border-y border-gray-200">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">Built for Event Organizers</h2>
+                        <p className="text-lg text-gray-500 max-w-2xl mx-auto">Everything you need to orchestrate seamless events and empower your tenants.</p>
                     </div>
-                    
-                    <div className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
-                        {happeningNowEvents.map((event) => (
-                            <EventCard key={event.id} {...event} />
-                        ))}
-                    </div>
-                </section>
-
-                {/* UPCOMING EVENTS SECTION */}
-                <section className="pt-10 pb-20 px-6 max-w-7xl mx-auto w-full">
-                    <div className="mb-8">
-                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-                            Upcoming Events
-                        </h2>
-                        <p className="text-gray-500 mt-2">Discover and secure your tenant spot before they sell out.</p>
-                    </div>
-                    
-                    <div className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
-                        {upcomingEvents.map((event) => (
-                            <EventCard key={event.id} {...event} />
-                        ))}
-                    </div>
-                </section>
-
-                {/* FEATURES SECTION */}
-                <section className="px-6 py-24 bg-white border-y border-gray-200">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">Built for Event Organizers</h2>
-                            <p className="text-lg text-gray-500 max-w-2xl mx-auto">Everything you need to orchestrate seamless events and empower your tenants.</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {features.map((feature) => (
-                                <div
-                                    key={feature.title}
-                                    className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                                >
-                                    <div className="w-14 h-14 mb-6 flex items-center justify-center rounded-xl bg-blue-100/50">
-                                        {feature.icon}
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900 tracking-tight mb-3">{feature.title}</h3>
-                                    <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {features.map((feature) => (
+                            <div
+                                key={feature.title}
+                                className="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                            >
+                                <div className="w-14 h-14 mb-6 flex items-center justify-center rounded-xl bg-blue-100/50">
+                                    {feature.icon}
                                 </div>
-                            ))}
-                        </div>
+                                <h3 className="text-xl font-bold text-gray-900 tracking-tight mb-3">{feature.title}</h3>
+                                <p className="text-gray-600 text-sm leading-relaxed">{feature.description}</p>
+                            </div>
+                        ))}
                     </div>
-                </section>
-
-                {/* FAQ SECTION */}
-                <section className="py-24 px-4 bg-gray-50">
-                    <div className="max-w-3xl mx-auto">
-                        <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12 tracking-tight">
-                            Frequently Asked Questions
-                        </h2>
-                        <div className="space-y-4">
-                            {faqs.map((faq, index) => (
-                                <FaqItem 
-                                    key={faq.question} 
-                                    {...faq} 
-                                    isOpen={activeIndex === index} 
-                                    onToggle={() => setActiveIndex(activeIndex === index ? null : index)} 
-                                />
-                            ))}
-                        </div>
+                </div>
+            </section>
+            {/* FAQ SECTION */}
+            <section className="py-24 px-4 bg-gray-50">
+                <div className="max-w-3xl mx-auto">
+                    <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12 tracking-tight">
+                        Frequently Asked Questions
+                    </h2>
+                    <div className="space-y-4">
+                        {faqs.map((faq, index) => (
+                            <FaqItem 
+                                key={faq.question} 
+                                {...faq} 
+                                isOpen={activeIndex === index} 
+                                onToggle={() => setActiveIndex(activeIndex === index ? null : index)} 
+                            />
+                        ))}
                     </div>
-                </section>
-
-                {/* FOOTER */}
-                <Footer />
-
-            </div>
-        </>
+                </div>
+            </section>
+        </LandingPageLayout>
     )
 }
