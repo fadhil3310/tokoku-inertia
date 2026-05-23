@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CatalogController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'));
 Route::post('/login', [AuthController::class, 'login']);
@@ -23,4 +24,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
     Route::resource('products', ProductController::class);
     Route::get('/subscription', fn() => Inertia::render('Subscription'));
+
+    // Catalog
+    Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
+    Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+    Route::get('/catalog/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
 });

@@ -8,6 +8,7 @@ import {
     SaveIcon,
 } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
+import { ProductCategories } from "../../Shared/productCategories";
 
 const Dialog = ({
     isOpen,
@@ -201,7 +202,10 @@ export default function Create() {
                                         <option value="" disabled>
                                             Choose category
                                         </option>
-                                        <option value="sticker">Sticker</option>
+                                        {ProductCategories.map(x => 
+                                            <option key={x.value} value={x.value}>{x.label}</option>
+                                        )}
+                                        {/* <option value="sticker">Sticker</option>
                                         <option value="poster">Poster</option>
                                         <option value="print">Print</option>
                                         <option value="accessory">
@@ -213,7 +217,7 @@ export default function Create() {
                                         </option>
                                         <option value="clothing">
                                             Clothing
-                                        </option>
+                                        </option> */}
                                     </select>
                                     {errors.category && (
                                         <p className={errorClass}>

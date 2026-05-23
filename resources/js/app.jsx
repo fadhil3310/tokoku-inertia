@@ -12,3 +12,14 @@ createInertiaApp({
     createRoot(el).render(<App {...props} />)
   },
 })
+
+// Intercept every back navigation requests to start our view transtions.
+navigation.addEventListener('navigate', (event) => {
+  if (event.navigationType === 'traverse' && event.canIntercept) {
+    event.intercept({
+      async handler() {        
+        const transition = document.startViewTransition();
+      }
+    });
+  }
+});
