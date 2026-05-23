@@ -70,18 +70,33 @@ function ProductCard({ productId, name, image, price, sold }) {
     }, [price]);
 
     return (
-        <Link href={"show/" + productId}>
+        <Link href={route("catalog.show", productId)} viewTransition>
             <div className="w-full flex flex-col bg-white rounded-xl border-1 border-[#E5E7EB] cursor-pointer hover:shadow-sm hover:translate-y-[-5px] transition-transform">
                 <div className="w-full shrink-0 p-2 bg-[#F3F4F6] rounded-t-xl">
                     <img
-                        className="w-full aspect-square object-cover"
+                        className="w-full aspect-square object-cover rounded-lg"
+                        style={{
+                            viewTransitionName: `product-image-${productId}`,
+                        }}
                         src={image}
                     />
                 </div>
                 <div className="flex flex-col h-full shrink-1 p-2">
-                    <p className="h-full mb-2 font-medium text-xs">{name}</p>
+                    <h2
+                        className="h-full mb-2 font-medium text-xs"
+                        style={{
+                            viewTransitionName: `product-name-${productId}`,
+                        }}
+                    >
+                        {name}
+                    </h2>
                     <div className="flex">
-                        <p className="w-full text-[#2B7FFF] font-semibold text-base">
+                        <p
+                            className="w-full text-[#2B7FFF] font-semibold text-base"
+                            style={{
+                                viewTransitionName: `product-price-${productId}`,
+                            }}
+                        >
                             {formattedPrice}
                         </p>
                         <p className="shrink-0 text-[#99A1AF] text-xs">
@@ -117,7 +132,7 @@ export default function Index({ products }) {
                         <ProductCard
                             key={item.id}
                             productId={item.id}
-                            image={"storage/" + item.image}
+                            image={"/storage/" + item.image}
                             name={item.name}
                             price={item.price}
                             sold={25}

@@ -24,5 +24,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
     Route::resource('products', ProductController::class);
     Route::get('/subscription', fn() => Inertia::render('Subscription'));
-    Route::resource('catalogue', CatalogueController::class);
+
+    // Catalog
+    Route::get('/catalog', [CatalogueController::class, 'index'])->name('catalog');
+    Route::get('/catalog/{id}', [CatalogueController::class, 'show'])->name('catalog.show');
+    Route::get('/catalog/image/{id}', [CatalogueController::class, 'showImage'])->name('catalog.showImage');
 });

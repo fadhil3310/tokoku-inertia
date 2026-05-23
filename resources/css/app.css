@@ -15,3 +15,31 @@
 @theme {
     --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
 }
+
+:root {
+    --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+@keyframes slide-from-bottom {
+  from { transform: translateY(50px); scale: 0.95 }
+}
+
+/* @keyframes slide-from-right {
+  from { transform: translateY(30px); }
+}
+
+@keyframes slide-to-left {
+  to { transform: translateY(-30px); }
+}
+
+
+::view-transition-old(root) {
+  animation: slide-to-left 0.3s;
+}
+::view-transition-new(root) {
+  animation: slide-from-right 0.3s;
+} */
