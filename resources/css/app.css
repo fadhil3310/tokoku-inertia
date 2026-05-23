@@ -27,19 +27,3 @@
 @keyframes slide-from-bottom {
   from { transform: translateY(50px); scale: 0.95 }
 }
-
-/* @keyframes slide-from-right {
-  from { transform: translateY(30px); }
-}
-
-@keyframes slide-to-left {
-  to { transform: translateY(-30px); }
-}
-
-
-::view-transition-old(root) {
-  animation: slide-to-left 0.3s;
-}
-::view-transition-new(root) {
-  animation: slide-from-right 0.3s;
-} */
