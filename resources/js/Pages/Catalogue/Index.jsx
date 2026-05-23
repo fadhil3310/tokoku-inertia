@@ -6,55 +6,79 @@ import { ProductCategories } from "../../Shared/productCategories";
 import { cn } from "../../Utilities/cn";
 import { Link } from "@inertiajs/react";
 
-function ProductCategoryChip({ selected, children, onClick }) {
+function ProductCategoryChip({ value, selected, children, onClick }) {
     return (
         <button
             className={cn(
                 "shrink-0 px-4 py-1.5 bg-[#F3F4F6] rounded-2xl text-[#4A5565] font-medium cursor-pointer text-sm",
                 selected && "bg-[#2B7FFF] text-white"
             )}
-            onClick={onClick}
+            onClick={() => onClick(value)}
+            type="button"
         >
             {children}
         </button>
     );
 }
 
-function ProductFilter({ search, category, onSearchChange, onCategoryChange }) {
+function ProductFilter() {
+    // goofy ahh framework, doesnt even provide a proper way to get url params.
+    // having to rely on native js api for most stuff, whoever uses inertia in a commercial project is a retard and need their iq checked.
+    const [searchQuery, setSearchQuery] = useState(
+        new URLSearchParams(window.location.search).get("search") ?? ""
+    );
+    const [selectedCategory, setSelectedCategory] = useState(
+        new URLSearchParams(window.location.search).get("category") ?? ""
+    );
+
     return (
         <div className="p-4 shadow-sm rounded-xl bg-white">
-            <div className="flex gap-3">
-                <div className="w-full flex items-center gap-2 px-3 py-2 border-1 border-[#D1D5DC] rounded-lg">
-                    <SearchIcon />
-                    <input
-                        type="text"
-                        className="w-full sm placeholder:text-[#757575] text-sm focus:outline-0"
-                        placeholder="Search something..."
-                        value={search}
-                        onChange={(ev) => onSearchChange(ev.target.value)}
-                    />
+            <form action="/catalog" method="GET">
+                <div className="flex gap-3">
+                    <div className="w-full flex items-center gap-2 px-3 py-2 border-1 border-[#D1D5DC] rounded-lg">
+                        <SearchIcon />
+                        <input
+                            type="text"
+                            name="search"
+                            className="w-full sm placeholder:text-[#757575] text-sm focus:outline-0"
+                            placeholder="Search something..."
+                            value={searchQuery}
+                            onChange={(ev) => setSearchQuery(ev.target.value)}
+                        />
+                    </div>
+
+                    <Button className="w-auto px-6 py-2" submit>
+                        Search
+                    </Button>
                 </div>
 
-                <Button className="w-auto px-6 py-2">Search</Button>
-            </div>
-
-            <div className="flex gap-1 mt-3 overflow-auto">
-                <ProductCategoryChip
-                    selected={category == ""}
-                    onClick={() => onCategoryChange("")}
-                >
-                    All Category
-                </ProductCategoryChip>
-                {ProductCategories.map((x) => (
+                <div className="flex gap-1 mt-3 overflow-auto">
                     <ProductCategoryChip
-                        key={x.value}
-                        selected={category == x.value}
-                        onClick={() => onCategoryChange(x.value)}
+                        selected={selectedCategory == ""}
+                        value={""}
+                        onClick={setSelectedCategory}
                     >
-                        {x.label}
+                        All Category
                     </ProductCategoryChip>
-                ))}
-            </div>
+                    {ProductCategories.map((x) => (
+                        <ProductCategoryChip
+                            key={x.value}
+                            value={x.value}
+                            selected={selectedCategory == x.value}
+                            onClick={setSelectedCategory}
+                        >
+                            {x.label}
+                        </ProductCategoryChip>
+                    ))}
+                </div>
+
+                <input
+                    type="text"
+                    name="category"
+                    value={selectedCategory}
+                    hidden
+                />
+            </form>
         </div>
     );
 }
@@ -109,26 +133,45 @@ function ProductCard({ productId, name, image, price, sold }) {
     );
 }
 
-export default function Index({ products }) {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
+function ProductPagination({ links }) {
+    return (
+        <div className="flex justify-center items-center mt-4 ">
+            <div className="flex gap-2 overflow-auto items-center">
+                {links.map((item, i) => (
+                    <Button
+                        href={item.url}
+                        size="sm"
+                        variant={item.active ? "primary" : "outline"}
+                        className="w-min h-min"
+                        disabled={
+                            (i == 0 || i == links.length - 1) && !item.active
+                        }
+                    >
+                        {i == 0
+                            ? "Prev"
+                            : i == links.length - 1
+                            ? "Next"
+                            : item.label}
+                    </Button>
+                ))}
+            </div>
+        </div>
+    );
+}
 
+export default function Index({ products }) {
+    console.log("asd", products);
     return (
         <CatalogueLayout>
-            <ProductFilter
-                search={searchQuery}
-                onSearchChange={setSearchQuery}
-                category={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-            />
+            <ProductFilter />
 
-            {products?.length == 0 ? (
-                <div className="w-full h-full flex items-center justify-center">
+            {products.data?.length == 0 ? (
+                <div className="w-full mt-5 mb-5 flex items-center justify-center">
                     <p>No product</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-7">
-                    {products.map((item) => (
+                <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-7">
+                    {products.data.map((item) => (
                         <ProductCard
                             key={item.id}
                             productId={item.id}
@@ -140,6 +183,8 @@ export default function Index({ products }) {
                     ))}
                 </div>
             )}
+
+            <ProductPagination links={products.links} />
         </CatalogueLayout>
     );
 }
