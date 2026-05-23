@@ -10,7 +10,7 @@ function ProductCategoryChip({ selected, children, onClick }) {
     return (
         <button
             className={cn(
-                "px-4 py-1.5 bg-[#F3F4F6] rounded-2xl text-[#4A5565] font-medium cursor-pointer text-sm",
+                "shrink-0 px-4 py-1.5 bg-[#F3F4F6] rounded-2xl text-[#4A5565] font-medium cursor-pointer text-sm",
                 selected && "bg-[#2B7FFF] text-white"
             )}
             onClick={onClick}
@@ -29,7 +29,7 @@ function ProductFilter({ search, category, onSearchChange, onCategoryChange }) {
                     <input
                         type="text"
                         className="w-full sm placeholder:text-[#757575] text-sm focus:outline-0"
-                        placeholder="Search for products, brands, and categories..."
+                        placeholder="Search something..."
                         value={search}
                         onChange={(ev) => onSearchChange(ev.target.value)}
                     />
@@ -38,7 +38,7 @@ function ProductFilter({ search, category, onSearchChange, onCategoryChange }) {
                 <Button className="w-auto px-6 py-2">Search</Button>
             </div>
 
-            <div className="flex gap-1 mt-3">
+            <div className="flex gap-1 mt-3 overflow-auto">
                 <ProductCategoryChip
                     selected={category == ""}
                     onClick={() => onCategoryChange("")}
@@ -127,7 +127,7 @@ export default function Index({ products }) {
                     <p>No product</p>
                 </div>
             ) : (
-                <div className="grid grid-rows-2 grid-cols-5 gap-3 mt-7">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-7">
                     {products.map((item) => (
                         <ProductCard
                             key={item.id}

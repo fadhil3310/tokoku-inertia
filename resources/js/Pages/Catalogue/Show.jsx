@@ -27,7 +27,7 @@ function CheckoutAction({ product }) {
     );
 
     return (
-        <div className="h-min min-w-[250px] shrink-0 p-4 row-2 bg-white shadow-sm rounded-xl animate-[slide-from-bottom_0.5s_var(--ease-out-quint)]">
+        <div className="h-min max-lg:row-2 col-1 lg:col-3 min-w-[250px] shrink-0 p-4 bg-white shadow-sm rounded-xl animate-[slide-from-bottom_0.5s_var(--ease-out-quint)]">
             <p className="text-lg font-semibold mb-3">Purchase details</p>
             <div className="flex gap-2 items-center mb-2">
                 <div className="flex gap-2 border-1 border-[#999999] rounded-xl">
@@ -87,20 +87,25 @@ export default function Show({ product }) {
 
     return (
         <CatalogueLayout showBack>
-            <div className="flex gap-4">
-                <div className="h-min shrink-0 p-3 bg-[#F3F4F6] rounded-xl shadow-sm">
-                    <Link href={route("catalog.showImage", product.id)} viewTransition>
-                        <img
-                            src={"/storage/" + product.image}
-                            className="h-[300px] aspect-square object-cover rounded-lg cursor-zoom-in hover:scale-105 hover:shadow-md hover:opacity-80 transition-transform"
-                            style={{
-                                viewTransitionName: `product-image-${product.id}`,
-                            }}
-                        />
-                    </Link>
+            <div className="grid grid-rows-[auto_auto_auto] md:grid-rows-[auto_1fr] lg:grid-rows-1 grid-cols-1 md:grid-cols-[auto_1fr] lg:grid-cols-[auto_1fr_auto] template gap-4">
+                <div className="max-md:flex justify-center w-full h-min col-1 shrink-0  ">
+                    <div className="p-3 bg-[#F3F4F6] rounded-xl shadow-sm">
+                        <Link
+                            href={route("catalog.showImage", product.id)}
+                            viewTransition
+                        >
+                            <img
+                                src={"/storage/" + product.image}
+                                className="h-[300px] aspect-square object-cover rounded-lg cursor-zoom-in hover:scale-105 hover:shadow-md hover:opacity-80 transition-transform"
+                                style={{
+                                    viewTransitionName: `product-image-${product.id}`,
+                                }}
+                            />
+                        </Link>
+                    </div>
                 </div>
 
-                <div className="flex gap-6 w-full p-4 bg-white shadow-sm rounded-xl animate-[slide-from-bottom_0.35s_var(--ease-out-quint)]">
+                <div className="flex row-3 md:row-span-2 lg:row-1 md:col-2 gap-6 w-full p-4 bg-white shadow-sm rounded-xl animate-[slide-from-bottom_0.35s_var(--ease-out-quint)]">
                     <div className="flex flex-col w-full">
                         <h2
                             className="font-semibold text-2xl opacity-90"
