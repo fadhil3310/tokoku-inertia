@@ -4,7 +4,7 @@ import { ArrowLeftIcon } from "../../Components/Icons";
 import { useCallback } from "react";
 import { cn } from "../../Utilities/cn";
 
-export default function CatalogueLayout({ showBack, hideHeader, hideFooter, disablePadding, children }) {
+export default function CatalogLayout({ showBack, hideHeader, hideFooter, disablePadding, children }) {
     const handleBack = useCallback(() => {
         window.history.back();
         document.startViewTransition();

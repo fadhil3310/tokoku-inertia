@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
-class CatalogueController extends Controller
+class CatalogController extends Controller
 {
     public function index(Request $request)
     {
@@ -22,7 +22,7 @@ class CatalogueController extends Controller
             $products = Product::where('category', $category)->where('name', 'like', "%{$search}%")->paginate(10);
         }
 
-        return Inertia::render('Catalogue/Index', [
+        return Inertia::render('Catalog/Index', [
             'products' => $products,
         ]);
     }
@@ -31,13 +31,13 @@ class CatalogueController extends Controller
     {
         $product = Product::find($id);
 
-        return Inertia::render('Catalogue/Show', ['product' => $product]);
+        return Inertia::render('Catalog/Show', ['product' => $product]);
     }
 
     public function showImage(string $id)
     {
         $product = Product::find($id);
 
-        return Inertia::render('Catalogue/ShowImage', ['id' => $product['id'], 'image' => $product['image']]);
+        return Inertia::render('Catalog/ShowImage', ['id' => $product['id'], 'image' => $product['image']]);
     }
 }

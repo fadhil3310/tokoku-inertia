@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import CatalogueLayout from "./CatalogueLayout";
+import CatalogLayout from "./CatalogLayout";
 import { SearchIcon } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
 import { ProductCategories } from "../../Shared/productCategories";
@@ -162,7 +162,7 @@ function ProductPagination({ links }) {
 export default function Index({ products }) {
     console.log("asd", products);
     return (
-        <CatalogueLayout>
+        <CatalogLayout>
             <ProductFilter />
 
             {products.data?.length == 0 ? (
@@ -185,6 +185,6 @@ export default function Index({ products }) {
             )}
 
             <ProductPagination links={products.links} />
-        </CatalogueLayout>
+        </CatalogLayout>
     );
 }

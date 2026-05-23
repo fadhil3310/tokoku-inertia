@@ -1,6 +1,6 @@
 import Button from "../../Components/Buttons";
 import { ArrowLeftIcon } from "../../Components/Icons";
-import CatalogueLayout from "./CatalogueLayout";
+import CatalogueLayout from "./CatalogLayout";
 import { useCallback } from "react";
 
 export default function ShowImage({ id, image }) {

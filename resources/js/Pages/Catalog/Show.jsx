@@ -1,6 +1,6 @@
 import Button from "../../Components/Buttons";
 import { ShoppingBasketIcon } from "../../Components/Icons";
-import CatalogueLayout from "./CatalogueLayout";
+import CatalogueLayout from "./CatalogLayout";
 import { useCallback, useMemo, useState } from "react";
 import { ProductCategories } from "../../Shared/productCategories";
 import { Link, router } from "@inertiajs/react";

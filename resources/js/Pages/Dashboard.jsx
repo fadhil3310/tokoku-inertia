@@ -118,7 +118,7 @@ export default function Dashboard() {
                     </div>
                     <div className="rounded-lg transition-all duration-200 relative overflow-hidden flex items-start justify-between flex-1 gap-2">
                         <Button
-                            href="/catalogue"
+                            href="/catalog"
                             target="_blank"
                             className={'flex items-center w-full h-full cursor-pointer'}
                             variant={'outline'}
