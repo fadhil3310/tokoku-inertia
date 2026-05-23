@@ -20,6 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->report(DatabaseExceptionHandler::report(...));
-        $exceptions->render(DatabaseExceptionHandler::render(...));
+        // $exceptions->report(DatabaseExceptionHandler::report(...));
+        // $exceptions->render(DatabaseExceptionHandler::render(...));
     })->create();
