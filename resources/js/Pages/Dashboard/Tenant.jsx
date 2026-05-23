@@ -1,12 +1,12 @@
 import React from "react";
 import { Link, Head } from "@inertiajs/react";
-import DashboardLayout from "./DashboardLayout";
-import Button from "../Components/Buttons";
-import { CatalogueIcon, InvoicePaperIcon } from "../Components/Icons";
+import TenantLayout from "./TenantLayout";
+import Button from "../../Components/Buttons";
+import { CatalogueIcon, InvoicePaperIcon } from "../../Components/Icons";
 
-export default function Dashboard() {
+export default function Tenant() {
     return (
-        <DashboardLayout>
+        <TenantLayout>
             <div className="p-4 lg:p-6 w-full">
                 <nav className="flex items-center space-x-2 text-sm mb-6">
                     <Link
@@ -383,6 +383,6 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
-        </DashboardLayout>
+        </TenantLayout>
     );
 }

@@ -22,7 +22,6 @@ class AuthController extends Controller
             'password'  => ['required', 'string', 'min:8', 'confirmed'],
             'role'      => ['required', 'string', 'in:tenant,event_organizer'],
             'redirect'  => ['nullable', 'integer'],
-            // Conditionally require boothName if role is tenant
             'boothName' => ['required_if:role,tenant', 'nullable', 'string', 'max:255'],
             'boothIcon' => ['nullable', 'image', 'max:2048'],
         ]);
@@ -63,7 +62,6 @@ class AuthController extends Controller
             Auth::login($user);
         });
 
-        // 3. Redirect logic
         if ($request->filled('redirect')) {
             return redirect('/join/event/' . $request->redirect);
         }
@@ -73,10 +71,13 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $validated = $request->validate([
             'email'    => ['required', 'email'],
             'password' => ['required'],
+            'redirect' => ['nullable'],
         ]);
+
+        $credentials = $request->only('email', 'password');
 
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
@@ -86,6 +87,10 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        if (!empty($validated['redirect'])) {
+            return redirect('/join/event/' . $validated['redirect']);
+        }
+        
         return redirect()->intended('/dashboard');
     }
 

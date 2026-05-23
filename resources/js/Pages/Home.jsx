@@ -2,6 +2,7 @@ import { Link, Head } from '@inertiajs/react'
 import { useState, useEffect } from 'react'
 import Button from '../Components/Buttons'
 import Footer from '../Components/Footer'
+import Header from '../Components/Header'
 
 const faqs = [
     {
@@ -69,11 +70,11 @@ function FaqItem({ question, answer, onToggle, isOpen }) {
     )
 }
 
-function EventCard({ title, date, city, image }) {
+function EventCard({ id, title, date, city, image }) {
     return (
-        <div className="w-64 md:w-72 shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 snap-start hover:shadow-md transition-shadow duration-300 flex flex-col">
+        <Link href={`/detail/event/${id}`} className="group w-64 md:w-72 shrink-0 bg-white hover:bg-gray-200 rounded-2xl overflow-hidden shadow-sm border border-gray-100 snap-start hover:shadow-md transition-shadow duration-300 flex flex-col">
             <div className="aspect-4/5 w-full overflow-hidden relative bg-gray-100">
-                <img src={image} alt={title} className="w-full h-full object-cover" />
+                <img src={image} alt={title} className="group-hover:brightness-90 w-full h-full object-cover" />
             </div>
             <div className="p-5 flex flex-col gap-2">
                 <h4 className="font-bold text-lg text-gray-900 truncate">{title}</h4>
@@ -86,7 +87,7 @@ function EventCard({ title, date, city, image }) {
                     <span className="truncate">{city}</span>
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
 
@@ -94,6 +95,7 @@ export default function Home({ upcomingEvents, pastEvents }) {
     const [activeIndex, setActiveIndex] = useState(null);
     const [heroSlide, setHeroSlide] = useState(0); // 0: Featured Event, 1: Subscription Plan
 
+    // dont use fallback, if there's no featured event just show one hero
     const featuredEvent = upcomingEvents?.[0] || pastEvents?.[0] || {
         id: 'fallback',
         title: 'Grand Annual Tech Expo',
@@ -116,21 +118,7 @@ export default function Home({ upcomingEvents, pastEvents }) {
             <Head title="Tokoku for Event Organizers" />
             <div className="flex flex-col min-h-screen bg-gray-50">
 
-                <header className="fixed top-0 right-0 z-50 h-16 bg-white/90 backdrop-blur-md border-b border-gray-200 transition-all duration-300 left-0">
-                    <div className="h-full px-4 lg:px-6 flex items-center justify-between gap-4 max-w-7xl mx-auto">
-                        <Link href="/" className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-sm">
-                                T
-                            </div>
-                            <span className="text-xl font-bold text-gray-800 tracking-tight">Tokoku</span>
-                        </Link>
-                        <div className="flex items-center gap-4 ml-auto">
-                            <Button href="/login" className="hidden sm:flex px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                                Get Started
-                            </Button>
-                        </div>
-                    </div>
-                </header>
+                <Header/>
 
                 {/* HERO CAROUSEL SECTION */}
                 <section className="pt-32 pb-24 px-6 md:px-12 lg:px-24 overflow-hidden relative text-white min-h-150 flex items-center">
@@ -174,7 +162,7 @@ export default function Home({ upcomingEvents, pastEvents }) {
                                 </div>
 
                                 <div className="flex justify-center lg:justify-start">
-                                    <Button href={`/join/event/${featuredEvent.id}`} className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-lg">
+                                    <Button href={`/detail/event/${featuredEvent.id}`} className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-lg">
                                         Learn more
                                     </Button>
                                 </div>
