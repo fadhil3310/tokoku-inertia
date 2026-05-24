@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, Head } from "@inertiajs/react";
-import DashboardLayout from "./DashboardLayout";
 import Button from "../Components/Buttons";
+import DashboardLayout from "../Layouts/DashboardLayout";
 import { CatalogueIcon, InvoicePaperIcon } from "../Components/Icons";
 
 export default function Dashboard() {

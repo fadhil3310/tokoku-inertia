@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DashboardLayout from "../DashboardLayout";
+import DashboardLayout from "../../Layouts/DashboardLayout";
 import { Link, Head, router } from "@inertiajs/react";
 import { Card, CardHeader, CardTitle } from "../../Components/Card";
 import { HomeIcon, ChevronRightIcon } from "../../Components/Icons";
