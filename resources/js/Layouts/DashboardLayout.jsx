@@ -15,7 +15,7 @@ export default function DashboardLayout({ children }) {
     const navItems = [
         { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
         { href: "/transactions", label: "Transactions", icon: TransactionsIcon },
-        { href: "/payment", label: "Payment", icon: PaymentIcon },
+        { href: "/payment-link", label: "Payment Link", icon: PaymentIcon },
         { href: "/products", label: "Products", icon: ProductsIcon },
         { href: "/booth", label: "Booth", icon: BoothIcon },
     ];

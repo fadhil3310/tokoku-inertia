@@ -6,6 +6,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\MidtransConfigController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'));
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment', fn() => Inertia::render('Payment'));
     Route::get('/booth', fn() => Inertia::render('Booth'));
     Route::get('/transactions/form', fn() => Inertia::render('TransactionsForm'));
+    Route::resource('payment-link', MidtransConfigController::class);
     Route::get('/profile', fn() => Inertia::render('Profile/Show'));
     Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
     Route::resource('products', ProductController::class);

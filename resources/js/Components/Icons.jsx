@@ -562,3 +562,24 @@ export function ArrowLeftIcon({ className = "", size = 24 }) {
         </svg>
     );
 }
+
+export function InfoIcon({ className = "", size = 24 }) {
+    return (
+        <svg
+            width={size}
+            height={size}
+            className={className}
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path d="M12 10.75a.75.75 0 0 1 .75.75v5a.75.75 0 0 1-1.5 0v-5a.75.75 0 0 1 .75-.75Z"></path>
+            <path d="M12 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"></path>
+            <path
+                fill-rule="evenodd"
+                d="M3.25 12a8.75 8.75 0 1 1 17.5 0 8.75 8.75 0 0 1-17.5 0ZM12 4.75a7.25 7.25 0 1 0 0 14.5 7.25 7.25 0 0 0 0-14.5Z"
+                clip-rule="evenodd"
+            ></path>
+        </svg>
+    );
+}
