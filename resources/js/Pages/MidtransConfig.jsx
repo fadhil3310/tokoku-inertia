@@ -1,4 +1,4 @@
-import DashboardLayout from "./DashboardLayout";
+import DashboardLayout from "../Layouts/DashboardLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { Card, CardHeader, CardTitle, CardActions } from "../Components/Card";
 import {
