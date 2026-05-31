@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, Head, useForm } from "@inertiajs/react";
-// import DashboardLayout from "./DashboardLayout";
 import { EmailIcon, EyeCloseIcon, EyeOpenIcon, GoogleIcon, LockIcon } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
 

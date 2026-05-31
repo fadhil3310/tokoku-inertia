@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { HomeIcon, ChevronRightIcon, EditIcon } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
 import { Link } from "@inertiajs/react";
-import DashboardLayout from "../DashboardLayout";
+import DashboardLayout from "../../Layouts/DashboardLayout";
 
 export default function Profile() {
     const [avatarSrc, setAvatarSrc] = useState(

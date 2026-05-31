@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, Head } from '@inertiajs/react'
-import DashboardLayout from './DashboardLayout'
+import DashboardLayout from './../Layouts/DashboardLayout'
 import { CancelIcon, SaveIcon } from '../Components/Icons'
 import Button from '../Components/Buttons'
 
