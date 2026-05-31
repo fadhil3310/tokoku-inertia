@@ -160,7 +160,6 @@ function ProductPagination({ links }) {
 }
 
 export default function Index({ products }) {
-    console.log("asd", products);
     return (
         <CatalogLayout>
             <ProductFilter />

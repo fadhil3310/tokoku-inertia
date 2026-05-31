@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -34,9 +35,11 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(String $userId)
     {
-        //
+        $user = User::find($userId);
+
+        return Inertia::render('Profile/Show', ['user' => $user]);
     }
 
     /**
@@ -50,9 +53,29 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, String $userId)
     {
-        //
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users,email,' . $userId,
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($request->password);
+        } else {
+            unset($validated['password']);
+        }
+        
+        $user = User::findOrFail($userId);
+        $user->update($validated);
+
+        Inertia::flash([
+            'status' => 'success',
+            'message' => 'Profile updated successfully'
+        ]);
+
+        return redirect()->route('profile.show', $userId);
     }
 
     /**
