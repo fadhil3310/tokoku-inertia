@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, Head } from "@inertiajs/react";
-import DashboardLayout from "./DashboardLayout";
+import DashboardLayout from "../Layouts/DashboardLayout";
 
 const PRODUCTS = [
     { name: "Poster Asa Mitaka", price: 15000 },

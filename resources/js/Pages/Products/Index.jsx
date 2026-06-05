@@ -28,7 +28,7 @@ export default function Index({ products, error }) {
         p.name,
         p.description,
         p.price,
-        p.created_at,
+        p.created_at_humanreadable,
     ]);
 
     const columns = [

@@ -7,10 +7,12 @@ import { Icon } from '@iconify/react';
 
 export default function DashboardLayout({ children }) {
     const { url } = usePage();
+    const { auth } = usePage().props;
     const [notifOpen, setNotifOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(true);
     const [mobileVisible, setMobileVisible] = useState(false);
+    const userId = auth.user.id;
 
     const navItems = [
         { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
@@ -137,7 +139,7 @@ export default function DashboardLayout({ children }) {
                                 {profileOpen && (
                                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
                                         <Link
-                                            href="/profile"
+                                            href={`/profile/${userId}`}
                                             className="block px-4 py-2 text-sm hover:bg-gray-100"
                                         >
                                             Profile
@@ -152,7 +154,7 @@ export default function DashboardLayout({ children }) {
                                             href="/logout"
                                             method="post"
                                             as="button"
-                                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
                                         >
                                             Sign out
                                         </Link>

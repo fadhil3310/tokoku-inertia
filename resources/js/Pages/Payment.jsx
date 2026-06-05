@@ -1,5 +1,5 @@
 import React from "react";
-import DashboardLayout from "./DashboardLayout";
+import DashboardLayout from "../Layouts/DashboardLayout";
 import { Link, Head } from '@inertiajs/react'
 
 export default function Payment() {
