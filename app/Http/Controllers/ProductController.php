@@ -15,7 +15,12 @@ class ProductController extends Controller
     public function index()
     {
         $boothId = Booth::where('owner_id', Auth::user()->id)->first()->id;
-        $products = Product::where('booth_id', $boothId)->get(['id', 'name', 'description', 'price', 'created_at']);
+        $products = Product::where('booth_id', $boothId)->get(['id', 'name', 'description', 'price', 'created_at'])->
+        map(function($product) {
+            $product->created_at_humanreadable = $product->created_at->diffForHumans();
+            return $product;
+            }
+        );
 
         return Inertia::render('Products/Index', [
             'products' => $products,
