@@ -12,7 +12,7 @@ export default function DashboardLayout({ children }) {
     const [profileOpen, setProfileOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(true);
     const [mobileVisible, setMobileVisible] = useState(false);
-    const userId = auth.user.id;
+    const userId = auth?.user?.id;
 
     const navItems = [
         { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
