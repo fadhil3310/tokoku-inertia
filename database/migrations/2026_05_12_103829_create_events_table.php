@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
+            $table->json('terms')->nullable();
             $table->dateTime('date_start');
             $table->dateTime('date_end');
             $table->string('poster')->nullable();

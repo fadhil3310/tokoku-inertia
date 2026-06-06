@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -55,11 +56,19 @@ class UserController extends Controller
      */
     public function update(Request $request, String $userId)
     {
-        $validated = $request->validate([
+        $user = User::findOrFail($userId);
+
+        $rules = [
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users,email,' . $userId,
             'password' => 'nullable|string|min:8',
-        ]);
+        ];
+        
+        if ($request->image != $user->image) {
+            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg|max:2048';
+        }
+
+        $validated = $request->validate($rules);
 
         if ($request->filled('password')) {
             $validated['password'] = bcrypt($request->password);
@@ -67,7 +76,16 @@ class UserController extends Controller
             unset($validated['password']);
         }
         
-        $user = User::findOrFail($userId);
+        if ($request->hasFile('image') && ($request->image != $user->image)) {
+            if ($user->image && File::exists(public_path($user->image))) {
+                File::delete(public_path($user->image));
+            }
+
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('images/userpic'), $imageName);
+            $validated['image'] = '/images/userpic/' . $imageName;
+        }
+
         $user->update($validated);
 
         Inertia::flash([
@@ -75,7 +93,6 @@ class UserController extends Controller
             'message' => 'Profile updated successfully'
         ]);
 
-        return redirect()->route('profile.show', $userId);
     }
 
     /**

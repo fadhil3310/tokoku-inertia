@@ -12,7 +12,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['name', 'email', 'password'])]
+use App\Models\Event;
+use App\Models\Booth;
+
+#[Fillable(['name', 'email', 'password', 'image', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -31,8 +34,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'owner_id', 'id');
+    }
 
-    public function booth(): HasOne
+    public function booth()
+    {
+        return $this->hasOne(Booth::class, 'owner_id', 'id');
+    }
+    
+    public function midtransConfig(): HasOne
     {
         return $this->hasOne(Booth::class, "owner_id");
     }

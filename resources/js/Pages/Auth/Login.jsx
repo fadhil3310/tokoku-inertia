@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Head, useForm } from "@inertiajs/react";
 import { EmailIcon, EyeCloseIcon, EyeOpenIcon, GoogleIcon, LockIcon } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
@@ -30,13 +30,20 @@ function InputField({
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
+    
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
+        redirect: '',
     });
 
-    const handleChange = (field) => (e) =>
-        setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const redirectParam = queryParams.get("redirect");
+        if (redirectParam) {
+            setData("redirect", redirectParam);
+        }
+    }, []);
 
     const submit = (e) => {
         e.preventDefault();
@@ -49,7 +56,7 @@ export default function Login() {
             <div className="min-h-screen text-gray-700 bg-gray-100 flex justify-center">
                 <main className="min-w-full lg:min-w-5xl bg-white shadow rounded-xl overflow-hidden flex flex-col-reverse lg:flex-row justify-center lg:absolute lg:top-1/2 lg:left-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2">
                     <div className="flex flex-1 flex-col p-12 space-y-4">
-                        <Link href="/" className="text-gray-700">
+                        <Link href="/" className="text-gray-700 w-fit">
                             <svg
                                 width="24"
                                 height="24"
@@ -69,6 +76,9 @@ export default function Login() {
                             onSubmit={submit}
                             className="mt-6 flex flex-col space-y-4"
                         >
+                            {/* Invisible input to pass redirect parameter */}
+                            <input type="hidden" name="redirect" value={data.redirect} />
+
                             <InputField
                                 icon={<EmailIcon />}
                                 type="email"
@@ -78,6 +88,7 @@ export default function Login() {
                                 required
                             />
                             {errors.email && <div className="text-red-500 text-sm">{errors.email}</div>}
+                            
                             <InputField
                                 icon={<LockIcon />}
                                 type={showPassword ? "text" : "password"}
@@ -105,16 +116,23 @@ export default function Login() {
                                 </Button>
                             </InputField>
                             {errors.password && <div className="text-red-500 text-sm">{errors.password}</div>}
-                            <Button submit>
+                            
+                            <Button submit disabled={processing}>
                                 Sign in
                             </Button>
                         </form>
-                        <Link href="/signup" className="text-center">
+                        
+                        {/* Passes the redirect param to the signup page if it exists */}
+                        <Link 
+                            href={data.redirect ? `/signup?redirect=${data.redirect}` : "/signup"} 
+                            className="text-center"
+                        >
                             Don't have an account?{" "}
                             <span className="underline font-bold text-blue-500">
                                 Sign Up
                             </span>
                         </Link>
+                        
                         <span className="text-center">Or continue with</span>
                         <div className="w-full flex-1">
                             <div className="flex flex-col items-center">
@@ -144,7 +162,7 @@ export default function Login() {
                         </div>
                     </div>
                     <div
-                        className="lg:w-3/5 min-h-52 bg-blue-100 text-center bg-cover"
+                        className="lg:w-3/5 min-h-52 bg-blue-100 text-center bg-cover bg-center"
                         style={{
                             backgroundImage:
                                 "url('https://www.anime-expo.org/wp-content/uploads/2017/04/anime-expo-los-angeles-convention-explore-exhibit-hall.jpg')",
