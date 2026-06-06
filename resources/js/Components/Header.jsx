@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@inertiajs/react";
+import { Link, Head } from "@inertiajs/react";
 import Button from "../Components/Buttons";
 
 export default function Header() {
