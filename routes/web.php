@@ -32,9 +32,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('payment-link', MidtransConfigController::class);
     Route::resource('profile', UserController::class);
     Route::resource('products', ProductController::class);
-
-    // Catalog
-    Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
-    Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.show');
-    Route::get('/catalog/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
 });
+
+// Catalog
+Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
+Route::get('/catalog/{boothId}/checkout', [CatalogController::class, 'checkout'])->name('catalog.checkout');
+Route::get('/catalog/{boothId}/check-payment', [CatalogController::class, 'checkout'])->name('catalog.checkPaymentStatus');

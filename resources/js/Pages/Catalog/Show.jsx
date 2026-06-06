@@ -1,11 +1,12 @@
 import Button from "../../Components/Buttons";
-import { ShoppingBasketIcon } from "../../Components/Icons";
+import { InfoIcon, ShoppingBasketIcon } from "../../Components/Icons";
 import CatalogueLayout from "./CatalogLayout";
 import { useCallback, useMemo, useState } from "react";
 import { ProductCategories } from "../../Shared/productCategories";
 import { Link, router } from "@inertiajs/react";
+import { cn } from "../../Utilities/cn";
 
-function CheckoutAction({ product }) {
+function CheckoutAction({ product, isPaymentReady }) {
     const [amount, setAmount] = useState(1);
 
     const formattedSubtotal = useMemo(() => {
@@ -26,26 +27,45 @@ function CheckoutAction({ product }) {
         [product.stock, amount, setAmount]
     );
 
+    const handleCheckout = useCallback(() => {
+        router.visit(
+            route("catalog.checkout", { productId: product.id, amount }),
+            {
+                viewTransition: true,
+            }
+        );
+    }, [product.id]);
+
     return (
-        <div className="h-min max-lg:row-2 col-1 lg:col-3 min-w-[250px] shrink-0 p-4 bg-white shadow-sm rounded-xl animate-[slide-from-bottom_0.5s_var(--ease-out-quint)]">
+        <div
+            className={cn(
+                "h-min max-lg:row-2 col-1 lg:col-3 min-w-[250px] shrink-0 p-4 bg-white shadow-sm rounded-xl animate-[slide-from-bottom_0.5s_var(--ease-out-quint)]",
+                { "cursor-not-allowed!": !isPaymentReady }
+            )}
+        >
             <p className="text-lg font-semibold mb-3">Purchase details</p>
             <div className="flex gap-2 items-center mb-2">
                 <div className="flex gap-2 border-1 border-[#999999] rounded-xl">
                     <button
                         className="w-[40px] h-[35px] shrink-0 text-3xl border-[#A0AEC0] cursor-pointer disabled:opacity-20"
                         onClick={() => handleAmountChange(-1)}
-                        disabled={amount == 1}
+                        disabled={amount == 1 || !isPaymentReady}
                     >
                         -
                     </button>
-                    <div className="flex items-center justify-center w-[30px] h-[35px] shrink-0 text-lg font-semibold">
+                    <div
+                        className={cn(
+                            "flex items-center justify-center w-[30px] h-[35px] shrink-0 text-lg font-semibold",
+                            { "opacity-40": !isPaymentReady }
+                        )}
+                    >
                         <p type="number">{amount}</p>
                     </div>
 
                     <button
                         className="w-[40px] h-[35px] shrink-0 text-2xl border-[#A0AEC0 cursor-pointer disabled:opacity-20"
                         onClick={() => handleAmountChange(1)}
-                        disabled={amount == product.stock}
+                        disabled={amount == product.stock || !isPaymentReady}
                     >
                         +
                     </button>
@@ -55,22 +75,44 @@ function CheckoutAction({ product }) {
                 </p>
             </div>
 
-            <div className="flex items-center mt-3 mb-3">
-                <p className="w-full text-sm">Subtotal: </p>
-                <p className="text-[#2B7FFF] text-xl font-bold">
-                    {formattedSubtotal}
-                </p>
-            </div>
+            {isPaymentReady && (
+                <div className="flex items-center mt-3 mb-3">
+                    <p className="w-full text-sm">Subtotal: </p>
+                    <p className="text-[#2B7FFF] text-xl font-bold">
+                        {formattedSubtotal}
+                    </p>
+                </div>
+            )}
 
-            <Button className="w-full py-2">
+            <Button
+                className="w-full py-2"
+                onClick={handleCheckout}
+                disabled={!isPaymentReady}
+            >
                 <ShoppingBasketIcon />
                 Checkout
             </Button>
+
+            {!isPaymentReady && (
+                <>
+                    <hr className="my-3 opacity-20" />
+                    <img
+                        src="/images/catalog_payment_not_ready.png"
+                        className="w-[50px]"
+                    />
+                    <div className="flex mt-2 gap-1">
+                        <InfoIcon size={20} className="shrink-0 mt-0" />
+                        <p className="md:w-[150px] text-xs pt-0.5">
+                            Tenant haven't set up their payment environment yet
+                        </p>
+                    </div>
+                </>
+            )}
         </div>
     );
 }
 
-export default function Show({ product }) {
+export default function Show({ product, isPaymentReady }) {
     const descriptionDelimited = useMemo(
         () => product.description.replaceAll("\n", "<br />"),
         [product.description]
@@ -150,7 +192,10 @@ export default function Show({ product }) {
                     </div>
                 </div>
 
-                <CheckoutAction product={product} />
+                <CheckoutAction
+                    product={product}
+                    isPaymentReady={isPaymentReady}
+                />
             </div>
         </CatalogueLayout>
     );

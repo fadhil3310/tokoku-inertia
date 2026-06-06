@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\MidtransConfig;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class MidtransConfigController extends Controller
 {
+    private static $isLibraryInitialized = false;
+
     public function index()
     {
         $config = Auth::user()->midtransConfig;
@@ -45,14 +49,26 @@ class MidtransConfigController extends Controller
             Auth::user()->midtransConfig->update($values);
         }
 
+        \Midtrans\Config::$serverKey = $values['server_key'];
+
         return Redirect::back();
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, MidtransConfig $midtransConfig)
+    public static function checkLibraryReady()
     {
-        //
+        $output = new ConsoleOutput();
+        if (!MidtransConfigController::$isLibraryInitialized) 
+            return false;
+
+        $config = Auth::user()->midtransConfig;
+        if ($config == null)
+            return false;
+
+        $output->writeln('Check Midtrans is ready? ' . MidtransConfigController::$isLibraryInitialized . " " . $config);
+
+        \Midtrans\Config::$serverKey = $config['server_key'];
+        \Midtrans\Config::$isProduction = false;
+
+        MidtransConfigController::$isLibraryInitialized = true;
     }
 }

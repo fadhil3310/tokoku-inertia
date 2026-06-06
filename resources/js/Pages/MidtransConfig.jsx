@@ -1,5 +1,5 @@
 import DashboardLayout from "../Layouts/DashboardLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { Card, CardHeader, CardTitle, CardActions } from "../Components/Card";
 import {
     AddIcon,
@@ -10,7 +10,8 @@ import {
     InfoIcon,
 } from "../Components/Icons";
 import Button from "../Components/Buttons";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
+import Dialog from "../Components/Dialog";
 
 const inputClass =
     "w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500";
@@ -18,6 +19,9 @@ const inputClass =
 const errorClass = "mt-1 text-xs text-red-500";
 
 export default function MidtransConfig({ serverKey, clientKey }) {
+    const { flash } = usePage();
+    const [failedDialogOpen, setFailedDialogOpen] = useState(false);
+
     const { data, setData, post, processing, errors } = useForm({
         server_key: serverKey,
         client_key: clientKey,
@@ -30,8 +34,21 @@ export default function MidtransConfig({ serverKey, clientKey }) {
         });
     }, []);
 
+    useEffect(() => {
+        if (flash.status != null && flash.status === false) {
+            setFailedDialogOpen(true);
+        }
+    }, [flash]);
+
     return (
         <DashboardLayout>
+            <Dialog
+                title="Failed connecting to Midtrans"
+                message="Make sure the keys you entered are correct"
+                showConfirm={false}
+                isOpen={failedDialogOpen}
+                onClose={() => setFailedDialogOpen(false)}
+            />
             <Head title="Payment" />
             <div className="p-4 lg:p-6 min-h-screen w-full">
                 <nav className="flex items-center space-x-2 text-sm mb-6">
@@ -161,7 +178,7 @@ export default function MidtransConfig({ serverKey, clientKey }) {
                                     >
                                         privacy policy
                                     </a>{" "}
-                                    before continuing. Tokoku held no liability
+                                    before continuing. Tokoku hold no liability
                                     in any errors caused by them.
                                 </span>
                             </p>
