@@ -20,6 +20,10 @@ class Booth extends Model
         'owner_id',
         'catalog_html',
         'catalog_css',
+        'email',
+        'phone',
+        'instagram',
+        'twitter',
     ];
     
     public function owner()

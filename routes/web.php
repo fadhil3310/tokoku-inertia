@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\MidtransConfigController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BoothController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'));
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,10 +26,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', fn() => Inertia::render('Dashboard'));
     Route::get('/transactions', fn() => Inertia::render('Transactions'));
     Route::get('/payment', fn() => Inertia::render('Payment'));
-    Route::get('/booth', fn() => Inertia::render('Booth'));
     Route::get('/transactions/form', fn() => Inertia::render('TransactionsForm'));
     Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
     Route::get('/subscription', fn() => Inertia::render('Subscription'));
+    Route::resource('booth', BoothController::class);
     Route::resource('payment-link', MidtransConfigController::class);
     Route::resource('profile', UserController::class);
     Route::resource('products', ProductController::class);
