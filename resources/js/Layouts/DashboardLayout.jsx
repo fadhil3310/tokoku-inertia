@@ -6,8 +6,7 @@ import { Toaster, toast } from 'sonner';
 import { Icon } from '@iconify/react';
 
 export default function DashboardLayout({ children }) {
-    const { url } = usePage();
-    const { auth } = usePage().props;
+    const { url, props: { auth } } = usePage();
     const [notifOpen, setNotifOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(true);
