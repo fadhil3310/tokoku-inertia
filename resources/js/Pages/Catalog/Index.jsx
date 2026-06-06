@@ -231,22 +231,6 @@ function ProductPagination({ links }) {
 
 // Ensure you destructure 'booth' from the Inertia props
 export default function Index({ products }) {
-    const booth = {
-        id: "bth-98765",
-        name: "Otaku Haven Collectibles",
-        description: "Your premium destination for exclusive anime figures, custom apparel, and limited edition art prints directly from Japan.",
-        image: null, 
-        owner: {
-            id: 1,
-            name: "Alex Mercer"
-        },
-        current_event: {
-            name: "Speed Festival 2026",
-            location: "Lanud Husein Sastranegara, Bandung",
-            booth_number: "O-142" // event_id first letter + booth_ticket id
-        }
-    };
-
     return (
         <CatalogLayout>
             

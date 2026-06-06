@@ -67,8 +67,8 @@ export default function EventOrganizerDashboard({ recentEvent, totalRevenue, tot
                     {recentEvent ? (
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
                             <div className="w-full sm:w-48 aspect-video bg-gray-100 rounded-xl overflow-hidden shrink-0 border border-gray-200">
-                                {recentEvent.poster || recentEvent.image ? (
-                                    <img src={`/storage/${recentEvent.poster ?? recentEvent.image}`} className="w-full h-full object-cover" alt="Event Poster" />
+                                {recentEvent.poster ? (
+                                    <img src={recentEvent.poster} className="w-full h-full object-cover" alt="Event Poster" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-400">
                                         <Icon icon="bx:image" width={48} />

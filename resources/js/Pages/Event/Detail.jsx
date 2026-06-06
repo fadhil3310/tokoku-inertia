@@ -153,7 +153,7 @@ export default function EventDetail({ event }) {
                                 </div>
 
                                 <Link 
-                                    href={event.price ? `/event/join/${id}` : undefined}
+                                    href={event.price ? `/event/join/${event.id}` : undefined}
                                     className={`w-full flex items-center justify-center px-6 py-3.5 ${
                                         event.price
                                             ? "bg-blue-600 hover:bg-blue-700"

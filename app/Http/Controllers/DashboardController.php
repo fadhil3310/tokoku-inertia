@@ -24,17 +24,17 @@ class DashboardController extends Controller
             $totalProducts = 0;
             $recentTransactions = collect();
 
-            if ($booth) {
-                $totalProducts = $booth->products()->count();
+            // if ($booth) {
+            //     $totalProducts = $booth->products()->count();
 
-                $recentTransactions = ProductPayment::whereHas('product', function ($query) use ($booth) {
-                        $query->where('booth_id', $booth->id);
-                    })
-                    ->with('product') 
-                    ->latest()
-                    ->take(5)
-                    ->get();
-            }
+            //     $recentTransactions = ProductPayment::whereHas('product', function ($query) use ($booth) {
+            //             $query->where('booth_id', $booth->id);
+            //         })
+            //         ->with('product') 
+            //         ->latest()
+            //         ->take(5)
+            //         ->get();
+            // }
                 
             return Inertia::render('Dashboard/Index', [
                 'user'               => $user,
@@ -52,14 +52,21 @@ class DashboardController extends Controller
 
             $totalRevenueRaw = 0;
             $totalBoothSpaceSold = 0;
-            $formattedRevenue = 0;
+            $formattedRevenue = '0';
 
             if ($recentEvent) {
-                $totalRevenueRaw = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
+                // FIXED: Get the records, eager load the ticket, and sum the prices
+                $totalRevenueRaw = TicketPayment::with('ticket')
+                    ->whereHas('ticket', function ($query) use ($recentEvent) {
                         $query->where('event_id', $recentEvent->id);
                     })
-                    ->where('status', 'paid') 
-                    ->sum('amount');
+                    ->where('status', 'paid')
+                    ->get()
+                    ->sum(function ($payment) {
+                        // If users can buy multiple tickets per payment, change this to:
+                        // return $payment->ticket->price * $payment->quantity;
+                        return $payment->ticket->price; 
+                    });
 
                 $totalBoothSpaceSold = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
                         $query->where('event_id', $recentEvent->id);

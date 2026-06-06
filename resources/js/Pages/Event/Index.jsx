@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import DashboardLayout from "../../Layouts/DashboardLayout";
-import { Link, Head, usePage } from "@inertiajs/react";
+import { Link, Head, usePage, router } from "@inertiajs/react";
 import {
     Card,
     CardHeader,
@@ -8,8 +8,6 @@ import {
     CardActions,
 } from "../../Components/Card";
 import {
-    AddIcon,
-    CatalogueIcon,
     CircleAddIcon,
     HomeIcon,
     ChevronRightIcon,
@@ -20,34 +18,52 @@ import { Grid } from "gridjs-react";
 import { h } from "gridjs";
 import "gridjs/dist/theme/mermaid.css";
 
-export default function Index({ products, error }) {
+export default function Index({ events = [], error }) {
     const { flash } = usePage();
 
-    const data = products.map((p) => [
-        p.id,
-        p.name,
-        p.description,
-        p.price,
-        p.created_at_humanreadable,
+    const data = events.map((e) => [
+        e.id,
+        e.name,
+        e.date_start,
+        e.date_end,
     ]);
 
     const columns = [
         "Id",
         "Name",
-        "Description",
-        "Price",
-        "Created",
+        "Start Date",
+        "End Date",
         {
             name: 'Actions',
             formatter: (_, row) => {
                 const id = row.cells[0].data;
-                return h('a', {
-                    href: route('products.show', id),
-                    className: 'cursor-pointer inline-flex items-center justify-center rounded-md transition-colors px-3 py-1.5 text-sm text-blue-500 hover:bg-blue-50'
-                }, 'View');
+                
+                // Using Preact's 'h' to render elements inside Grid.js
+                return h('div', { className: 'flex items-center space-x-1' }, [
+                    h('a', {
+                        href: `/detail/event/${id}`,
+                        className: 'cursor-pointer inline-flex items-center justify-center rounded-md transition-colors px-3 py-1.5 text-sm text-blue-500 hover:bg-blue-50 font-medium'
+                    }, 'Detail'),
+                    h('a', {
+                        href: route('events.edit', id),
+                        className: 'cursor-pointer inline-flex items-center justify-center rounded-md transition-colors px-3 py-1.5 text-sm text-amber-500 hover:bg-amber-50 font-medium'
+                    }, 'Edit'),
+                    h('button', {
+                        onClick: () => handleDelete(id),
+                        className: 'cursor-pointer inline-flex items-center justify-center rounded-md transition-colors px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 font-medium'
+                    }, 'Delete')
+                ]);
             }
         }
     ];
+
+    const handleDelete = (id) => {
+        if (confirm("Are you sure you want to delete this event? This will also delete all associated tickets.")) {
+            router.delete(route('events.destroy', id), {
+                preserveScroll: true,
+            });
+        }
+    };
 
     useEffect(() => {
         if (flash.status != null) {
@@ -57,7 +73,7 @@ export default function Index({ products, error }) {
 
     return (
         <DashboardLayout>
-            <Head title="Products" />
+            <Head title="Events" />
             <div className="p-4 lg:p-6 min-h-screen w-full">
                 <nav className="flex items-center space-x-2 text-sm mb-6">
                     <Link
@@ -68,33 +84,29 @@ export default function Index({ products, error }) {
                     </Link>
                     <ChevronRightIcon />
                     <Link
-                        href={"/products"}
+                        href={"/events"}
                         className="flex items-center text-gray-700 hover:text-blue-500"
                     >
-                        Products
+                        Events
                     </Link>
                 </nav>
 
                 <Card className="mb-6">
                     <CardHeader>
-                        <CardTitle>Products</CardTitle>
+                        <CardTitle>Events</CardTitle>
                         <CardActions>
-                            <Button variant="outline" className="text-nowrap">
-                                <CatalogueIcon />
-                                <span>Open Catalog</span>
-                            </Button>
                             <Button
                                 className="text-nowrap"
-                                href="/products/create"
+                                href={route('events.create')}
                             >
                                 <CircleAddIcon />
-                                <span>Add Product</span>
+                                <span>Add Event</span>
                             </Button>
                         </CardActions>
                     </CardHeader>
                 </Card>
 
-                <div className="bg-white rounded-lg p-4 md:p-6">
+                <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm border border-gray-100">
                     <div className="overflow-x-auto">
                         <Grid
                             data={data}
@@ -102,7 +114,7 @@ export default function Index({ products, error }) {
                             search={true}
                             language={{
                                 search: {
-                                    placeholder: "Search products...",
+                                    placeholder: "Search events...",
                                 },
                             }}
                             pagination={{

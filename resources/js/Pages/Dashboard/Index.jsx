@@ -1,6 +1,6 @@
 import React from "react";
 import { Head } from "@inertiajs/react";
-import DashboardLayout from "./DashboardLayout";
+import DashboardLayout from "../../Layouts/DashboardLayout";
 import TenantDashboard from "./TenantDashboard";
 import EventOrganizerDashboard from "./EventOrganizerDashboard";
 

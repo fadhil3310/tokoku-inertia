@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import DashboardLayout from "../DashboardLayout";
+import DashboardLayout from "../../Layouts/DashboardLayout";
 import { Link, Head, useForm } from "@inertiajs/react";
 import {
     CancelIcon,
@@ -80,7 +80,7 @@ export default function Edit({ product }) {
         setCreatedDate(formatted);
     }, []);
 
-    const handleChange = (e) => {
+    const handleInputChange = (e) => {
         const { id, value, files, type } = e.target;
         setData(id, type === "file" ? files[0] : value);
     };
@@ -157,7 +157,7 @@ export default function Edit({ product }) {
                                     placeholder="Enter product name.."
                                     className={inputClass}
                                     value={data.name}
-                                    onChange={handleChange}
+                                    onChange={handleInputChange}
                                 />
                                 {errors.name && (
                                     <p className={errorClass}>{errors.name}</p>
@@ -177,7 +177,7 @@ export default function Edit({ product }) {
                                         placeholder="e.g., ABC-2026-001"
                                         className={inputClass}
                                         value={data.sku}
-                                        onChange={handleChange}
+                                        onChange={handleInputChange}
                                     />
                                     {errors.sku && (
                                         <p className={errorClass}>
@@ -196,7 +196,7 @@ export default function Edit({ product }) {
                                         id="category"
                                         className={inputClass}
                                         value={data.category}
-                                        onChange={handleChange}
+                                        onChange={handleInputChange}
                                     >
                                         <option value="" disabled>
                                             Choose category
@@ -234,7 +234,7 @@ export default function Edit({ product }) {
                                     placeholder="Enter product description.."
                                     className={inputClass}
                                     value={data.description}
-                                    onChange={handleChange}
+                                    onChange={handleInputChange}
                                 />
                                 {errors.description && (
                                     <p className={errorClass}>
@@ -261,7 +261,7 @@ export default function Edit({ product }) {
                                     placeholder="0"
                                     className={inputClass}
                                     value={data.stock}
-                                    onChange={handleChange}
+                                    onChange={handleInputChange}
                                 />
                                 {errors.stock && (
                                     <p className={errorClass}>{errors.stock}</p>
@@ -281,7 +281,7 @@ export default function Edit({ product }) {
                                         placeholder="0"
                                         className={`${inputClass} pl-12`}
                                         value={data.price}
-                                        onChange={handleChange}
+                                        onChange={handleInputChange}
                                     />
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                                         Rp
@@ -310,7 +310,7 @@ export default function Edit({ product }) {
                                     type="file"
                                     accept="image/*"
                                     className={inputClass}
-                                    onChange={handleChange}
+                                    onChange={handleInputChange}
                                 />
                                 {errors.image && (
                                     <p className={errorClass}>{errors.image}</p>
@@ -336,7 +336,7 @@ export default function Edit({ product }) {
                                         id="status"
                                         className={inputClass}
                                         value={data.status}
-                                        onChange={handleChange}
+                                        onChange={handleInputChange}
                                     >
                                         <option value="draft">Draft</option>
                                         <option value="pending">Pending</option>
@@ -367,7 +367,7 @@ export default function Edit({ product }) {
                                         id="visibility"
                                         className={inputClass}
                                         value={data.visibility}
-                                        onChange={handleChange}
+                                        onChange={handleInputChange}
                                     >
                                         <option value="private">Private</option>
                                         <option value="public">Public</option>

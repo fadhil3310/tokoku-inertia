@@ -10,21 +10,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'owner_id',
         'name',
         'description',
-        'location',
+        'terms',
         'date_start',
         'date_end',
         'poster',
-        'image',
-        'terms',
-        'owner_id',
+        'location',
+        'coordinates',
+        'map',
+        'contact',
+        'max_participants',
+        'visibility',
     ];
 
     /**
@@ -35,6 +39,38 @@ class Event extends Model
         'date_end'   => 'datetime',
         'terms'      => 'array',
     ];
+
+    /**
+     * Get the full URL for the event poster.
+     */
+    public function getPoster()
+    {
+        if (empty($this->poster)) {
+            return null; // Or return a default placeholder image URL here
+        }
+
+        if (str_starts_with($this->poster, 'http')) {
+            return $this->poster;
+        }
+
+        return asset('storage/' . $this->poster);
+    }
+
+    /**
+     * Get the full URL for the event map.
+     */
+    public function getMap()
+    {
+        if (empty($this->map)) {
+            return null;
+        }
+
+        if (str_starts_with($this->map, 'http')) {
+            return $this->map;
+        }
+
+        return asset('storage/' . $this->map);
+    }
 
     /**
      * Get the organizer (user) that owns the event.

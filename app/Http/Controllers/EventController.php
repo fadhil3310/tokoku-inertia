@@ -6,6 +6,8 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -14,7 +16,21 @@ class EventController extends Controller
      */
     public function index()
     {
-        //
+        $events = Event::where('owner_id', auth()->id())
+            ->latest()
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'name' => $event->name,
+                    'date_start' => $event->date_start->format('d M Y, H:i'),
+                    'date_end' => $event->date_end->format('d M Y, H:i'),
+                ];
+            });
+
+        return Inertia::render('Event/Index', [
+            'events' => $events,
+        ]);
     }
 
     /**
@@ -30,7 +46,78 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'terms' => 'nullable|array',
+            'terms.*' => 'string',
+            'date_start' => 'required|date',
+            'date_end' => 'required|date|after_or_equal:date_start',
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'location' => 'nullable|string|max:255',
+            'coordinates' => 'nullable|string|max:255',
+            'map' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'contact' => 'nullable|string|max:255',
+            'max_participants' => 'nullable|integer|min:1',
+            'visibility' => 'required|in:public,unlisted,private',
+            
+            // Nested Tickets Validation
+            'tickets' => 'required|array|min:1',
+            'tickets.*.name' => 'required|string|max:255',
+            'tickets.*.price' => 'required|numeric|min:0',
+            'tickets.*.description' => 'nullable|string',
+            'tickets.*.location' => 'nullable|string|max:255',
+            'tickets.*.coordinates' => 'nullable|string|max:255',
+            'tickets.*.map' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        DB::transaction(function () use ($validated, $request) {
+            
+            $posterPath = $request->hasFile('poster') 
+                ? $request->file('poster')->store('events/posters', 'public') 
+                : null;
+                
+            $mapPath = $request->hasFile('map') 
+                ? $request->file('map')->store('events/maps', 'public') 
+                : null;
+
+            $event = Event::create([
+                'owner_id' => auth()->id(),
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'terms' => $validated['terms'] ?? null,
+                'date_start' => $validated['date_start'],
+                'date_end' => $validated['date_end'],
+                'poster' => $posterPath,
+                'location' => $validated['location'] ?? null,
+                'coordinates' => $validated['coordinates'] ?? null,
+                'map' => $mapPath,
+                'contact' => $validated['contact'] ?? null,
+                'max_participants' => $validated['max_participants'] ?? null,
+                'visibility' => $validated['visibility'],
+            ]);
+
+            // Create the Tickets
+            foreach ($validated['tickets'] as $index => $ticketData) {
+                
+                $ticketMapPath = null;
+                
+                if ($request->hasFile("tickets.{$index}.map")) {
+                    $ticketMapPath = $request->file("tickets.{$index}.map")->store('tickets/maps', 'public');
+                }
+
+                $event->tickets()->create([
+                    'name' => $ticketData['name'],
+                    'description' => $ticketData['description'] ?? null,
+                    'price' => $ticketData['price'],
+                    'location' => $ticketData['location'] ?? null,
+                    'coordinates' => $ticketData['coordinates'] ?? null,
+                    'map' => $ticketMapPath,
+                ]);
+            }
+        });
+
+        return redirect()->route('events.index')->with('success', 'Event and tickets created successfully.');
     }
 
     /**
@@ -44,25 +131,177 @@ class EventController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Event $event)
+    public function edit($id)
     {
-        //
+        $event = Event::with('tickets')
+            ->where('owner_id', auth()->id())
+            ->findOrFail($id);
+
+        // Format dates for the <input type="datetime-local"> element
+        $event->date_start_formatted = $event->date_start ? $event->date_start->format('Y-m-d\TH:i') : null;
+        $event->date_end_formatted = $event->date_end ? $event->date_end->format('Y-m-d\TH:i') : null;
+
+        // Append full image URLs
+        $event->poster_url = $event->getPoster();
+        $event->map_url = $event->getMap();
+
+        // Map through tickets to append their image URLs
+        $event->tickets->transform(function ($ticket) {
+            // Assumes you add a getMap() method to your Ticket model similar to the Event model
+            $ticket->map_url = empty($ticket->map) ? null : (str_starts_with($ticket->map, 'http') ? $ticket->map : asset('storage/' . $ticket->map));
+            return $ticket;
+        });
+
+        return Inertia::render('Event/Form', [
+            'event' => $event
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Event $event)
+    public function update(Request $request, $id)
     {
-        //
+        $event = Event::where('id', $id)
+            ->where('owner_id', auth()->id())
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'terms' => 'nullable|array',
+            'terms.*' => 'string',
+            'date_start' => 'required|date',
+            'date_end' => 'required|date|after_or_equal:date_start',
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'location' => 'nullable|string|max:255',
+            'coordinates' => 'nullable|string|max:255',
+            'map' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'contact' => 'nullable|string|max:255',
+            'max_participants' => 'nullable|integer|min:1',
+            'visibility' => 'required|in:public,unlisted,private',
+            
+            // Nested Tickets Validation
+            'tickets' => 'required|array|min:1',
+            'tickets.*.id' => 'nullable', // Allow ID to exist so we know if we are updating or creating
+            'tickets.*.name' => 'required|string|max:255',
+            'tickets.*.price' => 'required|numeric|min:0',
+            'tickets.*.description' => 'nullable|string',
+            'tickets.*.location' => 'nullable|string|max:255',
+            'tickets.*.coordinates' => 'nullable|string|max:255',
+            'tickets.*.map' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ]);
+
+        DB::transaction(function () use ($validated, $request, $event) {
+            
+            // --- HANDLE EVENT FILES ---
+            $posterPath = $event->poster;
+            if ($request->hasFile('poster')) {
+                if ($event->poster) Storage::disk('public')->delete($event->poster);
+                $posterPath = $request->file('poster')->store('events/posters', 'public');
+            }
+                
+            $mapPath = $event->map;
+            if ($request->hasFile('map')) {
+                if ($event->map) Storage::disk('public')->delete($event->map);
+                $mapPath = $request->file('map')->store('events/maps', 'public');
+            }
+
+            // --- UPDATE EVENT ---
+            $event->update([
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'terms' => $validated['terms'] ?? null,
+                'date_start' => $validated['date_start'],
+                'date_end' => $validated['date_end'],
+                'poster' => $posterPath,
+                'location' => $validated['location'] ?? null,
+                'coordinates' => $validated['coordinates'] ?? null,
+                'map' => $mapPath,
+                'contact' => $validated['contact'] ?? null,
+                'max_participants' => $validated['max_participants'] ?? null,
+                'visibility' => $validated['visibility'],
+            ]);
+
+            // --- HANDLE TICKETS ---
+            $incomingTicketIds = collect($validated['tickets'])
+                ->pluck('id')
+                ->filter(fn ($id) => is_numeric($id))
+                ->toArray();
+
+            $ticketsToDelete = $event->tickets()->whereNotIn('id', $incomingTicketIds)->get();
+            foreach ($ticketsToDelete as $ticket) {
+                if ($ticket->map) Storage::disk('public')->delete($ticket->map);
+                $ticket->delete();
+            }
+
+            foreach ($validated['tickets'] as $index => $ticketData) {
+                
+                $ticketId = $ticketData['id'] ?? null;
+                $ticket = is_numeric($ticketId) ? $event->tickets()->find($ticketId) : null;
+                
+                $ticketMapPath = $ticket ? $ticket->map : null; // Keep existing map by default
+                
+                if ($request->hasFile("tickets.{$index}.map")) {
+                    if ($ticket && $ticket->map) {
+                        Storage::disk('public')->delete($ticket->map);
+                    }
+                    $ticketMapPath = $request->file("tickets.{$index}.map")->store('tickets/maps', 'public');
+                }
+
+                if ($ticket) {
+                    // Update existing ticket
+                    $ticket->update([
+                        'name' => $ticketData['name'],
+                        'description' => $ticketData['description'] ?? null,
+                        'price' => $ticketData['price'],
+                        'location' => $ticketData['location'] ?? null,
+                        'coordinates' => $ticketData['coordinates'] ?? null,
+                        'map' => $ticketMapPath,
+                    ]);
+                } else {
+                    // Create new ticket
+                    $event->tickets()->create([
+                        'name' => $ticketData['name'],
+                        'description' => $ticketData['description'] ?? null,
+                        'price' => $ticketData['price'],
+                        'location' => $ticketData['location'] ?? null,
+                        'coordinates' => $ticketData['coordinates'] ?? null,
+                        'map' => $ticketMapPath,
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->route('events.index')->with('success', 'Event updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Event $event)
+    public function destroy($id)
     {
-        //
+        $event = Event::where('id', $id)
+            ->where('owner_id', auth()->id())
+            ->firstOrFail();
+
+        if ($event->poster) {
+            Storage::disk('public')->delete($event->poster);
+        }
+        
+        if ($event->map) {
+            Storage::disk('public')->delete($event->map);
+        }
+
+        foreach ($event->tickets as $ticket) {
+            if ($ticket->map) {
+                Storage::disk('public')->delete($ticket->map);
+            }
+        }
+
+        $event->delete();
+
+        return redirect()->route('events.index')->with('success', 'Event and all associated tickets deleted successfully.');
     }
 
     public function detail($id)

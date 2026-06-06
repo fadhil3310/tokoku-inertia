@@ -97,7 +97,7 @@ export default function SignUp() {
                         <div className="flex items-center space-x-2">
                             <div className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 1 ? 'bg-blue-500' : 'bg-gray-200'}`}></div>
                             <div className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 2 ? 'bg-blue-500' : 'bg-gray-200'}`}></div>
-                            <div className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 3 || (step === 2 && data.role === 'event_organizer') ? 'bg-blue-500' : 'bg-gray-200'}`}></div>
+                            <div className={`h-1.5 flex-1 rounded-full transition-colors ${step >= 3 || (step === 2 && data.role === 'event organizer') ? 'bg-blue-500' : 'bg-gray-200'}`}></div>
                         </div>
 
                         <form onSubmit={handleSubmit} className="flex flex-col flex-1">
@@ -186,13 +186,13 @@ export default function SignUp() {
                                             </div>
                                         </label>
 
-                                        <label className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${data.role === 'event_organizer' ? 'border-gray-800 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                        <label className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${data.role === 'event organizer' ? 'border-gray-800 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
                                             <div className="flex items-center space-x-3">
                                                 <input 
                                                     type="radio" 
                                                     name="role" 
-                                                    value="event_organizer" 
-                                                    checked={data.role === 'event_organizer'} 
+                                                    value="event organizer" 
+                                                    checked={data.role === 'event organizer'} 
                                                     onChange={(e) => setData('role', e.target.value)}
                                                     className="w-4 h-4 text-gray-800 focus:ring-gray-800 accent-blue-500"
                                                 />

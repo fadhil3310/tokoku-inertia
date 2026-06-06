@@ -9,12 +9,20 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\MidtransConfigController;
+use App\Http\Controllers\UserController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/signup', fn() => Inertia::render('Auth/Signup'));
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/logout', [AuthController::class, 'logout']);
+Route::get('/', fn() => Inertia::render('Home'));
+Route::get('/about-us', fn() => Inertia::render('AboutUs'));
+Route::get('/features', fn() => Inertia::render('Features'));
+Route::get('/pricing', fn() => Inertia::render('Pricing'));
+Route::get('/contact', fn() => Inertia::render('Contact'));
+Route::get('/support', fn() => Inertia::render('Support'));
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -40,10 +48,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment', fn() => Inertia::render('Payment'));
     Route::get('/booth', fn() => Inertia::render('Booth'));
     Route::get('/transactions/form', fn() => Inertia::render('TransactionsForm'));
-    Route::get('/profile', fn() => Inertia::render('Profile/Show'));
     Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
     Route::get('/subscription', fn() => Inertia::render('Subscription'));
-    
+    Route::resource('payment-link', MidtransConfigController::class);
+    Route::resource('profile', UserController::class);
     Route::resource('products', ProductController::class);
-    
+
+    Route::prefix('events')->group(function () {
+        Route::get('/', [EventController::class, 'index'])->name('events.index');
+
+        Route::get('/create', fn() => Inertia::render('Event/Form'))->name('events.create');
+        Route::get('/edit/{id}', [EventController::class, 'edit'])->name('events.edit');
+        
+        Route::post('/store', [EventController::class, 'store'])->name('events.store');
+        Route::put('/edit/{id}', [EventController::class, 'update'])->name('events.update');
+        Route::delete('/delete/{id}', [EventController::class, 'destroy'])->name('events.delete');
+
+    });
+
+    // Catalog
+    Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
+    Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+    Route::get('/catalog/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
 });

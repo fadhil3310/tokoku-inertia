@@ -1,27 +1,60 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { HomeIcon, ChevronRightIcon, EditIcon } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
-import { Link } from "@inertiajs/react";
-import DashboardLayout from "../DashboardLayout";
+import { Link, useForm, usePage } from "@inertiajs/react";
+import DashboardLayout from "../../Layouts/DashboardLayout";
+import { toast } from "sonner";
 
-export default function Profile() {
-    const [avatarSrc, setAvatarSrc] = useState(
-        "https://images.unsplash.com/photo-1480429370139-e0132c086e2a?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    );
-    const [showDialog, setShowDialog] = useState(false);
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+export default function Profile({ user }) {
+    const { flash } = usePage();
     const fileInputRef = useRef(null);
+    const [showDialog, setShowDialog] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState(user.image);
+    const [hasImageChange, setHasImageChange] = useState(false);
+
+    const { data, setData, put, processing, errors } = useForm({
+        name: user.name,
+        email: user.email,
+        image: user.image,
+        password: "",
+        confirmPassword: ""
+    });
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const url = URL.createObjectURL(file);
-            setAvatarSrc(url);
+            setData('image', file);
+            setHasImageChange(true);
+            setPreviewUrl(URL.createObjectURL(file));
         }
     };
+
+    const handleUserUpdate = (e) => {
+        if (data.password && data.password !== data.confirmPassword) {
+            toast.error("Passwords do not match.");
+            return;
+        }
+        setShowDialog(false);
+        put(route("profile.update", user.id), {
+            forceFormData: true,
+        });
+    }
+
+    const handleInputChange = (e) => {
+        const { id, value, files, type } = e.target;
+        setData(id, type === "file" ? files[0] : value);
+    };
+
+    useEffect(() => {
+        if (flash?.status === 'success') {
+            toast.success(flash.message);
+        } else if (flash?.status === 'error') {
+            toast.error(flash.message);
+        }
+    }, [flash]);
+
+    const inputClass = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent";
+    const errorClass = "mt-1 text-xs text-red-500";
 
     return (
         <DashboardLayout>
@@ -52,7 +85,7 @@ export default function Profile() {
                             <div className="relative">
                                 <div className="w-48 h-48 bg-gray-300 rounded-lg overflow-hidden">
                                     <img
-                                        src={avatarSrc}
+                                        src={previewUrl ?? "/images/placeholder.png"}
                                         alt="Profile Avatar"
                                         className="w-full h-full object-cover"
                                     />
@@ -65,6 +98,7 @@ export default function Profile() {
                                 </label>
                                 <input
                                     id="image"
+                                    name="image"
                                     type="file"
                                     accept="image/*"
                                     className="hidden"
@@ -75,35 +109,35 @@ export default function Profile() {
                         </div>
 
                         <div className="md:col-span-2">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 divide-x divide-gray-300">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 divide-x divide-gray-300">
                                 <div className="space-y-6 pr-6">
                                     <div>
                                         <label className="block text-gray-600 text-sm font-medium mb-2">
                                             Name
                                         </label>
                                         <input
+                                            id="name"
                                             type="text"
-                                            placeholder="Johnny Silverhand"
-                                            value={name}
-                                            onChange={(e) =>
-                                                setName(e.target.value)
-                                            }
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder="Enter your name..."
+                                            value={data.name}
+                                            onChange={handleInputChange}
+                                            className={inputClass}
                                         />
+                                        {errors.name && <p className={errorClass}>{errors.name}</p>}
                                     </div>
                                     <div>
                                         <label className="block text-gray-600 text-sm font-medium mb-2">
                                             Email
                                         </label>
                                         <input
+                                            id="email"
                                             type="email"
-                                            placeholder="johnnysilverhand@gmail.com"
-                                            value={email}
-                                            onChange={(e) =>
-                                                setEmail(e.target.value)
-                                            }
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder="Enter your email address..."
+                                            value={data.email}
+                                            onChange={handleInputChange}
+                                            className={inputClass}
                                         />
+                                        {errors.email && <p className={errorClass}>{errors.email}</p>}
                                     </div>
                                 </div>
 
@@ -113,42 +147,39 @@ export default function Profile() {
                                             Reset Password
                                         </label>
                                         <input
+                                            id="password"
                                             type="password"
                                             placeholder="••••••••"
-                                            value={password}
-                                            onChange={(e) =>
-                                                setPassword(e.target.value)
-                                            }
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            value={data.password}
+                                            onChange={handleInputChange}
+                                            className={inputClass}
                                         />
+                                        {errors.password && <p className={errorClass}>{errors.password}</p>}
                                     </div>
                                     <div>
                                         <label className="block text-gray-600 text-sm font-medium mb-2">
                                             Confirm Reset Password
                                         </label>
                                         <input
+                                            id="confirmPassword"
                                             type="password"
                                             placeholder="••••••••"
-                                            value={confirmPassword}
-                                            onChange={(e) =>
-                                                setConfirmPassword(
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            value={data.confirmPassword}
+                                            onChange={handleInputChange}
+                                            className={inputClass}
                                         />
+                                        {errors.confirmPassword && <p className={errorClass}>{errors.confirmPassword}</p>}
                                     </div>
                                 </div>
-
-                                <div className="md:pl-6 flex items-start">
-                                    <Button
-                                        size={"sm"}
-                                        onClick={() => setShowDialog(true)}
-                                    >
-                                        Save
-                                    </Button>
-                                </div>
                             </div>
+                        </div>
+                        <div className="md:pl-6 flex items-start">
+                            <Button
+                                size={"sm"}
+                                onClick={() => setShowDialog(true)}
+                            >
+                                Save
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -169,7 +200,7 @@ export default function Profile() {
                                 </p>
                             </div>
                             <div className="px-6 py-4 flex flex-col-reverse sm:flex-row-reverse gap-3">
-                                <Button onClick={() => setShowDialog(false)} size={'sm'}>
+                                <Button type="submit" onClick={handleUserUpdate} size={'sm'}>
                                     Save
                                 </Button>
                                 <Button onClick={() => setShowDialog(false)} variant={'outline'} size={'sm'}>

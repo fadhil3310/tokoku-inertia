@@ -1,29 +1,31 @@
 import { Link, Head, usePage } from "@inertiajs/react";
 import { useState } from "react";
-import { TransactionsIcon, HomeIcon, PaymentIcon, ProductsIcon, BoothIcon, BellIcon } from "../../Components/Icons";
-import Button from "../../Components/Buttons";
+import { TransactionsIcon, HomeIcon, PaymentIcon, ProductsIcon, BoothIcon, BellIcon } from "../Components/Icons";
+import Button from "../Components/Buttons";
 import { Toaster } from 'sonner';
 import { Icon } from '@iconify/react';
 
-export default function DashboardLayout({ user, children }) {
+export default function DashboardLayout({ children }) {
     const { url } = usePage();
+    const { auth } = usePage().props;
     const [notifOpen, setNotifOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(true);
     const [mobileVisible, setMobileVisible] = useState(false);
+    const userId = auth.user.id;
 
-    const navItems = user?.role === 'tenant' 
+    const navItems = auth.user?.role === 'event organizer' 
         ? [
+            { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
+            { href: "/events", label: "Events", icon: TransactionsIcon },
+            { href: "/payment", label: "Payment", icon: PaymentIcon },
+        ]
+        : [
             { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
             { href: "/transactions", label: "Transactions", icon: TransactionsIcon },
             { href: "/payment", label: "Payment", icon: PaymentIcon },
             { href: "/products", label: "Products", icon: ProductsIcon },
             { href: "/booth", label: "Booth", icon: BoothIcon },
-        ] 
-        : [
-            { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
-            { href: "/events", label: "Events", icon: TransactionsIcon },
-            { href: "/payment", label: "Payment", icon: PaymentIcon },
         ];
 
     return (
@@ -41,8 +43,10 @@ export default function DashboardLayout({ user, children }) {
                                         T
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-xl font-bold text-gray-700">Nama Toko</span>
-                                        <span className="text-xs text-gray-500">by Tokoku</span>
+                                        <span className="text-xl font-bold text-gray-700">{auth.user.booth?.name || "Tokoku"}</span>
+                                        {
+                                            auth.user.role === 'tenant' ?? <span className="text-xs text-gray-500">by Tokoku</span>
+                                        }
                                     </div>
                                 </>
                             )}
@@ -120,16 +124,46 @@ export default function DashboardLayout({ user, children }) {
                                     onClick={() => setProfileOpen(!profileOpen)}
                                     className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 text-gray-700"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
-                                        Ad
+                                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+                                        {auth.user.image ? (
+                                            <img
+                                                src={auth.user.image}
+                                                alt={auth.user.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            auth.user.name
+                                                .split(' ')
+                                                .slice(0, 2)
+                                                .map(word => word[0])
+                                                .join('')
+                                                .toUpperCase()
+                                        )}
                                     </div>
-                                    <span className="hidden md:inline text-sm font-medium">Admin</span>
+                                    <span className="hidden md:inline text-sm font-medium">{auth.user.name || ""}</span>
                                 </Button>
                                 {profileOpen && (
                                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
-                                        <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100">Profile</Link>
-                                        <Link href="/subscription" className="block px-4 py-2 text-sm hover:bg-gray-100">Subscription</Link>
-                                        <Link href="/logout" method="post" as="button" className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Sign out</Link>
+                                        <Link
+                                            href={`/profile/${userId}`}
+                                            className="block px-4 py-2 text-sm hover:bg-gray-100"
+                                        >
+                                            Profile
+                                        </Link>
+                                        <Link
+                                            href="/subscription"
+                                            className="block px-4 py-2 text-sm hover:bg-gray-100"
+                                        >
+                                            Subscription
+                                        </Link>
+                                        <Link
+                                            href="/logout"
+                                            method="post"
+                                            as="button"
+                                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                                        >
+                                            Sign out
+                                        </Link>
                                     </div>
                                 )}
                             </div>

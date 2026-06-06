@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { HomeIcon, ChevronRightIcon, EditIcon } from "../Components/Icons";
 import Button from "../Components/Buttons";
 import { Head, Link } from "@inertiajs/react";
-import DashboardLayout from "./DashboardLayout";
+import DashboardLayout from "../Layouts/DashboardLayout";
 
 export default function Subscription() {
     return (

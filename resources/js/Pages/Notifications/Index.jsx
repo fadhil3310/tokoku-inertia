@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DashboardLayout from "../DashboardLayout";
+import DashboardLayout from "../../Layouts/DashboardLayout";
 import { CheckIcon, ChevronRightIcon, HomeIcon } from "../../Components/Icons";
 import NotificationItem from "./NotificationItem";
 import Button from "../../Components/Buttons";
