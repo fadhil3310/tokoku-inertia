@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booth;
-use App\Models\Event;
-use App\Models\ProductPayment;
-use App\Models\TicketPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Event;
+use App\Models\ProductPayment;
+use App\Models\TicketPayment;
 
 class DashboardController extends Controller
 {
@@ -20,62 +19,62 @@ class DashboardController extends Controller
         // 1. TENANT DASHBOARD
         // ==========================================
         if ($user->role === 'tenant') {
-            // Get the user's booth (assuming User hasOne Booth)
             $booth = $user->booth; 
-            return response()->json($booth);
-
             
             $totalProducts = 0;
-            // $recentTransactions = collect();
+            $recentTransactions = collect();
 
             if ($booth) {
                 $totalProducts = $booth->products()->count();
 
-                // Assuming ProductPayment belongsTo Product, and Product belongsTo Booth
-                // $recentTransactions = ProductPayment::whereHas('product', function ($query) use ($booth) {
-                //         $query->where('booth_id', $booth->id);
-                //     })
-                //     ->with('product') // Eager load product details for the frontend
-                //     ->latest()
-                //     ->take(5)
-                //     ->get();
+                $recentTransactions = ProductPayment::whereHas('product', function ($query) use ($booth) {
+                        $query->where('booth_id', $booth->id);
+                    })
+                    ->with('product') 
+                    ->latest()
+                    ->take(5)
+                    ->get();
             }
-                $recentTransactions = null;
                 
-            return Inertia::render('Dashboard/Tenant', [
+            return Inertia::render('Dashboard/Index', [
+                'user'               => $user,
                 'booth'              => $booth,
                 'totalProducts'      => $totalProducts,
                 'recentTransactions' => $recentTransactions,
             ]);
         }
 
+        // ==========================================
+        // 2. EVENT ORGANIZER DASHBOARD
+        // ==========================================
         if ($user->role === 'event organizer') {
-            $recentEvent = null;
+            $recentEvent = Event::where('owner_id', $user->id)->latest()->first();
 
             $totalRevenueRaw = 0;
             $totalBoothSpaceSold = 0;
             $formattedRevenue = 0;
 
-            // if ($recentEvent) {
-            //     $totalRevenueRaw = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
-            //             $query->where('event_id', $recentEvent->id);
-            //         })
-            //         ->where('status', 'paid') 
-            //         ->sum('amount');
+            if ($recentEvent) {
+                $totalRevenueRaw = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
+                        $query->where('event_id', $recentEvent->id);
+                    })
+                    ->where('status', 'paid') 
+                    ->sum('amount');
 
-            //     $totalBoothSpaceSold = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
-            //             $query->where('event_id', $recentEvent->id);
-            //         })
-            //         ->where('status', 'paid')
-            //         ->count();
-            // }
+                $totalBoothSpaceSold = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
+                        $query->where('event_id', $recentEvent->id);
+                    })
+                    ->where('status', 'paid')
+                    ->count();
+            }
 
             // Format revenue to IDR format (e.g. "120.000")
-            // $formattedRevenue = number_format($totalRevenueRaw, 0, ',', '.');
+            $formattedRevenue = number_format($totalRevenueRaw, 0, ',', '.');
 
-            return Inertia::render('Dashboard/EventOrganizer', [
+            return Inertia::render('Dashboard/Index', [
+                'user'                => $user,
                 'recentEvent'         => $recentEvent,
-                'totalRevenue'        => $formattedRevenue, // Sent formatted so frontend can just prefix 'Rp'
+                'totalRevenue'        => $formattedRevenue, 
                 'totalBoothSpaceSold' => $totalBoothSpaceSold,
             ]);
         }

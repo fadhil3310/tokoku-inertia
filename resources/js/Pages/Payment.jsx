@@ -1,10 +1,10 @@
 import React from "react";
-import DashboardLayout from "./DashboardLayout";
+import TenantLayout from "./Dashboard/TenantLayout";
 import { Link, Head } from '@inertiajs/react'
 
 export default function Payment() {
     return (
-        <DashboardLayout>
+        <TenantLayout>
             <Head title="Payment" />
             <div className="p-4 lg:p-6 w-full">
                 <nav className="flex items-center space-x-2 text-sm mb-6">
@@ -141,6 +141,6 @@ export default function Payment() {
                     </div>
                 </form>
             </div>
-        </DashboardLayout>
+        </TenantLayout>
     );
 }

@@ -35,11 +35,11 @@ class User extends Authenticatable
     
     public function events()
     {
-        return $this->hasMany(Event::class);
+        return $this->hasMany(Event::class, 'owner_id', 'id');
     }
 
     public function booth()
     {
-        return $this->hasOne(Booth::class);
+        return $this->hasOne(Booth::class, 'owner_id', 'id');
     }
 }
