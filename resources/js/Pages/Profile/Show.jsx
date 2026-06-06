@@ -6,16 +6,16 @@ import DashboardLayout from "../../Layouts/DashboardLayout";
 import { toast } from "sonner";
 
 export default function Profile({ user }) {
-    const [avatarSrc, setAvatarSrc] = useState(
-        "https://images.unsplash.com/photo-1480429370139-e0132c086e2a?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    );
-    const [showDialog, setShowDialog] = useState(false);
-    const fileInputRef = useRef(null);
     const { flash } = usePage();
+    const fileInputRef = useRef(null);
+    const [showDialog, setShowDialog] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState(user.image);
+    const [hasImageChange, setHasImageChange] = useState(false);
 
     const { data, setData, put, processing, errors } = useForm({
         name: user.name,
         email: user.email,
+        image: user.image,
         password: "",
         confirmPassword: ""
     });
@@ -23,8 +23,9 @@ export default function Profile({ user }) {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const url = URL.createObjectURL(file);
-            setAvatarSrc(url);
+            setData('image', file);
+            setHasImageChange(true);
+            setPreviewUrl(URL.createObjectURL(file));
         }
     };
 
@@ -34,7 +35,9 @@ export default function Profile({ user }) {
             return;
         }
         setShowDialog(false);
-        put(route("profile.update", user.id));
+        put(route("profile.update", user.id), {
+            forceFormData: true,
+        });
     }
 
     const handleInputChange = (e) => {
@@ -78,11 +81,11 @@ export default function Profile({ user }) {
                     </h1>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* <div className="flex flex-col items-center md:items-start mx-auto">
+                        <div className="flex flex-col items-center md:items-start mx-auto">
                             <div className="relative">
                                 <div className="w-48 h-48 bg-gray-300 rounded-lg overflow-hidden">
                                     <img
-                                        src={avatarSrc}
+                                        src={previewUrl ?? "/images/placeholder.png"}
                                         alt="Profile Avatar"
                                         className="w-full h-full object-cover"
                                     />
@@ -95,6 +98,7 @@ export default function Profile({ user }) {
                                 </label>
                                 <input
                                     id="image"
+                                    name="image"
                                     type="file"
                                     accept="image/*"
                                     className="hidden"
@@ -102,7 +106,7 @@ export default function Profile({ user }) {
                                     onChange={handleImageChange}
                                 />
                             </div>
-                        </div> */}
+                        </div>
 
                         <div className="md:col-span-2">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 divide-x divide-gray-300">

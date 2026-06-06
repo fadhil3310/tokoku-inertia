@@ -12,9 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
         $middleware->web(append: [
-            \App\Http\Middleware\HandleInertiaRequests::class, ]);
+            \App\Http\Middleware\HandleInertiaRequests::class,
+        ]);
         $middleware->redirectGuestsTo('/login');
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // $exceptions->report(DatabaseExceptionHandler::report(...));

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Booth;
+
 class Product extends Model
 {
     use HasFactory, HasUuids;
@@ -25,4 +27,9 @@ class Product extends Model
         'status',
         'visibility',
     ];
+
+    public function booth()
+    {
+        return $this->belongsTo(Booth::class, 'booth_id');
+    }
 }
