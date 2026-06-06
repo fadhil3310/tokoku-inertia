@@ -6,13 +6,12 @@ import { Toaster } from 'sonner';
 import { Icon } from '@iconify/react';
 
 export default function DashboardLayout({ children }) {
-    const { url } = usePage();
-    const { auth } = usePage().props;
+    const { url, props: { auth } } = usePage();
     const [notifOpen, setNotifOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(true);
     const [mobileVisible, setMobileVisible] = useState(false);
-    const userId = auth.user.id;
+    const userId = auth?.user?.id;
 
     const navItems = auth.user?.role === 'event organizer' 
         ? [
