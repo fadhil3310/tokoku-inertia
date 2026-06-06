@@ -13,8 +13,6 @@ export default function Booth({ booth }) {
     const [cancelOpen, setCancelOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(booth.image);
 
-    console.log(booth);
-
     const { data, setData, put, processing, errors } = useForm({
         name: booth.name,
         description: booth.description ?? "",
@@ -47,6 +45,7 @@ export default function Booth({ booth }) {
 
     function handleCancel() {
         setCancelOpen(false);
+        window.location.href = route("booth.index");
     }
 
     useEffect(() => {
