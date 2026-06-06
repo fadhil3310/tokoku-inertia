@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class, ]);
         $middleware->redirectGuestsTo('/login');
     })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trustProxies(at: '*');
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         // $exceptions->report(DatabaseExceptionHandler::report(...));
         // $exceptions->render(DatabaseExceptionHandler::render(...));
