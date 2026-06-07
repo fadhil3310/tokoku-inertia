@@ -15,7 +15,7 @@ export default function ShowImage({ id, image }) {
                 <div className="relative h-full p-4 box-border">
                     <img
                         className="h-full aspect-square object-cover rounded-lg"
-                        src={"/storage/" + image}
+                        src={image}
                         style={{ viewTransitionName: `product-image-${id}` }}
                     />
 
