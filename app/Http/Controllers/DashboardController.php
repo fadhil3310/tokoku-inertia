@@ -8,6 +8,8 @@ use Inertia\Inertia;
 use App\Models\Event;
 use App\Models\ProductPayment;
 use App\Models\TicketPayment;
+use App\Models\User;
+use App\Models\Booth;
 
 class DashboardController extends Controller
 {
@@ -83,6 +85,49 @@ class DashboardController extends Controller
                 'recentEvent'         => $recentEvent,
                 'totalRevenue'        => $formattedRevenue, 
                 'totalBoothSpaceSold' => $totalBoothSpaceSold,
+            ]);
+        }
+
+        // ==========================================
+        // 3. ADMIN DASHBOARD
+        
+        if ($user->role === 'admin') {
+            $totalUsers = User::count();
+            $totalTenants = User::where('role', 'tenant')->count();
+            $totalEventOrganizers = User::where('role', 'event organizer')->count();
+            $totalEvents = Event::count();
+            $totalBooths = Booth::count();
+            $totalPaidTickets = TicketPayment::where('status', 'paid')->count();
+            $totalRevenue = TicketPayment::with('ticket')
+                ->where('status', 'paid')
+                ->get()
+                ->sum(function ($payment) {
+                    return $payment->ticket?->price ?? 0;
+                });
+
+            $recentEvents = Event::latest()
+                ->take(5)
+                ->get();
+
+            $recentTicketPayments = TicketPayment::latest()
+                ->take(10)
+                ->get();
+
+            return Inertia::render('Dashboard/Index', [
+                'user' => $user,
+
+                'stats' => [
+                    'totalUsers' => $totalUsers,
+                    'totalTenants' => $totalTenants,
+                    'totalEventOrganizers' => $totalEventOrganizers,
+                    'totalEvents' => $totalEvents,
+                    'totalBooths' => $totalBooths,
+                    'totalPaidTickets' => $totalPaidTickets,
+                    'totalRevenue' => number_format($totalRevenue, 0, ',', '.'),
+                ],
+
+                'recentEvents' => $recentEvents,
+                'recentTicketPayments' => $recentTicketPayments,
             ]);
         }
 
