@@ -49,6 +49,12 @@ export default function Footer({ className }) {
                     >
                         Support
                     </Link>
+                    <Link
+                        href="/help-center"
+                        className="text-gray-500 hover:text-blue-600 transition-colors"
+                    >
+                        Help Center
+                    </Link>
                 </div>
             </div>
             <div className="max-w-7xl mx-auto pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
