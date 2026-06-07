@@ -19,7 +19,7 @@ export default function Header() {
                 </Link>
                 <div className="flex items-center gap-4 ml-auto">
                     {
-                        auth ?
+                        (auth?.user != null) ?
                         (
                             <div className="relative">
                                 <Button
@@ -28,14 +28,14 @@ export default function Header() {
                                     className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 text-gray-700"
                                 >
                                     <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
-                                        {auth.user.image ? (
+                                        {auth?.user?.image ? (
                                             <img
-                                                src={auth.user.image}
-                                                alt={auth.user.name}
+                                                src={auth?.user?.image}
+                                                alt={auth?.user?.name}
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            auth.user.name
+                                            auth?.user?.name
                                                 .split(' ')
                                                 .slice(0, 2)
                                                 .map(word => word[0])
@@ -43,7 +43,7 @@ export default function Header() {
                                                 .toUpperCase()
                                         )}
                                     </div>
-                                    <span className="hidden md:inline text-sm font-medium">{auth.user.name || ""}</span>
+                                    <span className="hidden md:inline text-sm font-medium">{auth?.user?.name || ""}</span>
                                 </Button>
                                 {profileOpen && (
                                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
