@@ -153,14 +153,14 @@ export default function EventDetail({ event }) {
                                 </div>
 
                                 <Link 
-                                    href={event.price ? `/event/join/${event.id}` : undefined}
+                                    href={event.price ? `/join/event/${event.id}` : undefined}
                                     className={`w-full flex items-center justify-center px-6 py-3.5 ${
-                                        event.price
+                                        event.price && !event.hasEnded
                                             ? "bg-blue-600 hover:bg-blue-700"
                                             : "pointer-events-none cursor-not-allowed bg-gray-500"
                                     } text-white font-bold rounded-xl transition-colors shadow-sm`}
                                 >
-                                    {event.price ? "Book a Booth" : "Booth Booking Unavailable"}
+                                    {event.price && !event.hasEnded ? "Book a Booth" : "Booth Booking Unavailable"}
                                 </Link>
 
                                 <div className="grid grid-cols-2 gap-3 mt-1">
