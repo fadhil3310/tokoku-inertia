@@ -10,39 +10,87 @@ use App\Models\ProductPayment;
 use App\Models\TicketPayment;
 use App\Models\User;
 use App\Models\Booth;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $output = new ConsoleOutput();
         $user = Auth::user();
 
         // ==========================================
         // 1. TENANT DASHBOARD
         // ==========================================
         if ($user->role === 'tenant') {
-            $booth = $user->booth; 
-            
-            $totalProducts = 0;
-            $recentTransactions = collect();
+            $booth = $user->booth;
 
-            // if ($booth) {
-            //     $totalProducts = $booth->products()->count();
+            $startOfToday = now()->startOfDay();
+            $endOfToday   = now()->endOfDay();
 
-            //     $recentTransactions = ProductPayment::whereHas('product', function ($query) use ($booth) {
-            //             $query->where('booth_id', $booth->id);
-            //         })
-            //         ->with('product') 
-            //         ->latest()
-            //         ->take(5)
-            //         ->get();
-            // }
-                
+            $startOfYesterday = now()->subDay()->startOfDay();
+            $endOfYesterday   = now()->subDay()->endOfDay();
+
+            $todayRevenue = ProductPayment::whereBetween('created_at', [$startOfToday, $endOfToday])
+                ->sum('grand_total'); // Updated to use grand_total column directly
+
+            $todayCount = ProductPayment::whereBetween('created_at', [$startOfToday, $endOfToday])
+                ->count();
+
+
+            $yesterdayRevenue = ProductPayment::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])
+                ->sum('grand_total'); // Updated to use grand_total column directly
+
+            $yesterdayCount = ProductPayment::whereBetween('created_at', [$startOfYesterday, $endOfYesterday])
+                ->count();
+
+
+            // Revenue Percentage Change
+            $revenueChange = 0;
+            if ($yesterdayRevenue > 0) {
+                $revenueChange = (($todayRevenue - $yesterdayRevenue) / $yesterdayRevenue) * 100;
+            } elseif ($todayRevenue > 0) {
+                $revenueChange = 100;
+            }
+
+            // Transaction Volume Percentage Change
+            $countChange = 0;
+            if ($yesterdayCount > 0) {
+                $countChange = (($todayCount - $yesterdayCount) / $yesterdayCount) * 100;
+            } elseif ($todayCount > 0) {
+                $countChange = 100;
+            }
+
+            $recentPayments = ProductPayment::join('products', 'product_payments.product_id', '=', 'products.id')
+                ->select([
+                    'product_payments.id',
+                    'product_payments.grand_total',
+                    'product_payments.created_at',
+                    'product_payments.payment_method',
+                    'product_payments.status',
+                    'products.name as product_name', // Pulling the product name
+                ])
+                ->latest('product_payments.created_at') // Specify table name to avoid ambiguity
+                ->limit(3)
+                ->get();
+
             return Inertia::render('Dashboard/Index', [
                 'user'               => $user,
                 'booth'              => $booth,
-                'totalProducts'      => $totalProducts,
-                'recentTransactions' => $recentTransactions,
+                'stats' => [
+                    'revenue' => [
+                        'today' => (float) $todayRevenue,
+                        'yesterday' => (float) $yesterdayRevenue,
+                        'percentageChange' => round($revenueChange, 2),
+                    ],
+                    'orders' => [
+                        'today' => $todayCount,
+                        'yesterday' => $yesterdayCount,
+                        'percentageChange' => round($countChange, 2),
+                    ],
+                    'recentPayments' => $recentPayments
+                ]
             ]);
         }
 
@@ -67,12 +115,12 @@ class DashboardController extends Controller
                     ->sum(function ($payment) {
                         // If users can buy multiple tickets per payment, change this to:
                         // return $payment->ticket->price * $payment->quantity;
-                        return $payment->ticket->price; 
+                        return $payment->ticket->price;
                     });
 
                 $totalBoothSpaceSold = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
-                        $query->where('event_id', $recentEvent->id);
-                    })
+                    $query->where('event_id', $recentEvent->id);
+                })
                     ->where('status', 'paid')
                     ->count();
             }
@@ -83,14 +131,14 @@ class DashboardController extends Controller
             return Inertia::render('Dashboard/Index', [
                 'user'                => $user,
                 'recentEvent'         => $recentEvent,
-                'totalRevenue'        => $formattedRevenue, 
+                'totalRevenue'        => $formattedRevenue,
                 'totalBoothSpaceSold' => $totalBoothSpaceSold,
             ]);
         }
 
         // ==========================================
         // 3. ADMIN DASHBOARD
-        
+
         if ($user->role === 'admin') {
             $totalUsers = User::count();
             $totalTenants = User::where('role', 'tenant')->count();

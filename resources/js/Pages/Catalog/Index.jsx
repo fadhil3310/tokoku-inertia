@@ -124,7 +124,7 @@ function BoothProfile({ booth }) {
 }
 // -----------------------------------
 
-function ProductFilter() {
+function ProductFilter({ boothId }) {
     // goofy ahh framework, doesnt even provide a proper way to get url params.
     // having to rely on native js api for most stuff, whoever uses inertia in a commercial project is a retard and need their iq checked.
     const [searchQuery, setSearchQuery] = useState(
@@ -136,7 +136,7 @@ function ProductFilter() {
 
     return (
         <div className="p-4 shadow-sm rounded-xl bg-white">
-            <form action="/catalog" method="GET">
+            <form action={route("catalog", boothId)} method="GET">
                 <div className="flex gap-3">
                     <div className="w-full flex items-center gap-2 px-3 py-2 border-1 border-[#D1D5DC] rounded-lg">
                         <SearchIcon />
@@ -187,7 +187,7 @@ function ProductFilter() {
     );
 }
 
-function ProductCard({ boothId, productId, name, image, price, sold }) {
+function ProductCard({ boothId, productId, name, image, price }) {
     const formattedPrice = useMemo(() => {
         const formatted = new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -231,9 +231,7 @@ function ProductCard({ boothId, productId, name, image, price, sold }) {
                         >
                             {formattedPrice}
                         </p>
-                        <p className="shrink-0 text-[#99A1AF] text-xs mt-1">
-                            {sold} sold
-                        </p>
+                        <p className="shrink-0 text-[#99A1AF] text-xs mt-1"></p>
                     </div>
                 </div>
             </div>
@@ -283,7 +281,7 @@ export default function Index({ products, booth }) {
             {/* Added the Booth Profile Here */}
             <BoothProfile booth={booth} />
 
-            <ProductFilter />
+            <ProductFilter boothId={booth.id} />
 
             {!products?.data || products.data.length == 0 ? (
                 <div className="w-full mt-10 mb-10 flex flex-col items-center justify-center text-gray-500">
@@ -310,14 +308,9 @@ export default function Index({ products, booth }) {
                             key={item.id}
                             boothId={booth.id}
                             productId={item.id}
-                            image={
-                                item.image
-                                    ? `/storage/${item.image}`
-                                    : "https://via.placeholder.com/300"
-                            }
+                            image={item.image_path}
                             name={item.name}
                             price={item.price}
-                            sold={item.sold ?? 0} // Fallback to 0 if your DB doesn't have a sold count yet
                         />
                     ))}
                 </div>
