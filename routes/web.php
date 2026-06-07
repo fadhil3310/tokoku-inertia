@@ -63,15 +63,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->only(['index', 'create', 'store', 'edit', 'destroy']);
 });
 
-Route::middleware(['auth', 'role:admin,tenant'])->group(function () {
-    Route::resource('products', ProductController::class);
+Route::middleware(['auth', 'role:admin,tenant,event organizer'])->group(function () {
     Route::resource('profile', UserController::class)
         ->only(['show', 'update']);
 });
 
-Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {
-    Route::resource('profile', UserController::class)
-        ->only(['show', 'update']);
+Route::middleware(['auth', 'role:admin,tenant'])->group(function () {
+    Route::resource('products', ProductController::class);
 });
 
 Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {
