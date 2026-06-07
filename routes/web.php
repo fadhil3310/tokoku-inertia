@@ -47,19 +47,33 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/subscription', fn() => Inertia::render('Subscription'));
     Route::resource('booth', BoothController::class);
     Route::resource('payment-link', MidtransConfigController::class);
-    Route::resource('profile', UserController::class);
     Route::resource('products', ProductController::class);
 
+    // Catalog
+    Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
+    Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+    Route::get('/catalog/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::resource('profile', UserController::class)
+        ->only(['index', 'create', 'store', 'edit', 'destroy']);
+});
+
+Route::middleware(['auth', 'role:admin,tenant'])->group(function () {
+    Route::resource('profile', UserController::class)
+        ->only(['show', 'update']);
+});
+
+Route::middleware(['auth', 'role:admin, event organizer'])->group(function () {
     Route::prefix('events')->group(function () {
         Route::get('/', [EventController::class, 'index'])->name('events.index');
-
         Route::get('/create', fn() => Inertia::render('Event/Form'))->name('events.create');
         Route::get('/edit/{id}', [EventController::class, 'edit'])->name('events.edit');
         
         Route::post('/store', [EventController::class, 'store'])->name('events.store');
         Route::put('/edit/{id}', [EventController::class, 'update'])->name('events.update');
         Route::delete('/delete/{id}', [EventController::class, 'destroy'])->name('events.delete');
-
     });
 });
 

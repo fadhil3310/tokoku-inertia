@@ -1,6 +1,6 @@
 import { Link, Head, usePage } from "@inertiajs/react";
 import { useState } from "react";
-import { TransactionsIcon, HomeIcon, PaymentIcon, ProductsIcon, BoothIcon, BellIcon } from "../Components/Icons";
+import { TransactionsIcon, HomeIcon, PaymentIcon, ProductsIcon, BoothIcon, BellIcon, UserIcon } from "../Components/Icons";
 import Button from "../Components/Buttons";
 import { Toaster } from 'sonner';
 import { Icon } from '@iconify/react';
@@ -18,14 +18,21 @@ export default function DashboardLayout({ children }) {
             { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
             { href: "/events", label: "Events", icon: TransactionsIcon },
             { href: "/payment", label: "Payment", icon: PaymentIcon },
-        ]
-        : [
+        ] :
+        auth.user?.role === 'tenant' ?  [
             { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
             { href: "/transactions", label: "Transactions", icon: TransactionsIcon },
             { href: "/payment-link", label: "Payment Link", icon: PaymentIcon },
             { href: "/products", label: "Products", icon: ProductsIcon },
             { href: "/booth", label: "Booth", icon: BoothIcon },
-        ];
+        ] :
+        auth.user?.role === 'admin' ?  [
+            { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
+            { href: "/transactions", label: "Transactions", icon: TransactionsIcon },
+            { href: "/payment", label: "Payment", icon: PaymentIcon },
+            { href: "/products", label: "Products", icon: ProductsIcon },
+            { href: "/profile", label: "Users", icon: UserIcon },
+        ] : [];
 
     return (
         <>

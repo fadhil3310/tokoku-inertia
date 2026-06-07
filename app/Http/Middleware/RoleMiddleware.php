@@ -13,7 +13,7 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role)
+    public function handle(Request $request, Closure $next, string ...$roles)
     {
         if (!Auth::check()) {
             $eventId = $request->route('id');
@@ -25,16 +25,16 @@ class RoleMiddleware
             return redirect('/login');
         }
 
-        if (Auth::user()->role !== $role) {
+        if (!in_array(Auth::user()->role, $roles)) {
             // masih sementara
             if ($request->expectsJson()) {
                 return response()->json([
                     'error' => 'Role Denied',
-                    'message' => "You must be a {$role} to perform this action."
+                    'message' => "You must be a " . implode(' or ', $roles) . " to perform this action."
                 ], 403);
             }
 
-            abort(403, "Role Denied. You must be a {$role} to access this page.");
+            abort(403, "Role Denied. You must be a " . implode(' or ', $roles) . " to access this page.");
         }
 
         return $next($request);

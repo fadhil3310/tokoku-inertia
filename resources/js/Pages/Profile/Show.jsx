@@ -5,7 +5,7 @@ import { Link, useForm, usePage } from "@inertiajs/react";
 import DashboardLayout from "../../Layouts/DashboardLayout";
 import { toast } from "sonner";
 
-export default function Profile({ user }) {
+export default function Show({ user }) {
     const { flash } = usePage();
     const fileInputRef = useRef(null);
     const [showDialog, setShowDialog] = useState(false);
@@ -66,7 +66,7 @@ export default function Profile({ user }) {
                     </Link>
                     <ChevronRightIcon />
                     <Link
-                        href={"/profile"}
+                        href={"#"}
                         className="flex items-center text-gray-700 hover:text-blue-500"
                     >
                         Profile
