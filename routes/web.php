@@ -50,14 +50,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('transactions', ProductTransactionController::class);
     Route::resource('payment-link', MidtransConfigController::class);
     
-    // Catalog
-    Route::get('/catalog/{boothId}/check-payment-status/{orderId}', [CatalogController::class, 'checkPaymentStatus'])->name('catalog.checkPaymentStatus');
-    Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
-    Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
-    Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
-
-    // Payment
-    Route::post('/payment/product/checkout', [ProductPaymentController::class, 'checkout'])->name("payment.product.checkout");
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -85,3 +77,12 @@ Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {
         Route::delete('/delete/{id}', [EventController::class, 'destroy'])->name('events.delete');
     });
 });
+
+// Catalog
+Route::get('/catalog/{boothId}/check-payment-status/{orderId}', [CatalogController::class, 'checkPaymentStatus'])->name('catalog.checkPaymentStatus');
+Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
+
+// Payment
+Route::post('/payment/product/checkout', [ProductPaymentController::class, 'checkout'])->name("payment.product.checkout");
