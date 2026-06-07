@@ -70,6 +70,11 @@ Route::middleware(['auth', 'role:admin,tenant'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {
+    Route::resource('profile', UserController::class)
+        ->only(['show', 'update']);
+});
+
+Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {
     Route::prefix('events')->group(function () {
         Route::get('/', [EventController::class, 'index'])->name('events.index');
         Route::get('/create', fn() => Inertia::render('Event/Form'))->name('events.create');
