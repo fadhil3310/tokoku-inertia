@@ -59,8 +59,6 @@ export default function Edit({ user }) {
     const [createdDate, setCreatedDate] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    console.log(user);
-
     const { data, setData, put, processing, errors } = useForm({
         name: user.name,
         email: user.email,
