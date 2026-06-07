@@ -17,6 +17,7 @@ class ProductPayment extends Model
     protected $fillable = [
         'id',
         'payment_method',
+        'payment_url',
         'booth_id',
         'amount',
         'price',

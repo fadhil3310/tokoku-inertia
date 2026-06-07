@@ -8,7 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use MidtransFetchManager;
+use App\Midtrans\MidtransFetchManager;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class CatalogController extends Controller
@@ -71,28 +71,16 @@ class CatalogController extends Controller
         return Inertia::render('Catalog/ShowImage', ['id' => $product['id'], 'image' => $product['image']]);
     }
 
-    public function checkout(Request $request)
-    {
-        $output = new ConsoleOutput();
-        $validated = $request->validate([
-            'boothId' => ['required', 'numeric', 'min:1'],
-            'productId' => ['required', 'numeric', 'min:1'],
-            'amount' => ['required', 'numeric', 'min:1'],
-        ]);
-
-        $fetch = MidtransFetchManager::pay($validated['boothId'], $validated['productId'], $validated['amount']);
-        return response()->json(["order_id" => $fetch->getOrderId()]);
-    }
-
-    public function checkPaymentStatus(string $orderId)
+    public function checkPaymentStatus(string $boothId, string $orderId)
     {
         $output = new ConsoleOutput();
         try {
-            $fetch = MidtransFetchManager::get($orderId);
-            $status = $fetch->getStatus();
-            return Inertia::render('Catalog/Checkout', $status);
+            $status = ProductPaymentController::checkMidtransPaymentStatus($boothId, $orderId);
+            return Inertia::render('Catalog/CheckPaymentStatus', $status);
         } catch (Exception $e) {
-            return Inertia::render('Catalog/Checkout', ["status" => "error"]);
+            $output->writeln("Error when trying to check for payment status, message:");
+            $output->writeln($e->getCode() . " " . $e->getMessage());
+            return Inertia::render('Catalog/CheckPaymentStatus', ["status" => "error"]);
         }
     }
 }

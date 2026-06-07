@@ -1,124 +1,136 @@
 <?php
 
-use App\Models\Booth;
-use Illuminate\Support\Facades\Http;
-use App\Models\Product;
+// namespace App\Midtrans;
 
-class MidtransFetch
-{
-    private string $orderId;
-    private string $boothId;
-    private string $productId;
-    private int $amount;
-    private array $status;
+// use App\Models\Booth;
+// use App\Models\ProductPayment;
+// use Illuminate\Support\Facades\Http;
+// use App\Models\Product;
+// use Symfony\Component\Console\Output\ConsoleOutput;
+// use Exception;
 
-    private string $serverKey;
-    private string $authString;
-    private string $fullAuthString;
+// class MidtransFetch
+// {
+//     private string $orderId;
+//     private string $boothId;
+//     private string $productId;
+//     private int $amount;
+//     private array $detail;
 
-    public function __construct($boothId, $productId, $amount)
-    {
-        $this->boothId = $boothId;
-        $this->productId = $productId;
-        $this->amount = $amount;
+//     private string $serverKey;
+//     private string $authString;
+//     private string $fullAuthString;
 
-        $this->setupKey();
-        $this->pay();
-    }
+//     public function __construct($boothId, $productId, $amount)
+//     {
+//         $this->boothId = $boothId;
+//         $this->productId = $productId;
+//         $this->amount = $amount;
 
-    private function setupKey()
-    {
-        $booth = $this->getBooth();
-        $serverKey = $booth->midtransConfig->serverKey;
-        if ($serverKey == null)
-            throw new Exception("Booth haven't set up their Midtrans key yet");
-        $this->$serverKey = $serverKey;
-        $this->authString = base64_encode($serverKey . ":");
-        $this->fullAuthString = "Basic " . $this->authString;
-    }
+//         $this->setupKey();
+//         $this->pay();
+//     }
 
-    private function pay(): array
-    {
-        // Get booth.
-        $booth = $this->getBooth();
+//     private function setupKey()
+//     {
+//         $booth = $this->getBooth();
+//         $this->serverKey = $booth->midtransConfig->server_key;
+//         if ($this->serverKey == null)
+//             throw new Exception("Booth haven't set up their Midtrans key yet");
+//         $this->authString = base64_encode($this->serverKey . ":");
+//         $this->fullAuthString = "Basic " . $this->authString;
+//     }
 
-        // Get product first.
-        $product = Product::find($this->productId);
-        if ($product == null)
-            throw new Exception("Product not found");
+//     private function pay(): array
+//     {
+//         $output = new ConsoleOutput();
 
-        // Order params.
-        $randomId = bin2hex(random_bytes(16));
-        $orderId = "TOKOKU-" . $booth->name . "-" . $randomId;
-        $grandTotal = $this->amount * $product->price;
+//         // Get booth.
+//         $booth = $this->getBooth();
 
-        $params = array(
-            'transaction_details' => array(
-                'order_id' => $orderId,
-                'gross_amount' => $grandTotal,
-            )
-        );
+//         // Get product first.
+//         $product = Product::find($this->productId);
+//         if ($product == null)
+//             throw new Exception("Product not found");
 
-        // Request pay.
-        $response = Http::acceptJson()->withHeaders([
-            'Authorization' => $this->fullAuthString
-        ])->post("https://app.sandbox.midtrans.com/snap/v1/transactions", $params);
+//         // Order params.
+//         $randomId = bin2hex(random_bytes(10));
+//         $this->orderId = $randomId;
+//         $grandTotal = $this->amount * $product->price;
 
-        $this->status = [
-            "type" => "pending",
-            "detail" => [
-                "paymentUrl" => "abc"
-            ]
-        ];
+//         $params = array(
+//             'transaction_details' => array(
+//                 'order_id' => $this->orderId,
+//                 'gross_amount' => $grandTotal,
+//             )
+//         );
 
-        var_dump($response);
+//         // Request pay.
+//         $response = Http::acceptJson()->withHeaders([
+//             'Authorization' => $this->fullAuthString
+//         ])->post("https://app.sandbox.midtrans.com/snap/v1/transactions", $params);
 
-        // Insert receipt.
-        // ProductPayment::create([
-        //     "id" => $orderId,
-        //     "payment" => $orderId,
-        //     "booth_id" => Auth::user()->booth->id,
-        //     "amount" => $amount,
-        //     "price" => $product->price,
-        //     "grand_total" => $grandTotal,
-        //     "status" => "pending",
-        //     "product_id" => $productId,
-        //     "sku" => $product->sku,
-        //     "description" => $product->description
-        // ]);
+//         $output->writeln("Midtrans pay response:");
+//         $output->writeln($response);
 
-        // return [
-        //     'payment_url' => $paymentUrl,
-        //     'order_id' => $orderId
-        // ];
-        return [];
-    }
+//         if ($response->failed())
+//             throw new Exception("Midtrans pay failed");            
 
-    public function checkStatus()
-    {
-        // Request check status.
-        $response = Http::acceptJson()->withHeaders([
-            'Authorization' => $this->fullAuthString
-        ])->get("https://api.sandbox.midtrans.com/v2/" . $this->orderId . "/status");
+//         $responseData = $response->json();
 
-        var_dump($response);
-    }
+//         // Determine status.
+//         $this->detail = [
+//             "status" => "pending",
+//             "info" => [
+//                 "paymentUrl" => $responseData['redirect_url']
+//             ]
+//         ];
 
-    public function getOrderId(): string
-    {
-        return $this->orderId;
-    }
+//         // Insert receipt.
+//         ProductPayment::create([
+//             "id" => $this->orderId,
+//             "payment_method" => "midtrans",
+//             "booth_id" => $this->boothId,
+//             "amount" => $this->amount,
+//             "price" => $product->price,
+//             "grand_total" => $grandTotal,
+//             "status" => "pending",
+//             "product_id" => $this->productId,
+//             "sku" => $product->sku,
+//             "description" => $product->description
+//         ]);
 
-    public function getStatus(): array
-    {
-        return $this->status;
-    }
+//         return [];
+//     }
 
-    private function getBooth(): Booth
-    {
-        $booth = Booth::find($this->boothId);
-        if ($booth == null)
-            throw new Exception("Booth not found");
-        return $booth;
-    }
-}
+//     public function checkStatus()
+//     {
+//         $output = new ConsoleOutput();
+
+//         // Request check status.
+//         $response = Http::acceptJson()->withHeaders([
+//             'Authorization' => $this->fullAuthString
+//         ])->get("https://api.sandbox.midtrans.com/v2/" . $this->orderId . "/status");
+
+//         $output->writeln("Midtrans check status response:");
+//         $output->writeln($response);
+//     }
+
+//     public function getOrderId(): string
+//     {
+//         return $this->orderId;
+//     }
+
+//     public function getDetail(): array
+//     {
+//         return $this->detail;
+//     }
+
+//     private function getBooth(): Booth
+//     {
+//         $booth = Booth::find($this->boothId);
+//         if ($booth == null)
+//             throw new Exception("Booth not found");
+//         return $booth;
+//     }
+// }

@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { ProductCategories } from "../../Shared/productCategories";
 import { Link, router } from "@inertiajs/react";
 import { cn } from "../../Utilities/cn";
+import { toast } from "sonner";
 
 function CheckoutAction({ boothId, product, isPaymentReady }) {
     const [amount, setAmount] = useState(1);
@@ -27,14 +28,40 @@ function CheckoutAction({ boothId, product, isPaymentReady }) {
         [product.stock, amount, setAmount]
     );
 
-    const handleCheckout = useCallback(() => {
-        router.visit(
-            route("catalog.checkout", { boothId, productId: product.id, amount }),
-            {
-                viewTransition: true,
-            }
-        );
-    }, [product.id]);
+    const handleCheckout = useCallback(async () => {
+        try {
+            const response = await fetch(route("payment.product.checkout"), {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    boothId: boothId,
+                    productId: product.id,
+                    amount: amount,
+                    method: "midtrans",
+                }),
+            });
+            const data = await response.json();
+            if (data["orderId"] == null) throw new Error("orderId not found");
+
+            router.visit(
+                route("catalog.checkPaymentStatus", {
+                    boothId,
+                    orderId: data.orderId,
+                }),
+                {
+                    viewTransition: true,
+                }
+            );
+        } catch (error) {
+            console.error("Error while attempting to do checkout", error);
+            toast.error(
+                "Failed checking out, don't worry this not your fault (╯‵□′)╯︵┻━┻"
+            );
+        }
+    }, [boothId, product.id, amount]);
 
     return (
         <div
@@ -102,7 +129,7 @@ function CheckoutAction({ boothId, product, isPaymentReady }) {
                     />
                     <div className="flex mt-2 gap-1">
                         <InfoIcon size={20} className="shrink-0 mt-0" />
-                        <p className="md:w-[150px] text-xs pt-0.5">
+                        <p className="md:max-w-[250px] text-sm pt-0.5">
                             Tenant haven't set up their payment environment yet
                         </p>
                     </div>

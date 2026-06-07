@@ -12,6 +12,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\MidtransConfigController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoothController;
+use App\Http\Controllers\ProductPaymentController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -63,8 +64,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Catalog
+Route::get('/catalog/{boothId}/check-payment-status/{orderId}', [CatalogController::class, 'checkPaymentStatus'])->name('catalog.checkPaymentStatus');
 Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
 Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
 Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
-Route::post('/catalog/checkout', [CatalogController::class, 'checkout'])->name('catalog.checkout');
-Route::get('/catalog/check-payment', [CatalogController::class, 'checkout'])->name('catalog.checkPaymentStatus');
+
+// Payment
+Route::post('/payment/product/checkout', [ProductPaymentController::class, 'checkout'])->name("payment.product.checkout");

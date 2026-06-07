@@ -25,9 +25,6 @@ class MidtransConfigController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $values = $request->validate([
@@ -45,8 +42,6 @@ class MidtransConfigController extends Controller
         } else {
             Auth::user()->booth->midtransConfig->update($values);
         }
-
-        \Midtrans\Config::$serverKey = $values['server_key'];
 
         return Redirect::back();
     }

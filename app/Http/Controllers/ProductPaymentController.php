@@ -7,35 +7,56 @@ use App\Models\ProductPayment;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Midtrans\MidtransFetch;
+use App\Midtrans\MidtransFetchManager;
+use App\Models\Booth;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ProductPaymentController extends Controller
 {
+    private static array $statusMap = [
+        "pending" => ["pending"],
+        "completed" => [
+            "capture",
+            "settlement",
+            "refund",
+            "chargeback",
+            "partial_refund",
+            "partial_chargeback",
+        ],
+        "canceled" => ["deny", "cancel", "expire", "failure"],
+    ];
 
-    public function requestPay(Request $request)
+    public function checkout(Request $request)
     {
-        $values = $request->validate([
-            'payment_method' => ['required', 'string'],
+        $output = new ConsoleOutput();
+        [
+            "boothId" => $boothId,
+            "productId" => $productId,
+            "amount" => $amount,
+            "method" => $method
+        ] = $request->validate([
+            'boothId' => ['required', 'string', 'min:1'],
+            'productId' => ['required', 'string', 'min:1'],
             'amount' => ['required', 'numeric', 'min:1'],
-            'product_id' => ['required', 'string', 'max:255'],
+            'method' => ['required', 'string', 'min:1']
         ]);
 
-        try {
-            if ($values['payment_method'] == 'midtrans') {
-                $result = $this->payMidtrans($values['amount'], $values['product_id']);
-                return response()->json($result);
-            } else if ($values['payment_method'] == 'cash') {
-                $result = $this->payCash($values['amount'], $values['product_id']);
-                return response()->json($result);
-            }
-        } catch (Exception $e) {
-            abort(500, $e->getMessage());
+        if ($method != "midtrans" && $method != "cash")
+            return abort(400, "method must be 'midtrans' or 'cash'");
+
+        if ($method == "midtrans") {
+            $result = self::payMidtrans($boothId, $productId, $amount);
+            return response()->json($result);
+        } else if ($method == "cash") {
+            $orderId = $this->payCash($boothId, $productId, $amount);
+            return response()->json(["orderId" => $orderId]);
         }
     }
 
-    public static function payMidtrans($productId, $amount): array
+    public static function payMidtrans($boothId, $productId, $amount): array
     {
-        if (!MidtransConfigController::checkLibraryReady())
-            throw new Exception("Midtrans library is not ready");
+        self::setupLibrary($boothId);
 
         // Get product first.
         $product = Product::find($productId);
@@ -43,8 +64,7 @@ class ProductPaymentController extends Controller
             throw new Exception("Product not found");
 
         // Order params.
-        $randomId = bin2hex(random_bytes(16));
-        $orderId = "TOKOKU-" . Auth::user()->booth->name . "-" . $randomId;
+        $orderId = "TOKOKU-" . bin2hex(random_bytes(6));
         $grandTotal = $amount * $product->price;
 
         $params = array(
@@ -54,16 +74,15 @@ class ProductPaymentController extends Controller
             )
         );
 
-        // var_dump($randomId, $orderId);
-
-        // Request pay.
+        // Get Snap Payment Page URL
         $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
 
         // Insert receipt.
         ProductPayment::create([
             "id" => $orderId,
-            "payment" => $orderId,
-            "booth_id" => Auth::user()->booth->id,
+            "payment_method" => "midtrans",
+            "payment_url" => $paymentUrl,
+            "booth_id" => $boothId,
             "amount" => $amount,
             "price" => $product->price,
             "grand_total" => $grandTotal,
@@ -74,12 +93,12 @@ class ProductPaymentController extends Controller
         ]);
 
         return [
-            'payment_url' => $paymentUrl,
-            'order_id' => $orderId
+            "orderId" => $orderId,
+            "paymentUrl" => $paymentUrl
         ];
     }
 
-    public static function payCash($productId, $amount): array
+    public static function payCash($boothId, $productId, $amount): string
     {
         // Get product first.
         $product = Product::find($productId);
@@ -87,15 +106,15 @@ class ProductPaymentController extends Controller
             throw new Exception("Product not found");
 
         // Order params.
-        $randomId = bin2hex(random_bytes(16));
-        $orderId = "TOKOKU-" . Auth::user()->booth->name . "-" . $randomId;
+        $randomId = bin2hex(random_bytes(10));
+        $orderId = $randomId;
         $grandTotal = $amount * $product->price;
 
         // Insert receipt.
         ProductPayment::create([
             "id" => $orderId,
-            "payment" => $orderId,
-            "booth_id" => Auth::user()->booth->id,
+            "payment_method" => "cash",
+            "booth_id" => $boothId,
             "amount" => $amount,
             "price" => $product->price,
             "grand_total" => $grandTotal,
@@ -105,39 +124,75 @@ class ProductPaymentController extends Controller
             "description" => $product->description
         ]);
 
-        return [
-            "order_id" => $orderId
-        ];
+        return $orderId;
     }
 
-    public function requestCheckPaymentStatus(Request $request)
+    public static function checkMidtransPaymentStatus($boothId, $orderId): array
     {
-        $values = $request->validate([
-            'order_id' => ['required', 'string'],
-        ]);
+        $output = new ConsoleOutput();
+        self::setupLibrary($boothId);
+
+        $receipt = ProductPayment::find($orderId);
+
+        $status = "pending";
+        $info = [];
 
         try {
-            $status = $this->checkPaymentStatus($values['order_id']);
-            return response()->json([
-                "payment_status" => $status
-            ]);
+            $result = \Midtrans\Transaction::status($orderId);
+            $resultStatus = $result->fraud_status == 'deny' ? "deny" : $result->transaction_status;
+
+            foreach (self::$statusMap as $statusMapKey => $subStatuses) {
+                if (in_array($resultStatus, $subStatuses)) {
+                    $status = $statusMapKey;
+                    break;
+                }
+            }
+
+            if ($receipt->status != $status) {
+                $receipt->status = $status;
+                $receipt->save();
+            }
         } catch (Exception $e) {
-            abort(500, $e->getMessage());
+            if ($receipt->status != "pending")
+                throw $e;
         }
+
+        if ($status == "pending") {
+            $info = [
+                "paymentUrl" => $receipt->payment_url
+            ];
+        }
+
+        return ["status" => $status, "info" => $info];
     }
 
-    public function checkPaymentStatus($orderId): bool
+    private static function setupLibrary($boothId)
     {
-        $receipt = ProductPayment::find($orderId);
-        if ($receipt == null)
-            throw new Exception("Receipt not found");
+        $midtransConfig = Booth::find($boothId)->midtransConfig;
+        if ($midtransConfig == null)
+            throw new Exception("Tenant haven't set up their midtrans key yet");
 
-        if ($receipt->payment_method == "midtrans") {
-            $status = \Midtrans\Transaction::status($orderId);
-            var_dump($status);
-            return true;
-        } else {
-            return true;
-        }
+        \Midtrans\Config::$serverKey = $midtransConfig->server_key;
+        \Midtrans\Config::$isProduction = false;
     }
+
+    // public static function checkMidtransPaymentStatus($orderId): string
+    // {
+    //     $output = new ConsoleOutput();
+    //     $receipt = ProductPayment::find($orderId);
+    //     if ($receipt == null)
+    //         throw new Exception("Receipt not found");
+
+    //     if ($receipt->payment_method == "midtrans") {
+    //         try {
+    //             $fetch = MidtransFetchManager::get($orderId);
+    //             $status = $fetch->getStatus();
+    //             return $status
+    //         } catch (Exception $e) {
+    //             return Inertia::render('Catalog/Checkout', ["status" => "error"]);
+    //         }
+    //     } else {
+    //         return true;
+    //     }
+    // }
 }
