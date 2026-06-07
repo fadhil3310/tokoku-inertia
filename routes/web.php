@@ -31,8 +31,8 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('/detail/event/{id}', [EventController::class, 'detail']);
 
 // Auth & Tenant Only Routes
-Route::middleware(['auth', 'role:tenant'])->group(function () {
-    Route::get('/join/event/{id}', [EventController::class, 'showJoinForm']);
+Route::middleware(['role:tenant'])->group(function () {
+    Route::get('/join/event/{id}', [EventController::class, 'show']);
     Route::post('/join/event/{id}', [EventController::class, 'join']);
 });
 
