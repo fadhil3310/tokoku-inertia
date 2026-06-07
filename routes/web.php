@@ -35,12 +35,6 @@ Route::middleware(['auth', 'role:tenant'])->group(function () {
     Route::post('/join/event/{id}', [EventController::class, 'join']);
 });
 
-// catalog/event/id, catalog event
-// catalog/booth/id
-Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
-Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.show');
-Route::get('/catalog/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
-
 // General Authenticated Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -71,5 +65,5 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
 Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
 Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
-Route::get('/catalog/{boothId}/checkout', [CatalogController::class, 'checkout'])->name('catalog.checkout');
-Route::get('/catalog/{boothId}/check-payment', [CatalogController::class, 'checkout'])->name('catalog.checkPaymentStatus');
+Route::post('/catalog/checkout', [CatalogController::class, 'checkout'])->name('catalog.checkout');
+Route::get('/catalog/check-payment', [CatalogController::class, 'checkout'])->name('catalog.checkPaymentStatus');

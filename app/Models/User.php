@@ -44,11 +44,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(Booth::class, 'owner_id', 'id');
     }
-    
-    public function midtransConfig(): HasOne
-    {
-        return $this->hasOne(Booth::class, "owner_id");
-    }
 
     public function productPayments(): HasMany
     {

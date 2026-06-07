@@ -4,7 +4,7 @@ import { SearchIcon } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
 import { ProductCategories } from "../../Shared/productCategories";
 import { cn } from "../../Utilities/cn";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 function ProductCategoryChip({ value, selected, children, onClick }) {
     return (
@@ -45,8 +45,10 @@ function BoothProfile({ booth }) {
             <div className="flex flex-col text-center sm:text-left flex-1">
                 {/* Title & Live Badge */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-1">
-                    <h1 className="text-2xl font-bold text-gray-900">{booth.name}</h1>
-                    
+                    <h1 className="text-2xl font-bold text-gray-900">
+                        {booth.name}
+                    </h1>
+
                     {/* Only show this if current_event exists */}
                     {booth.current_event && (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 border border-green-200 text-xs font-bold uppercase tracking-wide w-fit mx-auto sm:mx-0">
@@ -64,14 +66,48 @@ function BoothProfile({ booth }) {
                 {booth.current_event && (
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-4 text-sm text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-200 w-fit mx-auto sm:mx-0">
                         <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            <span><span className="font-semibold text-gray-900">Booth:</span> {booth.current_event.booth_number}</span>
+                            <svg
+                                className="w-4 h-4 text-gray-400 shrink-0"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                ></path>
+                            </svg>
+                            <span>
+                                <span className="font-semibold text-gray-900">
+                                    Booth:
+                                </span>{" "}
+                                {booth.current_event.booth_number}
+                            </span>
                         </div>
-                        
-                        <div className="hidden sm:block w-px bg-gray-300"></div> {/* Divider */}
-                        
+                        <div className="hidden sm:block w-px bg-gray-300"></div>{" "}
+                        {/* Divider */}
                         <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <svg
+                                className="w-4 h-4 text-gray-400 shrink-0"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                ></path>
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                ></path>
+                            </svg>
                             <span>{booth.current_event.location}</span>
                         </div>
                     </div>
@@ -151,7 +187,7 @@ function ProductFilter() {
     );
 }
 
-function ProductCard({ productId, name, image, price, sold }) {
+function ProductCard({ boothId, productId, name, image, price, sold }) {
     const formattedPrice = useMemo(() => {
         const formatted = new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -162,7 +198,10 @@ function ProductCard({ productId, name, image, price, sold }) {
     }, [price]);
 
     return (
-        <Link href={route("catalog.show", productId)} viewTransition>
+        <Link
+            href={route("catalog.show", { boothId, id: productId })}
+            viewTransition
+        >
             <div className="w-full flex flex-col bg-white rounded-xl border-1 border-[#E5E7EB] cursor-pointer hover:shadow-sm hover:translate-y-[-5px] transition-transform">
                 <div className="w-full shrink-0 p-2 bg-[#F3F4F6] rounded-t-xl">
                     <img
@@ -219,9 +258,16 @@ function ProductPagination({ links }) {
                             (i == 0 || i == links.length - 1) && !item.url
                         }
                     >
-                        <span dangerouslySetInnerHTML={{ 
-                            __html: i == 0 ? "Prev" : i == links.length - 1 ? "Next" : item.label 
-                        }} />
+                        <span
+                            dangerouslySetInnerHTML={{
+                                __html:
+                                    i == 0
+                                        ? "Prev"
+                                        : i == links.length - 1
+                                        ? "Next"
+                                        : item.label,
+                            }}
+                        />
                     </Button>
                 ))}
             </div>
@@ -230,10 +276,10 @@ function ProductPagination({ links }) {
 }
 
 // Ensure you destructure 'booth' from the Inertia props
-export default function Index({ products }) {
+export default function Index({ products, booth }) {
+    console.log("atu", booth);
     return (
         <CatalogLayout>
-            
             {/* Added the Booth Profile Here */}
             <BoothProfile booth={booth} />
 
@@ -241,7 +287,20 @@ export default function Index({ products }) {
 
             {!products?.data || products.data.length == 0 ? (
                 <div className="w-full mt-10 mb-10 flex flex-col items-center justify-center text-gray-500">
-                    <svg className="w-12 h-12 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.905.553l-.92 1.838a1 1 0 01-.894.553H9.305a1 1 0 01-.894-.553l-.92-1.838A1 1 0 006.586 13H4"></path></svg>
+                    <svg
+                        className="w-12 h-12 mb-3 text-gray-300"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.905.553l-.92 1.838a1 1 0 01-.894.553H9.305a1 1 0 01-.894-.553l-.92-1.838A1 1 0 006.586 13H4"
+                        ></path>
+                    </svg>
                     <p>No products found.</p>
                 </div>
             ) : (
@@ -249,8 +308,13 @@ export default function Index({ products }) {
                     {products.data.map((item) => (
                         <ProductCard
                             key={item.id}
+                            boothId={booth.id}
                             productId={item.id}
-                            image={item.image ? `/storage/${item.image}` : "https://via.placeholder.com/300"}
+                            image={
+                                item.image
+                                    ? `/storage/${item.image}`
+                                    : "https://via.placeholder.com/300"
+                            }
                             name={item.name}
                             price={item.price}
                             sold={item.sold ?? 0} // Fallback to 0 if your DB doesn't have a sold count yet

@@ -6,7 +6,7 @@ import { ProductCategories } from "../../Shared/productCategories";
 import { Link, router } from "@inertiajs/react";
 import { cn } from "../../Utilities/cn";
 
-function CheckoutAction({ product, isPaymentReady }) {
+function CheckoutAction({ boothId, product, isPaymentReady }) {
     const [amount, setAmount] = useState(1);
 
     const formattedSubtotal = useMemo(() => {
@@ -29,7 +29,7 @@ function CheckoutAction({ product, isPaymentReady }) {
 
     const handleCheckout = useCallback(() => {
         router.visit(
-            route("catalog.checkout", { productId: product.id, amount }),
+            route("catalog.checkout", { boothId, productId: product.id, amount }),
             {
                 viewTransition: true,
             }
@@ -112,7 +112,7 @@ function CheckoutAction({ product, isPaymentReady }) {
     );
 }
 
-export default function Show({ product, isPaymentReady }) {
+export default function Show({ product, booth, isPaymentReady }) {
     const descriptionDelimited = useMemo(
         () => product.description.replaceAll("\n", "<br />"),
         [product.description]
@@ -133,7 +133,10 @@ export default function Show({ product, isPaymentReady }) {
                 <div className="max-md:flex justify-center w-full h-min col-1 shrink-0  ">
                     <div className="p-3 bg-[#F3F4F6] rounded-xl shadow-sm">
                         <Link
-                            href={route("catalog.showImage", product.id)}
+                            href={route("catalog.showImage", {
+                                boothId: booth.id,
+                                id: product.id,
+                            })}
                             viewTransition
                         >
                             <img
@@ -193,6 +196,7 @@ export default function Show({ product, isPaymentReady }) {
                 </div>
 
                 <CheckoutAction
+                    boothId={booth.id}
                     product={product}
                     isPaymentReady={isPaymentReady}
                 />

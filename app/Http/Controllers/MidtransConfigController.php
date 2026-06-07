@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\MidtransConfig;
+use App\Models\Booth;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -13,11 +15,9 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class MidtransConfigController extends Controller
 {
-    private static $isLibraryInitialized = false;
-
     public function index()
     {
-        $config = Auth::user()->midtransConfig;
+        $config = Auth::user()->booth->midtransConfig;
 
         return Inertia::render('MidtransConfig', [
             'serverKey' => $config['server_key'] ?? "",
@@ -37,16 +37,13 @@ class MidtransConfigController extends Controller
             'server_key.required' => 'Server Key is empty',
             'client_key.required' => 'Client Key is empty',
         ]);
-        
-        if (Auth::user()->midtransConfig == null) 
-        {
+
+        if (Auth::user()->booth->midtransConfig == null) {
             $values['id'] = Str::uuid();
-            $values['user_id'] = Auth::user()->id;
+            $values['booth_id'] = Auth::user()->booth->id;
             MidtransConfig::create($values);
-        } 
-        else 
-        {
-            Auth::user()->midtransConfig->update($values);
+        } else {
+            Auth::user()->booth->midtransConfig->update($values);
         }
 
         \Midtrans\Config::$serverKey = $values['server_key'];
@@ -54,21 +51,13 @@ class MidtransConfigController extends Controller
         return Redirect::back();
     }
 
-    public static function checkLibraryReady()
+    public static function checkReady($boothId)
     {
-        $output = new ConsoleOutput();
-        if (!MidtransConfigController::$isLibraryInitialized) 
-            return false;
-
-        $config = Auth::user()->midtransConfig;
+        $config = Booth::find($boothId)->midtransConfig;
         if ($config == null)
             return false;
-
-        $output->writeln('Check Midtrans is ready? ' . MidtransConfigController::$isLibraryInitialized . " " . $config);
-
-        \Midtrans\Config::$serverKey = $config['server_key'];
-        \Midtrans\Config::$isProduction = false;
-
-        MidtransConfigController::$isLibraryInitialized = true;
+        if ($config->server_key == "")
+            return false;
+        return true;
     }
 }

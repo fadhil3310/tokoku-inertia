@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Booth;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class CatalogController extends Controller
 {
-    public function index(Request $request, string $boothId)
+    public function index(Request $request, $boothId)
     {
         $search = $request->query('search');
         $category = $request->query('category');
@@ -30,35 +31,56 @@ class CatalogController extends Controller
                 ->paginate(10);
         }
 
+        $booth = Booth::find($boothId);
+
         return Inertia::render('Catalog/Index', [
             'products' => $products,
+            'booth' => [
+                "id" => $booth->id,
+                "name" => $booth->name,
+                "image" => $booth->image,
+            ]
         ]);
     }
 
-    public function show(string $id)
+    public function show(string $boothId, string $id)
     {
-        $product = Product::find($id);
-        $isPaymentReady = MidtransConfigController::checkLibraryReady();
+        $output = new ConsoleOutput();
+        $product = Product::where('booth_id', $boothId)->find($id);
+        $booth = Booth::find($boothId);
+        $isPaymentReady = MidtransConfigController::checkReady($boothId);
 
-        return Inertia::render('Catalog/Show', ['product' => $product, 'isPaymentReady' => $isPaymentReady]);
+        $output->writeln("asdasd " . ($isPaymentReady ? "true" : "false"));
+        
+
+        return Inertia::render('Catalog/Show', [
+            'product' => $product, 
+            'booth' => [
+                "id" => $booth->id,
+                "name" => $booth->name,
+                "image" => $booth->image,
+            ], 
+            'isPaymentReady' => $isPaymentReady
+        ]);
     }
 
-    public function showImage(string $id)
+    public function showImage(string $boothId, string $id)
     {
         $product = Product::find($id);
 
         return Inertia::render('Catalog/ShowImage', ['id' => $product['id'], 'image' => $product['image']]);
     }
 
-    public function checkout(Request $request, string $boothId)
+    public function checkout(Request $request)
     {
         $output = new ConsoleOutput();
         $validated = $request->validate([
-            'product_id' => ['required', 'numeric', 'min:1'],
+            'boothId' => ['required', 'numeric', 'min:1'],
+            'productId' => ['required', 'numeric', 'min:1'],
             'amount' => ['required', 'numeric', 'min:1'],
         ]);
 
-        $fetch = MidtransFetchManager::pay($boothId, $validated['product_id'], $validated['amount']);
+        $fetch = MidtransFetchManager::pay($validated['boothId'], $validated['productId'], $validated['amount']);
         return response()->json(["order_id" => $fetch->getOrderId()]);
     }
 
