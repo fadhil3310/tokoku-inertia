@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\MidtransConfig;
+use App\Models\Booth;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class MidtransConfigController extends Controller
 {
     public function index()
     {
-        $config = Auth::user()->midtransConfig;
+        $config = Auth::user()->booth->midtransConfig;
 
         return Inertia::render('MidtransConfig', [
             'serverKey' => $config['server_key'] ?? "",
@@ -21,9 +25,6 @@ class MidtransConfigController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $values = $request->validate([
@@ -33,26 +34,25 @@ class MidtransConfigController extends Controller
             'server_key.required' => 'Server Key is empty',
             'client_key.required' => 'Client Key is empty',
         ]);
-        
-        if (Auth::user()->midtransConfig == null) 
-        {
+
+        if (Auth::user()->booth->midtransConfig == null) {
             $values['id'] = Str::uuid();
-            $values['user_id'] = Auth::user()->id;
+            $values['booth_id'] = Auth::user()->booth->id;
             MidtransConfig::create($values);
-        } 
-        else 
-        {
-            Auth::user()->midtransConfig->update($values);
+        } else {
+            Auth::user()->booth->midtransConfig->update($values);
         }
 
         return Redirect::back();
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, MidtransConfig $midtransConfig)
+    public static function checkReady($boothId)
     {
-        //
+        $config = Booth::find($boothId)->midtransConfig;
+        if ($config == null)
+            return false;
+        if ($config->server_key == "")
+            return false;
+        return true;
     }
 }

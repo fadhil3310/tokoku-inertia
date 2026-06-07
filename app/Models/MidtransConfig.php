@@ -15,13 +15,13 @@ class MidtransConfig extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'user_id',
+        'booth_id',
         'server_key',
         'client_key'
     ];
 
-    public function user(): BelongsTo
+    public function booth(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Booth::class);
     }
 }

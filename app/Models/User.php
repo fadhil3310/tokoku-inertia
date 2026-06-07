@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -43,9 +44,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Booth::class, 'owner_id', 'id');
     }
-    
-    public function midtransConfig(): HasOne
+
+    public function productPayments(): HasMany
     {
-        return $this->hasOne(MidtransConfig::class);
+        return $this->hasMany(ProductPayment::class);
     }
 }

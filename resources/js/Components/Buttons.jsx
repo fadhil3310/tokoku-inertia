@@ -34,7 +34,7 @@ export default function Button({ className, variant, size, href, children, submi
 
     if (href) {
         return (
-            <Link href={href} className={classes}>
+            <Link href={href} className={classes} {...props}>
                 {children}
             </Link>
         );

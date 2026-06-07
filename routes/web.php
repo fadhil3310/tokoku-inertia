@@ -12,6 +12,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\MidtransConfigController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoothController;
+use App\Http\Controllers\ProductPaymentController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -36,12 +37,6 @@ Route::middleware(['role:tenant'])->group(function () {
     Route::post('/join/event/{id}', [EventController::class, 'join']);
 });
 
-// catalog/event/id, catalog event
-// catalog/booth/id
-Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
-Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.show');
-Route::get('/catalog/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
-
 // General Authenticated Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -53,18 +48,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('booth', BoothController::class);
     Route::resource('payment-link', MidtransConfigController::class);
     Route::resource('products', ProductController::class);
-
-    Route::prefix('events')->group(function () {
-        Route::get('/', [EventController::class, 'index'])->name('events.index');
-
-        Route::get('/create', fn() => Inertia::render('Event/Form'))->name('events.create');
-        Route::get('/edit/{id}', [EventController::class, 'edit'])->name('events.edit');
-        
-        Route::post('/store', [EventController::class, 'store'])->name('events.store');
-        Route::put('/edit/{id}', [EventController::class, 'update'])->name('events.update');
-        Route::delete('/delete/{id}', [EventController::class, 'destroy'])->name('events.delete');
-
-    });
 
     // Catalog
     Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
@@ -81,3 +64,24 @@ Route::middleware(['auth', 'role:admin,tenant'])->group(function () {
     Route::resource('profile', UserController::class)
         ->only(['show', 'update']);
 });
+
+Route::middleware(['auth', 'role:admin, event organizer'])->group(function () {
+    Route::prefix('events')->group(function () {
+        Route::get('/', [EventController::class, 'index'])->name('events.index');
+        Route::get('/create', fn() => Inertia::render('Event/Form'))->name('events.create');
+        Route::get('/edit/{id}', [EventController::class, 'edit'])->name('events.edit');
+        
+        Route::post('/store', [EventController::class, 'store'])->name('events.store');
+        Route::put('/edit/{id}', [EventController::class, 'update'])->name('events.update');
+        Route::delete('/delete/{id}', [EventController::class, 'destroy'])->name('events.delete');
+    });
+});
+
+// Catalog
+Route::get('/catalog/{boothId}/check-payment-status/{orderId}', [CatalogController::class, 'checkPaymentStatus'])->name('catalog.checkPaymentStatus');
+Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
+
+// Payment
+Route::post('/payment/product/checkout', [ProductPaymentController::class, 'checkout'])->name("payment.product.checkout");

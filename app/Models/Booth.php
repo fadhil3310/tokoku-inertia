@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Models\User;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Booth extends Model
 {
@@ -37,5 +38,10 @@ class Booth extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function midtransConfig(): HasOne
+    {
+        return $this->hasOne(MidtransConfig::class);
     }
 }

@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all(['id', 'name', 'email', 'image', 'created_at'])->
+        $users = User::all(['id', 'name', 'email', 'role', 'created_at'])->
         map(function($user) {
             $user->created_at_humanreadable = $user->created_at->diffForHumans();
             return $user;
@@ -116,8 +116,10 @@ class UserController extends Controller
         }
     }
 
-    public function destroy(User $user)
+    public function destroy(String $userId)
     {
+        $user = User::findOrFail($userId);
+
         if ($user->image && File::exists(public_path($user->image))) {
             File::delete(public_path($user->image));
         }
