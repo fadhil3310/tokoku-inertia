@@ -15,7 +15,7 @@ class MidtransConfig extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'booth_id',
+        'user_id',
         'server_key',
         'client_key'
     ];

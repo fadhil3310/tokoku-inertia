@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }) {
         ? [
             { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
             { href: "/events", label: "Events", icon: TransactionsIcon },
-            { href: "/payment", label: "Payment", icon: PaymentIcon },
+            { href: "/payment-link", label: "Payment Link", icon: PaymentIcon },
         ] :
         auth.user?.role === 'tenant' ?  [
             { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
@@ -25,13 +25,6 @@ export default function DashboardLayout({ children }) {
             { href: "/payment-link", label: "Payment Link", icon: PaymentIcon },
             { href: "/products", label: "Products", icon: ProductsIcon },
             { href: "/booth", label: "Booth", icon: BoothIcon },
-        ] :
-        auth.user?.role === 'admin' ?  [
-            { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
-            { href: "/transactions", label: "Transactions", icon: TransactionsIcon },
-            { href: "/payment", label: "Payment", icon: PaymentIcon },
-            { href: "/products", label: "Products", icon: ProductsIcon },
-            { href: "/profile", label: "Users", icon: UserIcon },
         ] : [];
 
     return (
@@ -49,9 +42,9 @@ export default function DashboardLayout({ children }) {
                                         T
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-xl font-bold text-gray-700">{auth.user.booth?.name || "Tokoku"}</span>
+                                        <span className="text-xl font-bold text-gray-700">{auth.user.role === 'tenant' ? auth.user.booth?.name : "Tokoku"}</span>
                                         {
-                                            auth.user.role === 'tenant' ?? <span className="text-xs text-gray-500">by Tokoku</span>
+                                            auth.user.role === 'tenant' && <span className="text-xs text-gray-500">by Tokoku</span>
                                         }
                                     </div>
                                 </>

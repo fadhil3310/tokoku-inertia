@@ -38,6 +38,7 @@ class CatalogController extends Controller
             'booth' => [
                 "id" => $booth->id,
                 "name" => $booth->name,
+                "owner" => $booth->owner->name,
                 "image" => $booth->image,
             ]
         ]);

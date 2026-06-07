@@ -59,7 +59,7 @@ function BoothProfile({ booth }) {
                 </div>
 
                 <p className="text-sm text-blue-600 font-medium mb-4">
-                    by {booth.owner?.name || "Unknown Owner"}
+                    by {booth.owner || "Unknown Owner"}
                 </p>
 
                 {/* Event Info Box */}

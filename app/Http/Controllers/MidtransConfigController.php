@@ -17,7 +17,7 @@ class MidtransConfigController extends Controller
 {
     public function index()
     {
-        $config = Auth::user()->booth->midtransConfig;
+        $config = Auth::user()->midtransConfig;
 
         return Inertia::render('MidtransConfig', [
             'serverKey' => $config['server_key'] ?? "",
@@ -35,12 +35,12 @@ class MidtransConfigController extends Controller
             'client_key.required' => 'Client Key is empty',
         ]);
 
-        if (Auth::user()->booth->midtransConfig == null) {
+        if (Auth::user()->midtransConfig == null) {
             $values['id'] = Str::uuid();
-            $values['booth_id'] = Auth::user()->booth->id;
+            $values['user_id'] = Auth::user()->id;
             MidtransConfig::create($values);
         } else {
-            Auth::user()->booth->midtransConfig->update($values);
+            Auth::user()->midtransConfig->update($values);
         }
 
         return Redirect::back();
@@ -48,7 +48,7 @@ class MidtransConfigController extends Controller
 
     public static function checkReady($boothId)
     {
-        $config = Booth::find($boothId)->midtransConfig;
+        $config = Booth::find($boothId)->owner->midtransConfig;
         if ($config == null)
             return false;
         if ($config->server_key == "")
