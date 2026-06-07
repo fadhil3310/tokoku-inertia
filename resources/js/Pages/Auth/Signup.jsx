@@ -275,7 +275,7 @@ export default function SignUp() {
                         </form>
 
                         <div className="flex flex-col animate-fade-in">
-                            <Link href="/login" className="text-center text-sm my-2">
+                            <Link href={data.redirect ? `/login?redirect=${data.redirect}` : "/login"} className="text-center text-sm my-2">
                                 Already have an account?{" "}
                                 <span className="underline font-bold text-blue-500">Sign in</span>
                             </Link>

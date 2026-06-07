@@ -123,9 +123,42 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Event $event)
+    public function show($id)
     {
-        //
+        // Fetch event with its related tickets and owner (organizer)
+        $event = Event::with(['tickets', 'owner'])->findOrFail($id);
+
+        // Format the data perfectly for the React component
+        $formattedEvent = [
+            'id' => $event->id,
+            'name' => $event->name,
+            'description' => $event->description,
+            'terms' => $event->terms, // Assuming this is cast to an array in the Model
+            'venue' => $event->location ?: 'Location TBD',
+            'image' => $event->getPoster(), // Using the method created earlier
+            'map_url' => $event->getMap(),
+            'cardDate' => Carbon::parse($event->date_start)->format('d M Y'),
+            'cardTime' => Carbon::parse($event->date_start)->format('H:i') . ' - ' . Carbon::parse($event->date_end)->format('H:i'),
+            'organizerName' => $event->owner->name ?? 'Unknown Organizer',
+            'hasEnded'      => Carbon::parse($event->date_end)->isPast(),
+            // Map tickets to include their specific maps
+            'tickets' => $event->tickets->map(function($ticket) {
+                return [
+                    'id' => $ticket->id,
+                    'name' => $ticket->name,
+                    'description' => $ticket->description,
+                    'price' => $ticket->price,
+                    'location' => $ticket->location,
+                    'map_url' => empty($ticket->map) ? null : (str_starts_with($ticket->map, 'http') ? $ticket->map : asset('storage/' . $ticket->map)),
+                ];
+            }),
+            // Get the lowest price for the "Starts From" label
+            'min_price' => $event->tickets->min('price'),
+        ];
+
+        return Inertia::render('Event/Join', [
+            'event' => $formattedEvent
+        ]);
     }
 
     /**
@@ -326,7 +359,7 @@ class EventController extends Controller
             'id'            => $event->id,
             'name'          => $event->name,
             'description'   => $event->description,
-            'image'         => $event->poster ?? $event->image,
+            'image'         => $event->getPoster(),
             'venue'         => $event->location,
             
             'terms'         => is_array($event->terms) ? $event->terms : array_filter(explode("\n", $event->terms)),
@@ -334,6 +367,7 @@ class EventController extends Controller
             'cardDate'      => $cardDate,
             'cardTime'      => $cardTime,
             'organizerName' => $event->owner->name ?? 'Unknown Organizer',
+            'hasEnded'      => $endDate->isPast(),
             // Return formatted string if price exists, otherwise null
             'price'         => !is_null($minPrice) ? 'Rp' . number_format($minPrice, 0, ',', '.') : null,
         ];
