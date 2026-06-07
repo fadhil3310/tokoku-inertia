@@ -167,7 +167,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                             viewTransition
                         >
                             <img
-                                src={product.image_path}
+                                src={'/'+product.image}
                                 className="h-[300px] aspect-square object-cover rounded-lg cursor-zoom-in hover:scale-105 hover:shadow-md hover:opacity-80 transition-transform"
                                 style={{
                                     viewTransitionName: `product-image-${product.id}`,

@@ -56,7 +56,13 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $file = $request->file('image');
+
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            $file->move(public_path('images/products'), $filename);
+
+            $validated['image'] = 'images/products/' . $filename;
         }
 
         $validated['id'] = Str::uuid();
@@ -74,14 +80,14 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $hasImage = Storage::disk('public')->exists($product->image);
+        $hasImage = $product->image && file_exists(public_path($product->image));
 
         return Inertia::render('Products/Show', ['product' => $product, 'hasImage' => $hasImage]);
     }
 
     public function edit(Product $product)
     {
-        $hasImage = Storage::disk('public')->exists($product->image);
+        $hasImage = $product->image && file_exists(public_path($product->image));
 
         return Inertia::render('Products/Edit', ['product' => $product, 'hasImage' => $hasImage]);
     }
@@ -101,10 +107,17 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
             }
-            $validated['image'] = $request->file('image')->store('products', 'public');
+
+            $file = $request->file('image');
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+            $file->move(public_path('images/products'), $filename);
+
+            $validated['image'] = 'images/products/' . $filename;
         } else {
             $validated['image'] = $product->image;
         }

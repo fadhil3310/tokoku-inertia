@@ -31,7 +31,7 @@ function BoothProfile({ booth }) {
             <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center">
                 {booth.image ? (
                     <img
-                        src={`/storage/${booth.image}`}
+                        src={`${booth.image}`}
                         alt={booth.name}
                         className="w-full h-full object-cover"
                     />
@@ -209,7 +209,7 @@ function ProductCard({ boothId, productId, name, image, price }) {
                         style={{
                             viewTransitionName: `product-image-${productId}`,
                         }}
-                        src={image}
+                        src={'/'+image}
                         alt={name}
                     />
                 </div>
@@ -275,7 +275,6 @@ function ProductPagination({ links }) {
 
 // Ensure you destructure 'booth' from the Inertia props
 export default function Index({ products, booth }) {
-    console.log("atu", booth);
     return (
         <CatalogLayout>
             {/* Added the Booth Profile Here */}
@@ -308,7 +307,7 @@ export default function Index({ products, booth }) {
                             key={item.id}
                             boothId={booth.id}
                             productId={item.id}
-                            image={item.image_path}
+                            image={item.image}
                             name={item.name}
                             price={item.price}
                         />
