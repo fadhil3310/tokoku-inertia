@@ -172,6 +172,12 @@ export default function Home({ upcomingEvents, pastEvents }) {
                                 The ultimate platform to manage multiple events, organize booth categories, and track tenant sales all in one place.
                             </p>
                         </div>
+                        <Button
+                            href="/login"
+                            className="flex sm:hidden px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                        >
+                            Get Started
+                        </Button>
                         <div className="lg:w-1/2 w-full text-slate-900">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-xl mx-auto lg:mx-0 lg:ml-auto">
                                 {/* STARTER PLAN */}

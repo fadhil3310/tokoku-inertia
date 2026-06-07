@@ -109,7 +109,11 @@ class UserController extends Controller
             'message' => 'Profile updated successfully'
         ]);
 
-        return redirect()->route('profile.index');
+        if ($user->role == 'admin') {
+            return redirect()->route('profile.index');
+        } else {
+            return redirect()->route('profile.show', $userId);
+        }
     }
 
     public function destroy(User $user)
