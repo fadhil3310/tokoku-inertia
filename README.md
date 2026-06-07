@@ -57,3 +57,4 @@ npm run dev
 ## Credits
 
 - Phone Icon https://icons8.com/icon/3biC8eqE8hzv/smartphone
+- Blobcat https://github.com/DuckOfDisorder/BlobCats

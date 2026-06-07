@@ -22,6 +22,7 @@
         "clsx": "^2.1.1",
         "gridjs": "^6.2.0",
         "gridjs-react": "^6.1.1",
+        "motion": "^12.40.0",
         "react": "^19.2.5",
         "react-dom": "^19.2.5",
         "sonner": "^2.0.7",

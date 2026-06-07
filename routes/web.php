@@ -12,6 +12,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\MidtransConfigController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoothController;
+use App\Http\Controllers\ProductPaymentController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -35,12 +36,6 @@ Route::middleware(['auth', 'role:tenant'])->group(function () {
     Route::get('/join/event/{id}', [EventController::class, 'showJoinForm']);
     Route::post('/join/event/{id}', [EventController::class, 'join']);
 });
-
-// catalog/event/id, catalog event
-// catalog/booth/id
-Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
-Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.show');
-Route::get('/catalog/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
 
 // General Authenticated Routes
 Route::middleware(['auth'])->group(function () {
@@ -81,3 +76,12 @@ Route::middleware(['auth', 'role:admin, event organizer'])->group(function () {
         Route::delete('/delete/{id}', [EventController::class, 'destroy'])->name('events.delete');
     });
 });
+
+// Catalog
+Route::get('/catalog/{boothId}/check-payment-status/{orderId}', [CatalogController::class, 'checkPaymentStatus'])->name('catalog.checkPaymentStatus');
+Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
+
+// Payment
+Route::post('/payment/product/checkout', [ProductPaymentController::class, 'checkout'])->name("payment.product.checkout");
