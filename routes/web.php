@@ -47,7 +47,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/subscription', fn() => Inertia::render('Subscription'));
     Route::resource('booth', BoothController::class);
     Route::resource('payment-link', MidtransConfigController::class);
-    Route::resource('products', ProductController::class);
 
     // Catalog
     Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
@@ -61,6 +60,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin,tenant'])->group(function () {
+    Route::resource('products', ProductController::class);
     Route::resource('profile', UserController::class)
         ->only(['show', 'update']);
 });

@@ -14,18 +14,26 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $boothId = Booth::where('owner_id', Auth::user()->id)->first()->id;
-        $products = Product::where('booth_id', $boothId)->get(['id', 'name', 'description', 'price', 'created_at'])->
-        map(function($product) {
-            $product->created_at_humanreadable = $product->created_at->diffForHumans();
-            return $product;
-            }
-        );
 
+        if (Auth::user()->role == 'admin') {
+            $products = Product::get(['id', 'name', 'description', 'price', 'created_at'])->map(
+                function ($product) {
+                    $product->created_at_humanreadable = $product->created_at->diffForHumans();
+                    return $product;
+                }
+            );
+        } else {
+            $boothId = Booth::where('owner_id', Auth::user()->id)->first()->id;
+            $products = Product::where('booth_id', $boothId)->get(['id', 'name', 'description', 'price', 'created_at'])->map(
+                function ($product) {
+                    $product->created_at_humanreadable = $product->created_at->diffForHumans();
+                    return $product;
+                }
+            );
+        }
         return Inertia::render('Products/Index', [
             'products' => $products,
         ]);
-
     }
 
     public function create()
@@ -121,7 +129,7 @@ class ProductController extends Controller
 
         Inertia::flash([
             'status' => 'success',
-            'message' => 'Product \''.$product->name.'\' deleted successfully.',
+            'message' => 'Product \'' . $product->name . '\' deleted successfully.',
         ]);
 
         return redirect()->route('products.index');
