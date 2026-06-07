@@ -13,6 +13,7 @@ use App\Http\Controllers\MidtransConfigController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoothController;
 use App\Http\Controllers\ProductPaymentController;
+use App\Http\Controllers\ProductTransactionController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -46,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
     Route::get('/subscription', fn() => Inertia::render('Subscription'));
     Route::resource('booth', BoothController::class);
+    Route::resource('transactions', ProductTransactionController::class);
     Route::resource('payment-link', MidtransConfigController::class);
     Route::resource('products', ProductController::class);
 
