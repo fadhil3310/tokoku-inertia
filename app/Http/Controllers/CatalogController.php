@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Midtrans\MidtransFetchManager;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Illuminate\Support\Facades\Storage;
 
 class CatalogController extends Controller
 {
@@ -23,12 +24,27 @@ class CatalogController extends Controller
         if ($category == '') {
             $products = Product::where('name', 'like', "%{$search}%")
                 ->where('booth_id', $boothId)
-                ->paginate(10);
+
+                ->paginate(10)
+                ->through(function ($product) {
+                    $product->image_path = $product->image
+                        ? Storage::url($product->image)
+                        : 'https://placehold.co/300'; // optional placeholder
+
+                    return $product;
+                });
         } else {
             $products = Product::where('category', $category)
                 ->where('name', 'like', "%{$search}%")
                 ->where('booth_id', $boothId)
-                ->paginate(10);
+
+                ->paginate(10)->through(function ($product) {
+                    $product->image_path = $product->image
+                        ? Storage::url($product->image)
+                        : 'https://placehold.co/300'; // optional placeholder
+
+                    return $product;
+                });
         }
 
         $booth = Booth::find($boothId);
@@ -48,19 +64,22 @@ class CatalogController extends Controller
     {
         $output = new ConsoleOutput();
         $product = Product::where('booth_id', $boothId)->find($id);
+        $product->image_path = $product->image
+            ? Storage::url($product->image)
+            : null;
         $booth = Booth::find($boothId);
         $isPaymentReady = MidtransConfigController::checkReady($boothId);
 
         $output->writeln("asdasd " . ($isPaymentReady ? "true" : "false"));
-        
+
 
         return Inertia::render('Catalog/Show', [
-            'product' => $product, 
+            'product' => $product,
             'booth' => [
                 "id" => $booth->id,
                 "name" => $booth->name,
-                "image" => $booth->image,
-            ], 
+                "image" =>  $booth->image,
+            ],
             'isPaymentReady' => $isPaymentReady
         ]);
     }
@@ -69,7 +88,7 @@ class CatalogController extends Controller
     {
         $product = Product::find($id);
 
-        return Inertia::render('Catalog/ShowImage', ['id' => $product['id'], 'image' => $product['image']]);
+        return Inertia::render('Catalog/ShowImage', ['id' => $product['id'], 'image' =>  Storage::url($product['image'])]);
     }
 
     public function checkPaymentStatus(string $boothId, string $orderId)

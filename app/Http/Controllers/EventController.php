@@ -361,6 +361,7 @@ class EventController extends Controller
             'description'   => $event->description,
             'image'         => $event->getPoster(),
             'venue'         => $event->location,
+            'coordinates'   => $event->coordinates,
             
             'terms'         => is_array($event->terms) ? $event->terms : array_filter(explode("\n", $event->terms)),
             

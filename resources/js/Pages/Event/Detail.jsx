@@ -24,6 +24,8 @@ const MapIcon = () => (
 export default function EventDetail({ event }) {
     const { url, props: { auth } } = usePage();
     
+    console.log(event);
+
     // "Event Not Found" Fallback State
     if (!event) {
         return (
@@ -125,6 +127,21 @@ export default function EventDetail({ event }) {
                                     <MapPinIcon />
                                     <span className="mt-0.5 leading-snug">{event.venue}</span>
                                 </div>
+
+                                {event.coordinates && (
+                                    <div className="w-full rounded-xl overflow-hidden border border-gray-200">
+                                        <iframe
+                                            title="Event Location"
+                                            width="100%"
+                                            height="200"
+                                            style={{ border: 0 }}
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            src={`https://maps.google.com/maps?q=${event.coordinates}&z=15&output=embed`}
+                                            allowFullScreen
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <hr className="border-gray-100" />

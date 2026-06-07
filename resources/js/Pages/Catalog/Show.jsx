@@ -167,7 +167,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                             viewTransition
                         >
                             <img
-                                src={"/storage/" + product.image}
+                                src={product.image_path}
                                 className="h-[300px] aspect-square object-cover rounded-lg cursor-zoom-in hover:scale-105 hover:shadow-md hover:opacity-80 transition-transform"
                                 style={{
                                     viewTransitionName: `product-image-${product.id}`,
@@ -197,7 +197,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                             >
                                 {formattedPrice}
                             </p>
-                            <p className="shrink-0">25 sold</p>
+                            <p className="shrink-0"></p>
                         </div>
 
                         <hr className="mt-4 mb-4 border-[#999999]" />

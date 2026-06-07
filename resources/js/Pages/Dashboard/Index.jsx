@@ -15,6 +15,7 @@ export default function Index({
     recentTicketPayments, 
     totalRevenue, 
     totalBoothSpaceSold,
+    percentageChange,
     stats
 }) {
     return (
@@ -24,8 +25,7 @@ export default function Index({
             {user?.role === 'tenant' ? (
                 <TenantDashboard 
                     booth={booth}
-                    totalProducts={totalProducts}
-                    recentTransactions={recentTransactions}
+                    stats={stats}
                 />
             ) : user?.role === 'event organizer' ? (
                 <EventOrganizerDashboard 

@@ -1,13 +1,24 @@
 import React from "react";
+import { useMemo } from "react";
 import { Link } from "@inertiajs/react";
 import Button from "../../Components/Buttons";
 import { CatalogueIcon, InvoicePaperIcon } from "../../Components/Icons";
 
-export default function TenantDashboard({
-    booth,
-    totalProducts,
-    recentTransactions,
-}) {
+function capitalizeFirstLetter(str) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export default function TenantDashboard({ booth, stats }) {
+    const formattedTotalRevenue = useMemo(() => {
+        const formatted = new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(Math.abs(stats.revenue.today));
+        return formatted;
+    }, [stats.revenue.today]);
+
     return (
         <div className="p-4 lg:p-6 w-full">
             <nav className="flex items-center space-x-2 text-sm mb-6">
@@ -48,18 +59,18 @@ export default function TenantDashboard({
                 </Link>
             </nav>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 <div className="card bg-white shadow rounded-lg p-3 md:p-6 transition-all duration-200 relative overflow-hidden flex items-start justify-between">
                     <div className="flex-1">
                         <p className="text-sm font-medium text-gray-700 mb-1">
                             Total Revenue
                         </p>
                         <p className="text-3xl font-bold text-gray-800 mb-2">
-                            Rp120.000
+                            {formattedTotalRevenue}
                         </p>
                         <div className="flex items-center gap-2">
                             <span className="bg-green-100 border border-green-400 rounded-lg px-2 py-0.5 text-xs flex items-center gap-1">
-                                20%
+                                {stats.revenue.percentageChange}%
                             </span>
                             <span>from yesterday</span>
                         </div>
@@ -75,11 +86,11 @@ export default function TenantDashboard({
                             Total Orders
                         </p>
                         <p className="text-3xl font-bold text-gray-800 mb-2">
-                            100
+                            {stats.orders.today}
                         </p>
                         <div className="flex items-center gap-2">
                             <span className="bg-green-100 border border-green-400 rounded-lg px-2 py-0.5 text-xs flex items-center gap-1">
-                                10%
+                                {stats.orders.percentageChange}%
                             </span>
                             <span>from yesterday</span>
                         </div>
@@ -97,31 +108,6 @@ export default function TenantDashboard({
                     </div>
                 </div>
 
-                <div className="card bg-white shadow rounded-lg p-3 md:p-6 transition-all duration-200 relative overflow-hidden flex items-start justify-between">
-                    <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-700 mb-1">
-                            Total Products
-                        </p>
-                        <p className="text-3xl font-bold text-gray-800 mb-2">
-                            {totalProducts || 25}
-                        </p>
-                    </div>
-                    <div className="p-3 rounded-xl bg-green-100 text-green-400 fill-current">
-                        <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M6.53518 3.25C5.95006 3.25 5.40366 3.54243 5.07909 4.02927L1.48987 9.41311C1.27014 9.74271 1.24386 10.1648 1.42101 10.5191C3.38512 14.4473 6.11467 17.9432 9.44923 20.8014L11.2 22.3021C11.6603 22.6967 12.3397 22.6967 12.8 22.3021L14.5508 20.8014C17.8853 17.9432 20.6149 14.4473 22.579 10.5191C22.7561 10.1648 22.7299 9.74271 22.5101 9.41311L18.9209 4.02927C18.5963 3.54243 18.0499 3.25 17.4648 3.25H6.53518ZM6.32717 4.86132C6.37353 4.79178 6.45159 4.75 6.53518 4.75H8.87499L6.95987 9.34629C6.91576 9.45216 6.88246 9.56135 6.86002 9.67224C6.15619 9.61985 5.45296 9.55669 4.75057 9.48276L3.34486 9.33479L6.32717 4.86132ZM3.27865 10.8361C5.07205 14.1261 7.44021 17.0714 10.2732 19.5312L7.14775 11.1967C6.29541 11.1381 5.44387 11.064 4.59355 10.9745L3.27865 10.8361ZM8.78481 11.2902L12 19.864L15.2152 11.2902C13.0728 11.3876 10.9272 11.3876 8.78481 11.2902ZM16.8523 11.1967L13.7268 19.5312C16.5598 17.0714 18.9279 14.1261 20.7213 10.8361L19.4064 10.9745C18.5561 11.064 17.7046 11.1381 16.8523 11.1967ZM20.6551 9.33479L19.2494 9.48276C18.547 9.55669 17.8438 9.61985 17.14 9.67224C17.1175 9.56135 17.0842 9.45216 17.0401 9.34629L15.125 4.75H17.4648C17.5484 4.75 17.6265 4.79178 17.6728 4.86133L20.6551 9.33479ZM15.5917 9.77005C13.1988 9.89432 10.8012 9.89432 8.4083 9.77005L10.5 4.75H13.5L15.5917 9.77005Z"
-                            />
-                        </svg>
-                    </div>
-                </div>
-
                 <div className="rounded-lg transition-all duration-200 relative overflow-hidden flex items-start justify-between flex-1 gap-2">
                     <Button
                         href={route("catalog", { boothId: booth.id })}
@@ -134,6 +120,54 @@ export default function TenantDashboard({
                         <CatalogueIcon />
                         <span>Open Catalog</span>
                     </Button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="card bg-white shadow rounded-lg p-3 md:p-6 transition-all duration-200 relative overflow-hidden flex items-start justify-between">
+                    <div className="flex-1">
+                        <h2 className="font-bold text-gray-700 mb-1">
+                            Recent Transactions
+                        </h2>
+                        <div className="flex-1 space-y-4">
+                            {stats.recentPayments?.length > 0 ? (
+                                stats.recentPayments.map(
+                                    (transaction, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-center justify-between py-3 border-b border-gray-400 last:border-0"
+                                        >
+                                            <div className="flex-1">
+                                                <p className="font-medium text-gray-700">
+                                                    {transaction.product_name}
+                                                </p>
+                                                <p className="text-sm text-gray-600">
+                                                    {capitalizeFirstLetter(
+                                                        transaction.payment_method
+                                                    )}
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="font-medium">
+                                                    Rp{transaction.grand_total}
+                                                </p>
+                                                <span className="bg-green-100 px-2 py-0.5 text-xs rounded-lg">
+                                                    {capitalizeFirstLetter(
+                                                        transaction.status
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )
+                                )
+                            ) : (
+                                <p>No transactions</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="rounded-lg transition-all duration-200 relative overflow-hidden flex items-start justify-between flex-1 gap-2">
                     <Button
                         href={"/transactions/form"}
                         className={
@@ -143,218 +177,6 @@ export default function TenantDashboard({
                         <InvoicePaperIcon />
                         <span>Create Invoice</span>
                     </Button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="card bg-white shadow rounded-lg p-3 md:p-6 transition-all duration-200 relative overflow-hidden flex items-start justify-between">
-                    <div className="flex-1 flex flex-col">
-                        <div className="mb-6">
-                            <h2 className="font-bold text-gray-700 mb-1">
-                                Revenue Overview
-                            </h2>
-                            <p className="text-xs text-gray-500">
-                                January - December 2026
-                            </p>
-                        </div>
-
-                        <div className="flex h-64 w-full gap-2 md:gap-4 mt-auto">
-                            <div className="flex flex-col justify-between text-[10px] sm:text-xs text-gray-400 text-right pb-8 font-medium">
-                                <span>1.000.000</span>
-                                <span>750.000</span>
-                                <span>500.000</span>
-                                <span>250.000</span>
-                                <span>0</span>
-                            </div>
-
-                            <div className="relative flex-1 flex items-end justify-between gap-1 sm:gap-2">
-                                <div className="absolute inset-0 pb-8 flex flex-col justify-between pointer-events-none z-0">
-                                    <div className="w-full border-t border-gray-200 border-dashed"></div>
-                                    <div className="w-full border-t border-gray-200 border-dashed"></div>
-                                    <div className="w-full border-t border-gray-200 border-dashed"></div>
-                                    <div className="w-full border-t border-gray-200 border-dashed"></div>
-                                    <div className="w-full border-t border-gray-300"></div>
-                                </div>
-
-                                {/* Chart Bars */}
-                                {[
-                                    {
-                                        month: "Jan",
-                                        val: "300.000",
-                                        height: "30%",
-                                    },
-                                    {
-                                        month: "Feb",
-                                        val: "450.000",
-                                        height: "45%",
-                                    },
-                                    {
-                                        month: "Mar",
-                                        val: "350.000",
-                                        height: "35%",
-                                    },
-                                    {
-                                        month: "Apr",
-                                        val: "500.000",
-                                        height: "50%",
-                                    },
-                                    {
-                                        month: "May",
-                                        val: "400.000",
-                                        height: "40%",
-                                    },
-                                    {
-                                        month: "Jun",
-                                        val: "650.000",
-                                        height: "65%",
-                                    },
-                                    {
-                                        month: "Jul",
-                                        val: "600.000",
-                                        height: "60%",
-                                    },
-                                    {
-                                        month: "Aug",
-                                        val: "800.000",
-                                        height: "80%",
-                                    },
-                                    {
-                                        month: "Sep",
-                                        val: "700.000",
-                                        height: "70%",
-                                    },
-                                    {
-                                        month: "Oct",
-                                        val: "900.000",
-                                        height: "90%",
-                                    },
-                                    {
-                                        month: "Nov",
-                                        val: "850.000",
-                                        height: "85%",
-                                    },
-                                    {
-                                        month: "Dec",
-                                        val: "1.000.000",
-                                        height: "100%",
-                                    },
-                                ].map((data) => (
-                                    <div
-                                        key={data.month}
-                                        className="relative flex flex-col items-center justify-end flex-1 h-full z-10"
-                                    >
-                                        <div
-                                            className={`w-full sm:w-3/4 bg-blue-500 hover:bg-blue-600 rounded-t-sm md:rounded-t-md transition-all relative group cursor-pointer`}
-                                            style={{ height: data.height }}
-                                        >
-                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-[10px] sm:text-xs py-1 px-2 rounded pointer-events-none transition-opacity z-20 whitespace-nowrap">
-                                                Rp {data.val}
-                                            </div>
-                                        </div>
-                                        <div className="h-8 flex items-end justify-center w-full">
-                                            <span className="text-[10px] sm:text-xs text-gray-500">
-                                                {data.month}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="card bg-white shadow rounded-lg p-3 md:p-6 transition-all duration-200 relative overflow-hidden flex items-start justify-between">
-                    <div className="flex-1">
-                        <h2 className="font-bold text-gray-700 mb-1">
-                            Recent Transactions
-                        </h2>
-                        <div className="flex-1 space-y-4">
-                            {recentTransactions?.length > 0 ? (
-                                recentTransactions.map((transaction, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-center justify-between py-3 border-b border-gray-400 last:border-0"
-                                    >
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-700">
-                                                {transaction.customer_name ||
-                                                    "Customer"}
-                                            </p>
-                                            <p className="text-sm text-gray-600">
-                                                {transaction.product?.name ||
-                                                    "Product"}
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-medium">
-                                                Rp{transaction.amount}
-                                            </p>
-                                            <span className="bg-green-100 px-2 py-0.5 text-xs rounded-lg">
-                                                {transaction.status}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <>
-                                    <div className="flex items-center justify-between py-3 border-b border-gray-400 last:border-0">
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-700">
-                                                John Doe
-                                            </p>
-                                            <p className="text-sm text-gray-600">
-                                                Anime A5 Sticker
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-medium">
-                                                Rp20.000
-                                            </p>
-                                            <span className="bg-green-100 px-2 py-0.5 text-xs rounded-lg">
-                                                Completed
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between py-3 border-b border-gray-400 last:border-0">
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-700">
-                                                Jane Doe
-                                            </p>
-                                            <p className="text-sm text-gray-600">
-                                                Keychain
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-medium">
-                                                Rp15.000
-                                            </p>
-                                            <span className="bg-green-100 px-2 py-0.5 text-xs rounded-lg">
-                                                Completed
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between py-3 border-b border-gray-400 last:border-0">
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-700">
-                                                Sam Baldman
-                                            </p>
-                                            <p className="text-sm text-gray-600">
-                                                Anime Poster
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-medium">
-                                                Rp40.000
-                                            </p>
-                                            <span className="bg-yellow-100 px-2 py-0.5 text-xs rounded-lg">
-                                                Preorder
-                                            </span>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

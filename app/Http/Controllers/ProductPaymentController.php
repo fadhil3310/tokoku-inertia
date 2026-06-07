@@ -5,10 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\ProductPayment;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Midtrans\MidtransFetch;
-use App\Midtrans\MidtransFetchManager;
 use App\Models\Booth;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -139,6 +136,7 @@ class ProductPaymentController extends Controller
 
         try {
             $result = \Midtrans\Transaction::status($orderId);
+            // Just ignore.
             $resultStatus = $result->fraud_status == 'deny' ? "deny" : $result->transaction_status;
 
             foreach (self::$statusMap as $statusMapKey => $subStatuses) {
@@ -175,24 +173,4 @@ class ProductPaymentController extends Controller
         \Midtrans\Config::$serverKey = $midtransConfig->server_key;
         \Midtrans\Config::$isProduction = false;
     }
-
-    // public static function checkMidtransPaymentStatus($orderId): string
-    // {
-    //     $output = new ConsoleOutput();
-    //     $receipt = ProductPayment::find($orderId);
-    //     if ($receipt == null)
-    //         throw new Exception("Receipt not found");
-
-    //     if ($receipt->payment_method == "midtrans") {
-    //         try {
-    //             $fetch = MidtransFetchManager::get($orderId);
-    //             $status = $fetch->getStatus();
-    //             return $status
-    //         } catch (Exception $e) {
-    //             return Inertia::render('Catalog/Checkout', ["status" => "error"]);
-    //         }
-    //     } else {
-    //         return true;
-    //     }
-    // }
 }
