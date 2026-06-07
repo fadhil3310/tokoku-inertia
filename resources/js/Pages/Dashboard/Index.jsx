@@ -3,6 +3,7 @@ import { Head } from "@inertiajs/react";
 import DashboardLayout from "../../Layouts/DashboardLayout";
 import TenantDashboard from "./TenantDashboard";
 import EventOrganizerDashboard from "./EventOrganizerDashboard";
+import AdminDashboard from "./AdminDashboard";
 
 export default function Index({ 
     user, 
@@ -10,8 +11,11 @@ export default function Index({
     totalProducts, 
     recentTransactions, 
     recentEvent, 
+    recentEvents, 
+    recentTicketPayments, 
     totalRevenue, 
-    totalBoothSpaceSold 
+    totalBoothSpaceSold,
+    stats
 }) {
     return (
         <DashboardLayout user={user}>
@@ -28,6 +32,12 @@ export default function Index({
                     recentEvent={recentEvent}
                     totalRevenue={totalRevenue}
                     totalBoothSpaceSold={totalBoothSpaceSold}
+                />
+            ) : user?.role === 'admin' ? (
+                <AdminDashboard 
+                    stats={stats}
+                    recentEvents={recentEvents}
+                    recentTicketPayments={recentTicketPayments}
                 />
             ) : (
                 <div className="p-6">
