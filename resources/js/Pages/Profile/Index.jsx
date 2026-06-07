@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../Layouts/DashboardLayout";
-import { Link, Head, usePage } from "@inertiajs/react";
+import { Link, Head, usePage, router } from "@inertiajs/react";
 import {
     Card,
     CardHeader,
@@ -20,27 +20,73 @@ import { Grid } from "gridjs-react";
 import { h } from "gridjs";
 import "gridjs/dist/theme/mermaid.css";
 
+function DeleteModal({ isOpen, onClose, onConfirm, userName }) {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+            <div className="relative bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
+                <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                    Delete User
+                </h2>
+                <p className="text-gray-600 mb-6">
+                    Are you sure you want to delete{" "}
+                    <span className="font-medium text-gray-800">
+                        {userName}
+                    </span>
+                    ? This action cannot be undone.
+                </p>
+                <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={onClose}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={onConfirm}>
+                        Delete
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function Index({ users, error }) {
     const { flash } = usePage();
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
 
     const data = users.map((u) => [
         u.id,
         u.name,
         u.email,
-        u.image,
+        u.role,
         u.created_at_humanreadable,
     ]);
+
+    const handleDeleteClick = (id, userName) => {
+        setSelectedUser({ id, userName });
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (selectedUser) {
+            router.delete(route("profile.destroy", selectedUser.id), {
+                onFinish: () => setShowDeleteModal(false),
+            });
+        }
+    };
 
     const columns = [
         "Id",
         "Name",
         "Email",
-        "Image",
+        "Role",
         "Created",
         {
             name: 'Actions',
             formatter: (_, row) => {
                 const id = row.cells[0].data;
+                const userName = row.cells[1].data;
                 return h('div', {
                     className: 'flex gap-2'
                 }, [
@@ -48,8 +94,8 @@ export default function Index({ users, error }) {
                         href: route('profile.edit', id),
                         className: 'cursor-pointer inline-flex items-center justify-center rounded-md transition-colors px-3 py-1.5 text-sm text-amber-500 hover:bg-amber-50'
                     }, 'Edit'),
-                    h('a', {
-                        href: route('profile.destroy', id),
+                    h('button', {
+                        onClick: () => handleDeleteClick(id, userName),
                         className: 'cursor-pointer inline-flex items-center justify-center rounded-md transition-colors px-3 py-1.5 text-sm text-red-500 hover:bg-red-50'
                     }, 'Delete'),
                 ]);
@@ -116,6 +162,13 @@ export default function Index({ users, error }) {
                         />
                     </div>
                 </div>
+
+                <DeleteModal
+                    isOpen={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onConfirm={handleConfirmDelete}
+                    userName={selectedUser?.userName}
+                />
             </div>
         </DashboardLayout>
     );

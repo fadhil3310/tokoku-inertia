@@ -66,7 +66,7 @@ export default function Show({ user }) {
                     </Link>
                     <ChevronRightIcon />
                     <Link
-                        href={"/profile"}
+                        href={"#"}
                         className="flex items-center text-gray-700 hover:text-blue-500"
                     >
                         Profile
