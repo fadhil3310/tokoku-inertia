@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Link, Head, useForm } from '@inertiajs/react';
+import React, { useState, useCallback } from 'react';
+import { Link, Head, router } from '@inertiajs/react';
 import Header from '../../Components/Header';
+import { toast } from 'sonner'; // Integrated for smooth error feedback
 
 // --- Icons ---
 const LinkIcon = () => (
@@ -35,27 +36,58 @@ function formatRupiah(amount) {
 }
 
 export default function Join({ event }) {
-    
-    // State to hold the currently selected ticket/booth
+    // Track the currently selected ticket/booth configuration
     const [selectedTicket, setSelectedTicket] = useState(null);
-
-    // Form submission handler to proceed to checkout
-    const { data, setData, get, processing } = useForm({
-        ticket_id: '',
-    });
+    const [processing, setProcessing] = useState(false);
 
     const handleSelectTicket = (ticket) => {
-        if (event.hasEnded) {
-            return;
-        }
+        if (event.hasEnded) return;
         setSelectedTicket(ticket);
-        setData('ticket_id', ticket.id);
     };
 
-    const handleCheckout = () => {
-        if (!data.ticket_id) return;
-        get(route('checkout.create', { ticket_id: data.ticket_id })); 
-    };
+    // Modified checkout handler mapping payload directly to TicketPaymentController structure
+    const handleCheckout = useCallback(async () => {
+        if (!selectedTicket) return;
+
+        setProcessing(true);
+        try {
+            const response = await fetch(route("payment.ticket.checkout"), {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    ticketId: selectedTicket.id,
+                    amount: 1, // Defaults to 1 ticket unit per registration process
+                    method: "midtrans",
+                }),
+            });
+
+            const data = await response.json();
+            
+            if (data.orderId == null) {
+                throw new Error("orderId not found from registration payload");
+            }
+
+            // Redirect smoothly to your unified payment status loop view
+            router.visit(
+                route("ticket.checkPaymentStatus", {
+                    orderId: data.orderId,
+                }),
+                {
+                    viewTransition: true,
+                }
+            );
+        } catch (error) {
+            console.error("Error while attempting ticket registration checkout:", error);
+            toast.error(
+                "Failed checking out, don't worry this not your fault (╯‵□′)╯︵┻━┻"
+            );
+        } finally {
+            setProcessing(false);
+        }
+    }, [selectedTicket]);
 
     // "Event Not Found" Fallback State
     if (!event) {
@@ -79,25 +111,18 @@ export default function Join({ event }) {
         );
     }
 
-    // Normal Render State
     return (
         <div className="min-h-screen bg-gray-50 text-gray-800 font-sans pb-16">
             <Head title={`${event.name} - Tokoku`} />
-
-            {/* --- NAVBAR --- */}
             <Header/>
 
-            {/* --- MAIN CONTENT --- */}
             <main className="max-w-7xl mx-auto px-4 lg:px-8 py-8 mt-16">
-
-                {/* Grid Layout */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     {/* Left Column: Event Details & Tickets */}
                     <div className="lg:col-span-2">
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-10">
                             
-                            {/* 4:5 Poster Image */}
                             {event.image && (
                                 <div className="w-full max-w-100 mx-auto aspect-4/5 overflow-hidden rounded-xl bg-gray-100 shadow-sm border border-gray-100">
                                     <img 
@@ -108,7 +133,6 @@ export default function Join({ event }) {
                                 </div>
                             )}
 
-                            {/* Ticket Selection Section */}
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 mb-4">Select a Booth / Ticket</h2>
                                 {event.tickets && event.tickets.length > 0 ? (
@@ -130,13 +154,11 @@ export default function Join({ event }) {
                                                             {selectedTicket?.id === ticket.id && <CheckCircleIcon />}
                                                         </div>
                                                         
-                                                        {/* Description clearly under name */}
                                                         {ticket.description && (
                                                             <p className="text-sm text-gray-600 mt-1">{ticket.description}</p>
                                                         )}
                                                         
                                                         <div className="mt-2 space-y-2">
-                                                            {/* Location block */}
                                                             {ticket.location && (
                                                                 <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-100 w-fit px-2.5 py-1.5 rounded-md">
                                                                     <MapPinIcon className="w-3.5 h-3.5 text-gray-500" />
@@ -144,7 +166,6 @@ export default function Join({ event }) {
                                                                 </div>
                                                             )}
                                                             
-                                                            {/* Map Link block */}
                                                             {ticket.map_url && (
                                                                 <a 
                                                                     href={ticket.map_url} 
@@ -160,7 +181,6 @@ export default function Join({ event }) {
                                                         </div>
                                                     </div>
                                                     
-                                                    {/* Price on the right */}
                                                     <div className="text-right shrink-0">
                                                         <p className="font-bold text-blue-600 text-lg">{formatRupiah(ticket.price)}</p>
                                                     </div>
@@ -175,7 +195,6 @@ export default function Join({ event }) {
 
                             <hr className="border-gray-100" />
 
-                            {/* Description Section */}
                             <section>
                                 <h2 className="text-xl font-bold text-gray-900 mb-4">Description</h2>
                                 <p className="text-gray-600 leading-relaxed text-sm sm:text-base whitespace-pre-line">
@@ -183,7 +202,6 @@ export default function Join({ event }) {
                                 </p>
                             </section>
 
-                            {/* Terms and Conditions Section */}
                             {event.terms && event.terms.length > 0 && (
                                 <section>
                                     <h2 className="text-xl font-bold text-gray-900 mb-4">Terms and Conditions</h2>
@@ -196,7 +214,6 @@ export default function Join({ event }) {
                                     </ol>
                                 </section>
                             )}
-                            
                         </div>
                     </div>
 
@@ -211,7 +228,6 @@ export default function Join({ event }) {
                                 </div>
                             </div>
                             
-                            {/* Key Details */}
                             <div className="flex flex-col gap-4 text-gray-600 text-sm">
                                 <div className="flex items-start gap-3">
                                     <CalendarIcon />
@@ -229,7 +245,6 @@ export default function Join({ event }) {
 
                             <hr className="border-gray-100" />
 
-                            {/* Organizer */}
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white text-xs font-bold shrink-0 uppercase">
                                     {event.organizerName.charAt(0)}
@@ -242,13 +257,11 @@ export default function Join({ event }) {
 
                             <hr className="border-gray-100" />
 
-                            {/* Actions / Buttons */}
                             <div className="flex flex-col gap-4">
                                 <div>
                                     <p className="text-xs text-gray-500 mb-1">
                                         {selectedTicket ? "Selected Booth Total" : "Tenant Booths Start From"}
                                     </p>
-                                    
                                     {selectedTicket ? (
                                         <p className="font-bold text-3xl text-blue-600 transition-all">{formatRupiah(selectedTicket.price)}</p>
                                     ) : event.min_price !== null ? (
@@ -267,15 +280,13 @@ export default function Join({ event }) {
                                             : "pointer-events-none cursor-not-allowed bg-gray-300 text-gray-500"
                                     } text-white font-bold rounded-xl transition-colors shadow-sm`}
                                 >
-                                    {
-                                        event.hasEnded
-                                            ? "Booth Booking Unavailable"
-                                            : processing
-                                                ? "Processing..."
-                                                : selectedTicket
-                                                    ? "Book Selected Booth"
-                                                    : "Select a Booth First"
-                                   }
+                                    {event.hasEnded
+                                        ? "Booth Booking Unavailable"
+                                        : processing
+                                            ? "Processing..."
+                                            : selectedTicket
+                                                ? "Book Selected Booth"
+                                                : "Select a Booth First"}
                                 </button>
 
                                 <div className="grid grid-cols-2 gap-3 mt-1">

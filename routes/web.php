@@ -13,6 +13,7 @@ use App\Http\Controllers\MidtransConfigController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoothController;
 use App\Http\Controllers\ProductPaymentController;
+use App\Http\Controllers\TicketPaymentController;
 use App\Http\Controllers\ProductTransactionController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
@@ -72,6 +73,11 @@ Route::middleware(['auth', 'role:admin,tenant,event organizer'])->group(function
 
 Route::middleware(['auth', 'role:admin,tenant'])->group(function () {
     Route::resource('products', ProductController::class);
+});
+
+Route::middleware(['auth', 'role:tenant'])->group(function () {
+    Route::post('/payment/ticket/checkout', [TicketPaymentController::class, 'checkout'])->name('payment.ticket.checkout');
+    Route::get('/payment/ticket/check-payment-status/{orderId}', [TicketPaymentController::class, 'checkPaymentStatus'])->name('ticket.checkPaymentStatus');
 });
 
 Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {

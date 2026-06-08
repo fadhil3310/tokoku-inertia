@@ -389,7 +389,8 @@ class EventController extends Controller
         $query = Product::whereIn('booth_id', function ($query) use ($eventId) {
             $query->select('booth_id')
                 ->from('booth_tickets')
-                ->where('event_id', $eventId);
+                ->where('event_id', $eventId)
+                ->where('status', 'completed'); // Optional: ensures only approved/paid booths show items
         })->where('name', 'like', "%{$search}%");
 
         if (!empty($category)) {
@@ -397,11 +398,16 @@ class EventController extends Controller
         }
 
         $products = $query->paginate(10)->through(function ($product) {
-            $product->image_path = $product->image
+            // 1. Convert the model to an array FIRST to keep array signatures consistent
+            $data = $product->toArray();
+            
+            // 2. Overwrite the existing 'image' property with the resolved asset URL
+            $data['image'] = $product->image
                 ? Storage::url($product->image)
-                : 'https://placehold.co/300';
-                
-            return $product;
+                : 'https://placehold.co/300'; 
+
+            // 3. Return the modified array payload
+            return $data;
         });
 
         return Inertia::render('Catalog/Index', [
