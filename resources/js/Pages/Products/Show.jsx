@@ -38,6 +38,8 @@ function DeleteModal({ isOpen, onClose, onConfirm, productName }) {
 export default function Show({ product, hasImage }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+    console.log('/'+hasImage)
+
     function handleDelete() {
         router.delete(route("products.destroy", product.id), {
             onFinish: () => setShowDeleteModal(false),
@@ -86,7 +88,7 @@ export default function Show({ product, hasImage }) {
                             <img
                                 src={
                                     hasImage
-                                        ? `/storage/${product.image}`
+                                        ? `/${product.image}`
                                         : "/images/placeholder.png"
                                 }
                                 alt={product.name}

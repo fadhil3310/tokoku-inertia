@@ -24,8 +24,6 @@ const MapIcon = () => (
 export default function EventDetail({ event }) {
     const { url, props: { auth } } = usePage();
     
-    console.log(event);
-
     // "Event Not Found" Fallback State
     if (!event) {
         return (

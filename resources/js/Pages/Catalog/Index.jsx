@@ -200,8 +200,10 @@ function ProductCard({ boothId, productId, name, image, price }) {
                 <div className="w-full shrink-0 p-2 bg-[#F3F4F6] rounded-t-xl">
                     <img
                         className="w-full aspect-square object-cover rounded-lg"
-                        style={{ viewTransitionName: `product-image-${productId}` }}
-                        src={image}
+                        style={{
+                            viewTransitionName: `product-image-${productId}`,
+                        }}
+                        src={'/'+image}
                         alt={name}
                     />
                 </div>
@@ -271,7 +273,7 @@ export default function Index({ products, booth, event }) {
                             key={item.id}
                             boothId={item.booth_id || booth?.id} // IMPORTANT: Relies on the item's booth_id
                             productId={item.id}
-                            image={item.image_path}
+                            image={item.image}
                             name={item.name}
                             price={item.price}
                         />
