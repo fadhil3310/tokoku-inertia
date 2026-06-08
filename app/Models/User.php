@@ -40,6 +40,11 @@ class User extends Authenticatable
         return $this->hasMany(Event::class, 'owner_id', 'id');
     }
 
+    public function midtransConfig(): HasOne
+    {
+        return $this->hasOne(MidtransConfig::class);
+    }
+
     public function booth()
     {
         return $this->hasOne(Booth::class, 'owner_id', 'id');

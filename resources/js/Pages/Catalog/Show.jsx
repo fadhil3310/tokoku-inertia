@@ -141,7 +141,7 @@ function CheckoutAction({ boothId, product, isPaymentReady }) {
 
 export default function Show({ product, booth, isPaymentReady }) {
     const descriptionDelimited = useMemo(
-        () => product.description.replaceAll("\n", "<br />"),
+        () => product.description ? product.description.replaceAll("\n", "<br />") : "",
         [product.description]
     );
 
@@ -207,7 +207,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                             <strong>
                                 {ProductCategories.find(
                                     (x) => x.value == product.category
-                                ).label ?? product.category}
+                                )?.label ?? product.category}
                             </strong>
                         </p>
 
@@ -216,7 +216,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                         </p>
                         <p
                             dangerouslySetInnerHTML={{
-                                __html: descriptionDelimited,
+                                __html: descriptionDelimited || "<span class='text-gray-400 italic text-sm'>No description provided.</span>",
                             }}
                         ></p>
                     </div>

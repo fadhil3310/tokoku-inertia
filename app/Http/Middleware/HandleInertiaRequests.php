@@ -35,10 +35,18 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return array_merge(parent::share($request), [
+        $user = $request->user();
+
+        // Eager load the booth if the user is a tenant
+        if ($user && $user->role === 'tenant') {
+            $user->load('booth'); 
+        }
+
+        return [
+            ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
             ],
-        ]);
+        ];
     }
 }
