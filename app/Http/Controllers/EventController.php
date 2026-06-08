@@ -398,7 +398,7 @@ class EventController extends Controller
 
         $products = $query->paginate(10)->through(function ($product) {
             $product->image_path = $product->image
-                ? \Illuminate\Support\Facades\Storage::url($product->image)
+                ? Storage::url($product->image)
                 : 'https://placehold.co/300';
                 
             return $product;
@@ -413,7 +413,7 @@ class EventController extends Controller
                 "owner" => $event->owner->name ?? 'Unknown',
                 "image" => $event->getPoster(),
                 "location" => $event->location ?: 'Location TBD',
-                "date" => \Carbon\Carbon::parse($event->date_start)->format('d M Y'),
+                "date" => Carbon::parse($event->date_start)->format('d M Y'),
             ]
         ]);
     }

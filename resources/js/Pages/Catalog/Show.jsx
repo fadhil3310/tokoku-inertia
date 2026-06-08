@@ -44,6 +44,7 @@ function CheckoutAction({ boothId, product, isPaymentReady }) {
                 }),
             });
             const data = await response.json();
+            console.log(data)
             if (data["orderId"] == null) throw new Error("orderId not found");
 
             router.visit(
@@ -167,7 +168,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                             viewTransition
                         >
                             <img
-                                src={'/'+product.image}
+                                src={product.image}
                                 className="h-[300px] aspect-square object-cover rounded-lg cursor-zoom-in hover:scale-105 hover:shadow-md hover:opacity-80 transition-transform"
                                 style={{
                                     viewTransitionName: `product-image-${product.id}`,

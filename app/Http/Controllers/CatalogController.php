@@ -19,42 +19,34 @@ class CatalogController extends Controller
         $search = $request->query('search');
         $category = $request->query('category');
 
-        $products = null;
+        $query = Product::where('booth_id', $boothId)
+            ->where('name', 'like', "%{$search}%");
 
-        if ($category == '') {
-            $products = Product::where('name', 'like', "%{$search}%")
-                ->where('booth_id', $boothId)
-
-                ->paginate(10)
-                ->through(function ($product) {
-                    $product->image_path = $product->image
-                        ? Storage::url($product->image)
-                        : 'https://placehold.co/300'; // optional placeholder
-
-                    return $product;
-                });
-        } else {
-            $products = Product::where('category', $category)
-                ->where('name', 'like', "%{$search}%")
-                ->where('booth_id', $boothId)
-
-                ->paginate(10)->through(function ($product) {
-                    $product->image_path = $product->image
-                        ? Storage::url($product->image)
-                        : 'https://placehold.co/300'; // optional placeholder
-
-                    return $product;
-                });
+        if (!empty($category)) {
+            $query->where('category', $category);
         }
 
-        $booth = Booth::find($boothId);
+        $products = $query->paginate(10)->through(function ($product) {
+            // Convert the model to an array FIRST
+            $data = $product->toArray();
+            
+            // Overwrite the existing 'image' property with the full URL
+            $data['image'] = $product->image
+                ? Storage::url($product->image)
+                : 'https://placehold.co/300'; 
+
+            // Return the modified array
+            return $data;
+        });
+
+        $booth = Booth::with('owner')->findOrFail($boothId);
 
         return Inertia::render('Catalog/Index', [
             'products' => $products,
             'booth' => [
                 "id" => $booth->id,
                 "name" => $booth->name,
-                "owner" => $booth->owner->name,
+                "owner" => $booth->owner->name ?? 'Unknown',
                 "image" => $booth->image,
             ]
         ]);
@@ -64,9 +56,9 @@ class CatalogController extends Controller
     {
         $output = new ConsoleOutput();
         $product = Product::where('booth_id', $boothId)->find($id);
-        $product->image_path = $product->image
+        $product['image'] = $product->image
             ? Storage::url($product->image)
-            : null;
+            : 'https://placehold.co/300'; 
         $booth = Booth::find($boothId);
         $isPaymentReady = MidtransConfigController::checkReady($boothId);
 

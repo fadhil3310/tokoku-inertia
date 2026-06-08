@@ -203,7 +203,7 @@ function ProductCard({ boothId, productId, name, image, price }) {
                         style={{
                             viewTransitionName: `product-image-${productId}`,
                         }}
-                        src={'/'+image}
+                        src={image}
                         alt={name}
                     />
                 </div>
