@@ -98,41 +98,48 @@ class DashboardController extends Controller
         // 2. EVENT ORGANIZER DASHBOARD
         // ==========================================
         if ($user->role === 'event organizer') {
-            $recentEvent = Event::where('owner_id', $user->id)->latest()->first();
+            $recentEvent = Event::where('owner_id', $user->id)
+                ->latest()
+                ->first();
+
+            if ($recentEvent) {
+                $recentEvent->image = $recentEvent->getPoster();
+            }
 
             $totalRevenueRaw = 0;
             $totalBoothSpaceSold = 0;
-            $formattedRevenue = '0';
+            $recentPayments = []; // Initialize empty array container
 
             if ($recentEvent) {
-                // FIXED: Get the records, eager load the ticket, and sum the prices
-                $totalRevenueRaw = TicketPayment::with('ticket')
+                // Optimization: Sum grand_total field directly in SQL instead of looping inside PHP memory
+                $totalRevenueRaw = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
+                        $query->where('event_id', $recentEvent->id);
+                    })
+                    ->where('status', 'completed')
+                    ->sum('grand_total');
+
+                $totalBoothSpaceSold = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
+                        $query->where('event_id', $recentEvent->id);
+                    })
+                    ->where('status', 'completed')
+                    ->count();
+
+                // Fetch the 5 most recent payment registrations (both pending and completed)
+                $recentPayments = TicketPayment::with(['ticket', 'booth'])
                     ->whereHas('ticket', function ($query) use ($recentEvent) {
                         $query->where('event_id', $recentEvent->id);
                     })
-                    ->where('status', 'paid')
-                    ->get()
-                    ->sum(function ($payment) {
-                        // If users can buy multiple tickets per payment, change this to:
-                        // return $payment->ticket->price * $payment->quantity;
-                        return $payment->ticket->price;
-                    });
-
-                $totalBoothSpaceSold = TicketPayment::whereHas('ticket', function ($query) use ($recentEvent) {
-                    $query->where('event_id', $recentEvent->id);
-                })
-                    ->where('status', 'paid')
-                    ->count();
+                    ->latest()
+                    ->take(5)
+                    ->get();
             }
-
-            // Format revenue to IDR format (e.g. "120.000")
-            $formattedRevenue = number_format($totalRevenueRaw, 0, ',', '.');
 
             return Inertia::render('Dashboard/Index', [
                 'user'                => $user,
                 'recentEvent'         => $recentEvent,
-                'totalRevenue'        => $formattedRevenue,
+                'totalRevenue'        => number_format($totalRevenueRaw, 0, ',', '.'),
                 'totalBoothSpaceSold' => $totalBoothSpaceSold,
+                'recentTicketPayments'      => $recentPayments,
             ]);
         }
 

@@ -3,7 +3,7 @@ import { Link } from "@inertiajs/react";
 import Button from "../../Components/Buttons";
 import { Icon } from '@iconify/react';
 
-export default function EventOrganizerDashboard({ recentEvent, totalRevenue, totalBoothSpaceSold }) {
+export default function EventOrganizerDashboard({ recentEvent, totalRevenue, totalBoothSpaceSold, recentTicketPayments }) {
     return (
         <div className="p-4 md:p-8 w-full max-w-7xl mx-auto">
             <div className="mb-8">
@@ -16,9 +16,6 @@ export default function EventOrganizerDashboard({ recentEvent, totalRevenue, tot
                     <div>
                         <p className="text-sm font-medium text-gray-500 mb-1">Total Revenue</p>
                         <p className="text-3xl font-black text-gray-900 mb-3">Rp{totalRevenue || '0'}</p>
-                        <span className="bg-green-50 text-green-700 border border-green-100 rounded-md px-2 py-1 text-xs font-semibold">
-                            +12% this week
-                        </span>
                     </div>
                     <div className="p-3 rounded-xl bg-indigo-50 text-indigo-500">
                         <span className="font-bold text-lg leading-none">Rp</span>
@@ -29,9 +26,6 @@ export default function EventOrganizerDashboard({ recentEvent, totalRevenue, tot
                     <div>
                         <p className="text-sm font-medium text-gray-500 mb-1">Booth Spaces Sold</p>
                         <p className="text-3xl font-black text-gray-900 mb-3">{totalBoothSpaceSold || '0'}</p>
-                        <span className="bg-green-50 text-green-700 border border-green-100 rounded-md px-2 py-1 text-xs font-semibold">
-                            +5 recent
-                        </span>
                     </div>
                     <div className="p-3 rounded-xl bg-indigo-50 text-indigo-500">
                         <Icon icon="bx:store-alt" width={24} />
@@ -67,8 +61,8 @@ export default function EventOrganizerDashboard({ recentEvent, totalRevenue, tot
                     {recentEvent ? (
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
                             <div className="w-full sm:w-48 aspect-video bg-gray-100 rounded-xl overflow-hidden shrink-0 border border-gray-200">
-                                {recentEvent.poster ? (
-                                    <img src={recentEvent.poster} className="w-full h-full object-cover" alt="Event Poster" />
+                                {recentEvent.image ? (
+                                    <img src={recentEvent.image} className="w-full h-full object-cover" alt="Event Poster" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-400">
                                         <Icon icon="bx:image" width={48} />
@@ -106,23 +100,46 @@ export default function EventOrganizerDashboard({ recentEvent, totalRevenue, tot
                 <div className="lg:col-span-1 bg-white shadow-sm border border-gray-100 rounded-2xl p-6">
                     <h2 className="font-bold text-lg text-gray-900 mb-6">Recent Registrations</h2>
                     <div className="space-y-5">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm shrink-0">
-                                    TN
+                        {recentTicketPayments && recentTicketPayments.length > 0 ? (
+                            recentTicketPayments.map((payment) => (
+                                <div key={payment.id} className="flex items-center justify-between gap-4">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-gray-900 text-sm truncate">
+                                            {payment.booth?.name ?? "Unknown Tenant"}
+                                        </p>
+                                        <p className="text-xs text-gray-500 truncate">
+                                            Booked {payment.ticket?.name ?? "Booth Space"}
+                                        </p>
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                        <p className="font-bold text-sm text-gray-900">
+                                            {new Intl.NumberFormat("id-ID", {
+                                                style: "currency",
+                                                currency: "IDR",
+                                                minimumFractionDigits: 0,
+                                            }).format(payment.grand_total)}
+                                        </p>
+                                        <p 
+                                            className={`text-xs font-medium capitalize ${
+                                                payment.status === "completed" 
+                                                    ? "text-green-600" 
+                                                    : payment.status === "pending" 
+                                                    ? "text-amber-500" 
+                                                    : "text-red-500"
+                                            }`}
+                                        >
+                                            {payment.status === "completed" ? "Paid" : payment.status}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-gray-900 text-sm truncate">Tenant Store {i}</p>
-                                    <p className="text-xs text-gray-500 truncate">Booked VIP Booth A{i}</p>
-                                </div>
-                                <div className="text-right shrink-0">
-                                    <p className="font-bold text-sm text-gray-900">Rp2M</p>
-                                    <p className="text-xs text-green-600 font-medium">Paid</p>
-                                </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p className="text-gray-400 text-sm italic text-center py-4">
+                                No booth registrations recorded yet.
+                            </p>
+                        )}
                     </div>
-                    <Button href="/payment" variant="outline" className="w-full mt-6 justify-center">View All Transactions</Button>
+                    <Button href="/registrations" variant="outline" className="w-full mt-6 justify-center">View All Transactions</Button>
                 </div>
             </div>
         </div>

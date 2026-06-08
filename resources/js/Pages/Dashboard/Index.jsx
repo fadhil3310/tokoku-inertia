@@ -32,6 +32,7 @@ export default function Index({
                     recentEvent={recentEvent}
                     totalRevenue={totalRevenue}
                     totalBoothSpaceSold={totalBoothSpaceSold}
+                    recentTicketPayments={recentTicketPayments}
                 />
             ) : user?.role === 'admin' ? (
                 <AdminDashboard 

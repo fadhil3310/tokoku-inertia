@@ -14,6 +14,35 @@ use Inertia\Inertia;
 
 class TicketPaymentController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+
+        // Fetch payments belonging only to events owned by this specific user
+        $payments = TicketPayment::with(['ticket.event', 'booth'])
+            ->whereHas('ticket.event', function ($query) use ($user) {
+                $query->where('owner_id', $user->id);
+            })
+            ->latest()
+            ->get()
+            ->map(function ($payment) {
+                return [
+                    'id'             => $payment->id,
+                    'booth_name'     => $payment->booth->name ?? 'Unknown Tenant',
+                    'ticket_name'    => $payment->ticket->name ?? 'Unknown Space',
+                    'event_name'     => $payment->ticket->event->name ?? 'Unknown Event',
+                    'payment_method' => $payment->payment_method,
+                    'grand_total'    => $payment->grand_total,
+                    'status'         => $payment->status,
+                    'created_at'     => $payment->created_at ? $payment->created_at->format('d M Y, H:i') : '-',
+                ];
+            });
+
+        return Inertia::render('Registrations/Index', [
+            'payments' => $payments,
+        ]);
+    }
+
     private static array $statusMap = [
         "pending" => ["pending"],
         "completed" => [

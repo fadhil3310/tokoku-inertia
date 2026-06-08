@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Plan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -62,6 +63,16 @@ class HomeController extends Controller
         return Inertia::render('Home', [
             'upcomingEvents' => $upcomingEvents,
             'pastEvents' => $pastEvents,
+        ]);
+    }
+
+    public function pricing()
+    {
+        // Fetch available premium plans from the database
+        $plans = Plan::where('price', '>', 0)->get();
+
+        return Inertia::render('Pricing', [
+            'plans' => $plans
         ]);
     }
 }

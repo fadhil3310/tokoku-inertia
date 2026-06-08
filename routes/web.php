@@ -15,6 +15,7 @@ use App\Http\Controllers\BoothController;
 use App\Http\Controllers\ProductPaymentController;
 use App\Http\Controllers\TicketPaymentController;
 use App\Http\Controllers\ProductTransactionController;
+use App\Http\Controllers\SubscriptionController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,11 +25,10 @@ Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('/', fn() => Inertia::render('Home'));
 Route::get('/about-us', fn() => Inertia::render('AboutUs'));
 Route::get('/features', fn() => Inertia::render('Features'));
-Route::get('/pricing', fn() => Inertia::render('Pricing'));
 Route::get('/contact', fn() => Inertia::render('Contact'));
 Route::get('/support', fn() => Inertia::render('Support'));
 Route::get('/help-center', fn() => Inertia::render('HelpCenter'))->name('help-center');
-Route::get('/pricing', fn() => Inertia::render('Pricing'))->name('pricing');
+Route::get('/pricing', [HomeController::class, 'pricing'])->name('pricing');
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -56,7 +56,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment', fn() => Inertia::render('Payment'));
     Route::get('/transactions/form', fn() => Inertia::render('TransactionsForm'));
     Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
-    Route::get('/subscription', fn() => Inertia::render('Subscription'));
     Route::resource('booth', BoothController::class);
     Route::resource('transactions', ProductTransactionController::class);
     Route::resource('payment-link', MidtransConfigController::class);
@@ -92,6 +91,12 @@ Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {
         Route::put('/edit/{id}', [EventController::class, 'update'])->name('events.update');
         Route::delete('/delete/{id}', [EventController::class, 'destroy'])->name('events.delete');
     });
+
+    Route::get('/registrations', [TicketPaymentController::class, 'index']);
+
+    Route::get('/subscription', [SubscriptionController::class, 'index'])->name('subscription.index');
+    Route::post('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::get('/subscription/check-payment-status/{orderId}', [SubscriptionController::class, 'checkPaymentStatus'])->name('subscription.checkPaymentStatus');
 });
 
 // Catalog

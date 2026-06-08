@@ -36,7 +36,7 @@ class TicketPayment extends Model
      */
     public function ticket()
     {
-        return $this->belongsTo(Ticket::class);
+        return $this->belongsTo(Ticket::class, 'ticket_id', 'id');
     }
 
     /**
@@ -44,6 +44,6 @@ class TicketPayment extends Model
      */
     public function booth()
     {
-        return $this->belongsTo(Booth::class);
+        return $this->belongsTo(Booth::class, 'booth_id', 'id');
     }
 }

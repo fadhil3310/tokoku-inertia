@@ -16,7 +16,8 @@ export default function DashboardLayout({ children }) {
     const navItems = auth.user?.role === 'event organizer' 
         ? [
             { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
-            { href: "/events", label: "Events", icon: TransactionsIcon },
+            { href: "/events", label: "Events", icon: BoothIcon },
+            { href: "/registrations", label: "Transactions", icon: TransactionsIcon },
             { href: "/payment-link", label: "Payment Link", icon: PaymentIcon },
         ] :
         auth.user?.role === 'tenant' ?  [
@@ -149,12 +150,15 @@ export default function DashboardLayout({ children }) {
                                         >
                                             Profile
                                         </Link>
-                                        <Link
-                                            href="/subscription"
-                                            className="block px-4 py-2 text-sm hover:bg-gray-100"
-                                        >
-                                            Subscription
-                                        </Link>
+                                        {
+                                            auth.user.role === 'event organizer' &&
+                                            <Link
+                                                href="/subscription"
+                                                className="block px-4 py-2 text-sm hover:bg-gray-100"
+                                            >
+                                                Subscription
+                                            </Link>
+                                        }
                                         <Link
                                             href="/logout"
                                             method="post"
