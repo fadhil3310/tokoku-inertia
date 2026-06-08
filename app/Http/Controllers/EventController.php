@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -375,6 +376,45 @@ class EventController extends Controller
 
         return Inertia::render('Event/Detail', [
             'event' => $eventData
+        ]);
+    }
+
+    public function catalog(Request $request, $eventId)
+    {
+        $search = $request->query('search');
+        $category = $request->query('category');
+
+        $event = Event::with('owner')->findOrFail($eventId);
+
+        $query = Product::whereIn('booth_id', function ($query) use ($eventId) {
+            $query->select('booth_id')
+                ->from('booth_tickets')
+                ->where('event_id', $eventId);
+        })->where('name', 'like', "%{$search}%");
+
+        if (!empty($category)) {
+            $query->where('category', $category);
+        }
+
+        $products = $query->paginate(10)->through(function ($product) {
+            $product->image_path = $product->image
+                ? \Illuminate\Support\Facades\Storage::url($product->image)
+                : 'https://placehold.co/300';
+                
+            return $product;
+        });
+
+        return Inertia::render('Catalog/Index', [
+            'products' => $products,
+            'booth' => null, 
+            'event' => [
+                "id" => $event->id,
+                "name" => $event->name,
+                "owner" => $event->owner->name ?? 'Unknown',
+                "image" => $event->getPoster(),
+                "location" => $event->location ?: 'Location TBD',
+                "date" => \Carbon\Carbon::parse($event->date_start)->format('d M Y'),
+            ]
         ]);
     }
 }

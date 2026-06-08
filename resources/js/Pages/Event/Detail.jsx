@@ -186,7 +186,7 @@ export default function EventDetail({ event }) {
                                 }
                                 <div className="grid grid-cols-2 gap-3 mt-1">
                                     <Link 
-                                        href={`/catalog/event/${event.id}`} 
+                                        href={`/event/${event.id}/catalog`} 
                                         className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl text-sm transition-colors border border-blue-100"
                                     >
                                         <CatalogueIcon />
