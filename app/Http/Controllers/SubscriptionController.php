@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan;
 use App\Models\Subscription;
+use App\Models\SubscriptionPayment; // Added tracking model
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,11 +29,8 @@ class SubscriptionController extends Controller
     public function index()
     {
         $user = Auth::user();
-
-        // Fetch all plans available in the database
         $plans = Plan::all();
 
-        // Fetch the user's latest subscription history details
         $currentSubscription = Subscription::with('plan')
             ->where('user_id', $user->id)
             ->latest()
@@ -89,7 +87,6 @@ class SubscriptionController extends Controller
             throw new Exception("Subscription plan profile not found");
         }
 
-        // 1. Create a pending subscription log entry first to grab an ID reference
         $subscription = Subscription::create([
             "user_id" => $userId,
             "plan_id" => $planId,
@@ -98,7 +95,6 @@ class SubscriptionController extends Controller
             "end_date" => null,
         ]);
 
-        // 2. Generate a compound string for Midtrans' order_id to easily decode the ID later
         $orderId = "SUB-" . $subscription->id . "-" . bin2hex(random_bytes(3));
         $grandTotal = $plan->price;
 
@@ -109,8 +105,21 @@ class SubscriptionController extends Controller
             ]
         ];
 
-        // Get Snap Payment Page URL
         $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+
+        SubscriptionPayment::create([
+            "id" => $orderId,
+            "subscription_id" => $subscription->id,
+            "user_id" => $userId,
+            "plan_id" => $planId,
+            "payment_method" => "midtrans",
+            "amount" => 1,
+            "price" => $plan->price,
+            "grand_total" => $grandTotal,
+            "status" => "pending",
+            "payment_url" => $paymentUrl,
+            "description" => "Upgrade / Renewal to " . $plan->name . " Tier Plan"
+        ]);
 
         return [
             "orderId" => $orderId,
@@ -119,21 +128,20 @@ class SubscriptionController extends Controller
     }
 
     /**
-     * Live processing checks for checking external payment updates.
+     * Live processing checks for evaluating payment responses.
      */
     public static function checkMidtransPaymentStatus($orderId): array
     {
         self::setupLibrary();
 
-        $parts = explode('-', $orderId);
-        if (count($parts) < 3) {
-            throw new Exception("Invalid order tracking ID formatting template supplied.");
+        $receipt = SubscriptionPayment::with(['subscription.plan'])->find($orderId);
+        if (!$receipt) {
+            throw new Exception("Subscription payment transaction record not found.");
         }
-        $subscriptionId = $parts[1];
 
-        $subscription = Subscription::with('plan')->find($subscriptionId);
+        $subscription = $receipt->subscription;
         if (!$subscription) {
-            throw new Exception("Subscription log record not found.");
+            throw new Exception("Linked subscription structural instance data is missing.");
         }
 
         $status = "pending";
@@ -150,11 +158,13 @@ class SubscriptionController extends Controller
                 }
             }
 
-            // Sync the payment status logic into the membership profile window parameters
-            if ($subscription->status != $status) {
+            if ($receipt->status != $status) {
+                
+                $receipt->status = $status;
+                $receipt->save();
+
                 if ($status === "completed") {
                     
-                    // Look for any existing active/completed plan stretching furthest into the future
                     $furthestActiveSubscription = Subscription::where('user_id', $subscription->user_id)
                         ->whereIn('status', ['active', 'completed'])
                         ->where('id', '!=', $subscription->id)
@@ -167,7 +177,7 @@ class SubscriptionController extends Controller
                         $subscription->start_date = $furthestActiveSubscription->end_date;
                         $subscription->end_date = Carbon::parse($furthestActiveSubscription->end_date)->addDays($subscription->plan->duration_days);
                     } else {
-                        // SCENARIO B: Clean start from current date (old subscription was in the past or doesn't exist)
+                        // SCENARIO B: Clean start from current execution date
                         $subscription->start_date = Carbon::now();
                         $subscription->end_date = Carbon::now()->addDays($subscription->plan->duration_days);
                     }
@@ -178,12 +188,19 @@ class SubscriptionController extends Controller
                 } else {
                     $subscription->status = $status;
                 }
+                
                 $subscription->save();
             }
         } catch (Exception $e) {
-            if ($subscription->status != "pending") {
+            if ($receipt->status != "pending") {
                 throw $e;
             }
+        }
+
+        if ($status == "pending") {
+            $info = [
+                "paymentUrl" => $receipt->payment_url
+            ];
         }
 
         return ["status" => $status, "info" => $info];
