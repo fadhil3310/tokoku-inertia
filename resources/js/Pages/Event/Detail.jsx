@@ -1,4 +1,4 @@
-import { Link, Head } from '@inertiajs/react';
+import { Link, Head, usePage } from '@inertiajs/react';
 import Header from '../../Components/Header';
 
 // --- Icons ---
@@ -22,6 +22,7 @@ const MapIcon = () => (
 );
 
 export default function EventDetail({ event }) {
+    const { url, props: { auth } } = usePage();
     
     // "Event Not Found" Fallback State
     if (!event) {
@@ -124,6 +125,21 @@ export default function EventDetail({ event }) {
                                     <MapPinIcon />
                                     <span className="mt-0.5 leading-snug">{event.venue}</span>
                                 </div>
+
+                                {event.coordinates && (
+                                    <div className="w-full rounded-xl overflow-hidden border border-gray-200">
+                                        <iframe
+                                            title="Event Location"
+                                            width="100%"
+                                            height="200"
+                                            style={{ border: 0 }}
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            src={`https://maps.google.com/maps?q=${event.coordinates}&z=15&output=embed`}
+                                            allowFullScreen
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <hr className="border-gray-100" />
@@ -151,21 +167,24 @@ export default function EventDetail({ event }) {
                                         <p className="font-bold text-xl text-gray-400">No Tickets Available</p>
                                     )}
                                 </div>
-
-                                <Link 
-                                    href={event.price ? `/join/event/${event.id}` : undefined}
-                                    className={`w-full flex items-center justify-center px-6 py-3.5 ${
-                                        event.price && !event.hasEnded
-                                            ? "bg-blue-600 hover:bg-blue-700"
-                                            : "pointer-events-none cursor-not-allowed bg-gray-500"
-                                    } text-white font-bold rounded-xl transition-colors shadow-sm`}
-                                >
-                                    {event.price && !event.hasEnded ? "Book a Booth" : "Booth Booking Unavailable"}
-                                </Link>
-
+                                {
+                                    auth.user?.role !== 'event organizer' &&
+                                    (
+                                        <Link 
+                                            href={event.price ? `/join/event/${event.id}` : undefined}
+                                            className={`w-full flex items-center justify-center px-6 py-3.5 ${
+                                                event.price && !event.hasEnded
+                                                    ? "bg-blue-600 hover:bg-blue-700"
+                                                    : "pointer-events-none cursor-not-allowed bg-gray-500"
+                                            } text-white font-bold rounded-xl transition-colors shadow-sm`}
+                                        >
+                                            {event.price && !event.hasEnded ? "Book a Booth" : "Booth Booking Unavailable"}
+                                        </Link>
+                                    )
+                                }
                                 <div className="grid grid-cols-2 gap-3 mt-1">
                                     <Link 
-                                        href={`/catalog/event/${event.id}`} 
+                                        href={`/event/${event.id}/catalog`} 
                                         className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl text-sm transition-colors border border-blue-100"
                                     >
                                         <CatalogueIcon />

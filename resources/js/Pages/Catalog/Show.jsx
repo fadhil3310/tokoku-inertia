@@ -43,6 +43,7 @@ function CheckoutAction({ boothId, product, isPaymentReady }) {
                     method: "midtrans",
                 }),
             });
+            
             const data = await response.json();
             if (data["orderId"] == null) throw new Error("orderId not found");
 
@@ -141,7 +142,7 @@ function CheckoutAction({ boothId, product, isPaymentReady }) {
 
 export default function Show({ product, booth, isPaymentReady }) {
     const descriptionDelimited = useMemo(
-        () => product.description.replaceAll("\n", "<br />"),
+        () => product.description ? product.description.replaceAll("\n", "<br />") : "",
         [product.description]
     );
 
@@ -167,7 +168,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                             viewTransition
                         >
                             <img
-                                src={product.image_path}
+                                src={product.image}
                                 className="h-[300px] aspect-square object-cover rounded-lg cursor-zoom-in hover:scale-105 hover:shadow-md hover:opacity-80 transition-transform"
                                 style={{
                                     viewTransitionName: `product-image-${product.id}`,
@@ -207,7 +208,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                             <strong>
                                 {ProductCategories.find(
                                     (x) => x.value == product.category
-                                ).label ?? product.category}
+                                )?.label ?? product.category}
                             </strong>
                         </p>
 
@@ -216,7 +217,7 @@ export default function Show({ product, booth, isPaymentReady }) {
                         </p>
                         <p
                             dangerouslySetInnerHTML={{
-                                __html: descriptionDelimited,
+                                __html: descriptionDelimited || "<span class='text-gray-400 italic text-sm'>No description provided.</span>",
                             }}
                         ></p>
                     </div>

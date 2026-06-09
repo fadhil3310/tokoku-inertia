@@ -13,8 +13,10 @@ use App\Http\Controllers\MidtransConfigController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoothController;
 use App\Http\Controllers\ProductPaymentController;
+use App\Http\Controllers\TicketPaymentController;
 use App\Http\Controllers\ProductTransactionController;
 use App\Http\Controllers\SupportController;
+use App\Http\Controllers\SubscriptionController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,9 +26,10 @@ Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('/', fn() => Inertia::render('Home'));
 Route::get('/about-us', fn() => Inertia::render('AboutUs'));
 Route::get('/features', fn() => Inertia::render('Features'));
-Route::get('/pricing', fn() => Inertia::render('Pricing'));
 Route::get('/contact', fn() => Inertia::render('Contact'));
 Route::resource('/support', SupportController::class);
+Route::get('/help-center', fn() => Inertia::render('HelpCenter'))->name('help-center');
+Route::get('/pricing', [HomeController::class, 'pricing'])->name('pricing');
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -39,6 +42,14 @@ Route::middleware(['role:tenant'])->group(function () {
     Route::post('/join/event/{id}', [EventController::class, 'join']);
 });
 
+// Catalog
+Route::get('/catalog/{boothId}/check-payment-status/{orderId}', [CatalogController::class, 'checkPaymentStatus'])->name('catalog.checkPaymentStatus');
+Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
+
+Route::get('/event/{eventId}/catalog', [EventController::class, 'catalog'])->name('event.catalog');
+
 // General Authenticated Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
@@ -46,19 +57,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment', fn() => Inertia::render('Payment'));
     Route::get('/transactions/form', fn() => Inertia::render('TransactionsForm'));
     Route::get('/notifications', fn() => Inertia::render('Notifications/Index'));
-    Route::get('/subscription', fn() => Inertia::render('Subscription'));
     Route::resource('booth', BoothController::class);
     Route::resource('transactions', ProductTransactionController::class);
     Route::resource('payment-link', MidtransConfigController::class);
     
-    // Catalog
-    Route::get('/catalog/{boothId}/check-payment-status/{orderId}', [CatalogController::class, 'checkPaymentStatus'])->name('catalog.checkPaymentStatus');
-    Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
-    Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
-    Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
-
-    // Payment
-    Route::post('/payment/product/checkout', [ProductPaymentController::class, 'checkout'])->name("payment.product.checkout");
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -75,6 +77,11 @@ Route::middleware(['auth', 'role:admin,tenant'])->group(function () {
     Route::resource('products', ProductController::class);
 });
 
+Route::middleware(['auth', 'role:tenant'])->group(function () {
+    Route::post('/payment/ticket/checkout', [TicketPaymentController::class, 'checkout'])->name('payment.ticket.checkout');
+    Route::get('/payment/ticket/check-payment-status/{orderId}', [TicketPaymentController::class, 'checkPaymentStatus'])->name('ticket.checkPaymentStatus');
+});
+
 Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {
     Route::prefix('events')->group(function () {
         Route::get('/', [EventController::class, 'index'])->name('events.index');
@@ -85,4 +92,19 @@ Route::middleware(['auth', 'role:admin,event organizer'])->group(function () {
         Route::put('/edit/{id}', [EventController::class, 'update'])->name('events.update');
         Route::delete('/delete/{id}', [EventController::class, 'destroy'])->name('events.delete');
     });
+
+    Route::get('/registrations', [TicketPaymentController::class, 'index']);
+
+    Route::get('/subscription', [SubscriptionController::class, 'index'])->name('subscription.index');
+    Route::post('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::get('/subscription/check-payment-status/{orderId}', [SubscriptionController::class, 'checkPaymentStatus'])->name('subscription.checkPaymentStatus');
 });
+
+// Catalog
+Route::get('/catalog/{boothId}/check-payment-status/{orderId}', [CatalogController::class, 'checkPaymentStatus'])->name('catalog.checkPaymentStatus');
+Route::get('/catalog/{boothId}', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/catalog/{boothId}/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/catalog/{boothId}/image/{id}', [CatalogController::class, 'showImage'])->name('catalog.showImage');
+
+// Payment
+Route::post('/payment/product/checkout', [ProductPaymentController::class, 'checkout'])->name("payment.product.checkout");

@@ -16,8 +16,9 @@ export default function DashboardLayout({ children }) {
     const navItems = auth.user?.role === 'event organizer' 
         ? [
             { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
-            { href: "/events", label: "Events", icon: TransactionsIcon },
-            { href: "/payment", label: "Payment", icon: PaymentIcon },
+            { href: "/events", label: "Events", icon: BoothIcon },
+            { href: "/registrations", label: "Transactions", icon: TransactionsIcon },
+            { href: "/payment-link", label: "Payment Link", icon: PaymentIcon },
         ] :
         auth.user?.role === 'tenant' ?  [
             { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
@@ -25,13 +26,6 @@ export default function DashboardLayout({ children }) {
             { href: "/payment-link", label: "Payment Link", icon: PaymentIcon },
             { href: "/products", label: "Products", icon: ProductsIcon },
             { href: "/booth", label: "Booth", icon: BoothIcon },
-        ] :
-        auth.user?.role === 'admin' ?  [
-            { href: "/dashboard", label: "Dashboard", icon: HomeIcon },
-            { href: "/transactions", label: "Transactions", icon: TransactionsIcon },
-            { href: "/payment", label: "Payment", icon: PaymentIcon },
-            { href: "/products", label: "Products", icon: ProductsIcon },
-            { href: "/profile", label: "Users", icon: UserIcon },
         ] : [];
 
     return (
@@ -49,9 +43,9 @@ export default function DashboardLayout({ children }) {
                                         T
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-xl font-bold text-gray-700">{auth.user.booth?.name || "Tokoku"}</span>
+                                        <span className="text-xl font-bold text-gray-700">{auth.user.role === 'tenant' ? auth.user.booth?.name : "Tokoku"}</span>
                                         {
-                                            auth.user.role === 'tenant' ?? <span className="text-xs text-gray-500">by Tokoku</span>
+                                            auth.user.role === 'tenant' && <span className="text-xs text-gray-500">by Tokoku</span>
                                         }
                                     </div>
                                 </>
@@ -156,12 +150,15 @@ export default function DashboardLayout({ children }) {
                                         >
                                             Profile
                                         </Link>
-                                        <Link
-                                            href="/subscription"
-                                            className="block px-4 py-2 text-sm hover:bg-gray-100"
-                                        >
-                                            Subscription
-                                        </Link>
+                                        {
+                                            auth.user.role === 'event organizer' &&
+                                            <Link
+                                                href="/subscription"
+                                                className="block px-4 py-2 text-sm hover:bg-gray-100"
+                                            >
+                                                Subscription
+                                            </Link>
+                                        }
                                         <Link
                                             href="/logout"
                                             method="post"

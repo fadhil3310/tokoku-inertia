@@ -86,7 +86,7 @@ class ProductPaymentController extends Controller
             "status" => "pending",
             "product_id" => $productId,
             "sku" => $product->sku,
-            "description" => $product->description
+            "description" => $product->description ?? ""
         ]);
 
         return [
@@ -166,9 +166,15 @@ class ProductPaymentController extends Controller
 
     private static function setupLibrary($boothId)
     {
-        $midtransConfig = Booth::find($boothId)->midtransConfig;
-        if ($midtransConfig == null)
+        // Fetch the booth and eager load the owner to prevent errors
+        $booth = Booth::with('owner')->findOrFail($boothId);
+
+        // Fetch the Midtrans config through the booth's owner (User model)
+        $midtransConfig = $booth->owner->midtransConfig;
+
+        if ($midtransConfig == null) {
             throw new Exception("Tenant haven't set up their midtrans key yet");
+        }
 
         \Midtrans\Config::$serverKey = $midtransConfig->server_key;
         \Midtrans\Config::$isProduction = false;
