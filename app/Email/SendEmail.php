@@ -18,13 +18,13 @@ class SendEmail
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
-            $mail->Username   = 'virgianofadhil@upi.edu';
-            $mail->Password   = 'yhmp dkxy ouna wvuo';
+            $mail->Username   = env('MAILER_EMAIL');
+            $mail->Password   = env('MAILER_PASSKEY');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = 587;
 
-            $mail->setFrom('virgianofadhil@upi.edu', 'VIRGIANO FADHIL');
-            $mail->addAddress('virgianofadhil@gmail.com', 'Virgiano Fadhil');
+            $mail->setFrom(env('MAILER_EMAIL'), env('MAILER_EMAIL'));
+            $mail->addAddress(env('MAILER_RECEPIENT_EMAIL'), env('MAILER_RECEPIENT_EMAIL'));
 
             $mail->isHTML(true);
             $mail->Subject = 'Tokoku Support';
