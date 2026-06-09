@@ -69,7 +69,8 @@ export default function SignUp() {
     }, []);
 
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
-    const isStep1Valid = data.name.trim() !== "" && isEmailValid && data.password.length >= 8 &&data.password === data.password_confirmation;
+    const isPasswordStrong = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(data.password);
+    const isStep1Valid = data.name.trim().length >= 3 && data.name.trim().length <= 50 &&isEmailValid && isPasswordStrong && data.password === data.password_confirmation;
     // const isStep1Valid = data.name.trim() !== "" && data.email.trim() !== "" && data.password !== "" && data.password_confirmation !== "";
     const isStep2Valid = data.role !== "";
     const isStep3Valid = data.boothName.trim() !== "";
@@ -114,7 +115,7 @@ export default function SignUp() {
                                         placeholder="Full Name"
                                         value={data.name}
                                         onChange={(e) => setData("name", e.target.value)}
-                                        error={errors.name}
+                                        error={data.name.length > 50 ? "Name is too long (Max 50 characters)" : errors.name}
                                         required
                                     />
                                     <InputField
@@ -123,7 +124,7 @@ export default function SignUp() {
                                         placeholder="Email"
                                         value={data.email}
                                         onChange={(e) => setData("email", e.target.value)}
-                                        error={errors.email}
+                                        error={(data.email.length > 0 && !isEmailValid) ? "Email Format is not valid (must have @ and .)" : errors.email}
                                         required
                                     />
                                     <InputField
@@ -132,7 +133,7 @@ export default function SignUp() {
                                         placeholder="Password"
                                         value={data.password}
                                         onChange={(e) => setData("password", e.target.value)}
-                                        error={errors.password}
+                                        error={(data.password.length > 0 && !isPasswordStrong) ? "Password requires 8 variables & must number combination" : errors.password}
                                         required
                                     >
                                         <Button
@@ -151,6 +152,7 @@ export default function SignUp() {
                                         placeholder="Confirm Password"
                                         value={data.password_confirmation}
                                         onChange={(e) => setData("password_confirmation", e.target.value)}
+                                        error={(data.password_confirmation.length > 0 && data.password !== data.password_confirmation) ? "Password does not match" : errors.password_confirmation}
                                         required
                                     />
 
@@ -244,7 +246,7 @@ export default function SignUp() {
                                         placeholder="Booth Name"
                                         value={data.boothName}
                                         onChange={(e) => setData("boothName", e.target.value)}
-                                        error={errors.boothName}
+                                        error={data.name.length > 30 ? "Name is too long (Max 50 Characters)" : errors.boothName}
                                         required
                                     />
 
