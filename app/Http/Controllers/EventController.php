@@ -15,9 +15,21 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $req)
     {
+        $search = $req->query('search');
+        $status = $req->query('status');
+
         $events = Event::where('owner_id', auth()->id())
+            ->where('name', 'like', "%{$search}%")
+            ->when($status, function ($query) use ($status){
+                if ($status == 'upcoming') {
+                    return $query->where('date_end', '>=', now());
+                }
+                else if ($status == 'past') {
+                    return $query->where('date_end', '<', now());
+                }
+            })
             ->latest()
             ->get()
             ->map(function ($event) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../Layouts/DashboardLayout";
 import { Link, Head, usePage, router } from "@inertiajs/react";
 import {
@@ -11,6 +11,7 @@ import {
     CircleAddIcon,
     HomeIcon,
     ChevronRightIcon,
+    SearchIcon,
 } from "../../Components/Icons";
 import Button from "../../Components/Buttons";
 import { toast } from "sonner";
@@ -19,6 +20,13 @@ import { h } from "gridjs";
 import "gridjs/dist/theme/mermaid.css";
 
 export default function Index({ events = [], error }) {
+    const [searchQuery, setSearchQuery] = useState(
+        new URLSearchParams(window.location.search).get("search") ?? ""
+    );
+    const [statusQuery, setStatusQuery] = useState(
+        new URLSearchParams(window.location.search).get("status") ?? ""
+    );
+    
     const { flash } = usePage();
 
     const data = events.map((e) => [
@@ -31,8 +39,36 @@ export default function Index({ events = [], error }) {
     const columns = [
         "Id",
         "Name",
-        "Start Date",
-        "End Date",
+        {
+            name: "Start Date",
+            formatter: (cell) => {
+                const date = new Date(cell);
+                const formattedDate = new Intl.DateTimeFormat("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                }).format(date);
+                return formattedDate.replace(",", "");
+            },
+        },
+        {
+            name: "End Date",
+            formatter: (cell) => {
+                const date = new Date(cell);
+                const formattedDate = new Intl.DateTimeFormat("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                }).format(date);
+                return formattedDate.replace(",", "");
+            },
+        },
         {
             name: 'Actions',
             formatter: (_, row) => {
@@ -107,11 +143,32 @@ export default function Index({ events = [], error }) {
                 </Card>
 
                 <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm border border-gray-100">
+                    <form>
+                        <div className="flex gap-3 mb-6">
+                            <div className="w-full flex items-center gap-2 px-3 py-2 border border-[#D1D5DC] rounded-lg">
+                                <SearchIcon />
+                                <input
+                                    type="text"
+                                    name="search"
+                                    className="w-full placeholder:text-[#757575] text-sm focus:outline-0"
+                                    placeholder="Search something..."
+                                    value={searchQuery}
+                                    onChange={(ev) => setSearchQuery(ev.target.value)}
+                                />
+                            </div>
+                            <select value={statusQuery} onChange={(ev) => setStatusQuery(ev.target.value)} name="status" className="flex items-center gap-2 px-3 py-2 border border-[#D1D5DC] rounded-lg">
+                                <option value="status" selected>Status</option>
+                                <option value="upcoming">Upcoming Events</option>
+                                <option value="past">Past Events</option>
+                            </select>
+                            <Button className="w-auto px-6 py-2" submit>Search</Button>
+                        </div>
+                    </form>
                     <div className="overflow-x-auto">
                         <Grid
                             data={data}
                             columns={columns}
-                            search={true}
+                            search={false}
                             language={{
                                 search: {
                                     placeholder: "Search events...",

@@ -68,7 +68,9 @@ export default function SignUp() {
         }
     }, []);
 
-    const isStep1Valid = data.name.trim() !== "" && data.email.trim() !== "" && data.password !== "" && data.password_confirmation !== "";
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
+    const isStep1Valid = data.name.trim() !== "" && isEmailValid && data.password.length >= 8 &&data.password === data.password_confirmation;
+    // const isStep1Valid = data.name.trim() !== "" && data.email.trim() !== "" && data.password !== "" && data.password_confirmation !== "";
     const isStep2Valid = data.role !== "";
     const isStep3Valid = data.boothName.trim() !== "";
 
