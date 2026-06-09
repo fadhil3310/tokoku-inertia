@@ -59,7 +59,7 @@ export default function Index({ events = [], error }) {
 
     const handleDelete = (id) => {
         if (confirm("Are you sure you want to delete this event? This will also delete all associated tickets.")) {
-            router.delete(route('events.destroy', id), {
+            router.delete(route('events.delete', id), {
                 preserveScroll: true,
             });
         }
