@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoothController;
 use App\Http\Controllers\ProductPaymentController;
 use App\Http\Controllers\ProductTransactionController;
+use App\Http\Controllers\SupportController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -25,7 +26,7 @@ Route::get('/about-us', fn() => Inertia::render('AboutUs'));
 Route::get('/features', fn() => Inertia::render('Features'));
 Route::get('/pricing', fn() => Inertia::render('Pricing'));
 Route::get('/contact', fn() => Inertia::render('Contact'));
-Route::get('/support', fn() => Inertia::render('Support'));
+Route::resource('/support', SupportController::class);
 
 Route::get('/', [HomeController::class, 'index']);
 
