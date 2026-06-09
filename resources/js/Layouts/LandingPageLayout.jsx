@@ -1,7 +1,8 @@
-import { Link, Head } from '@inertiajs/react';
-import Header from '../Components/Header';
-import Footer from '../Components/Footer';
+import { Link, Head } from "@inertiajs/react";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 import React from "react";
+import { Toaster } from "sonner";
 
 export default function LandingPageLayout({ title, children }) {
     return (
@@ -12,6 +13,7 @@ export default function LandingPageLayout({ title, children }) {
                 {children}
                 <Footer />
             </div>
+            <Toaster />
         </div>
     );
 }

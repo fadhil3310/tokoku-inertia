@@ -15,6 +15,7 @@ use App\Http\Controllers\BoothController;
 use App\Http\Controllers\ProductPaymentController;
 use App\Http\Controllers\TicketPaymentController;
 use App\Http\Controllers\ProductTransactionController;
+use App\Http\Controllers\SupportController;
 use App\Http\Controllers\SubscriptionController;
 
 Route::get('/login', fn() => Inertia::render('Auth/Login'))->name('login');
@@ -26,7 +27,7 @@ Route::get('/', fn() => Inertia::render('Home'));
 Route::get('/about-us', fn() => Inertia::render('AboutUs'));
 Route::get('/features', fn() => Inertia::render('Features'));
 Route::get('/contact', fn() => Inertia::render('Contact'));
-Route::get('/support', fn() => Inertia::render('Support'));
+Route::resource('/support', SupportController::class);
 Route::get('/help-center', fn() => Inertia::render('HelpCenter'))->name('help-center');
 Route::get('/pricing', [HomeController::class, 'pricing'])->name('pricing');
 
